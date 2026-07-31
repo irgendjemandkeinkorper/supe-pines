@@ -52,9 +52,11 @@ with sync_playwright() as playwright:
     assert page.locator(".casecard").count() == 8
     assert page.locator(".case-phase-rail").count() == 1
     assert page.locator(".casecard-art img").count() >= 4
-    page.wait_for_timeout(250)
-    assert page.locator(".casecard-art img").evaluate_all(
-        "imgs => imgs.slice(0,4).every(img => img.complete && img.naturalWidth > 0)"
+    page.wait_for_function(
+        """() => [...document.querySelectorAll('.casecard-art img')]
+        .slice(0, 4)
+        .every(img => img.complete && img.naturalWidth > 0)""",
+        timeout=10_000,
     )
 
     page.locator(".casecard").first.click()
