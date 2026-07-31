@@ -2,7 +2,7 @@ import { $, esc, toneBadge } from '../engine/utils.js';
 import { State } from '../engine/state.js';
 import { show } from './screens.js';
 import { faceUp, matchSecret } from '../engine/rules.js';
-import { signalCard } from './cards.js';
+import { signalCard, sceneTrackerHTML } from './cards.js';
 import { afterSceneFlow } from './hub.js';
 
 /* ---------------- resolution ---------------- */
@@ -15,7 +15,8 @@ export function renderResolve(){
   const G = State.G;
   const c = G.current;
   $('scr-resolve').innerHTML = `
-    <h2 class="center">The scene concludes</h2>
+    ${sceneTrackerHTML(G,{phase:'resolve'})}
+    <h2 class="center" style="margin-top:24px">The scene concludes</h2>
     <p class="center muted">Consult each Hero’s face-up condition. If it was met in this scene, turn the card.</p>
     <div class="ornament">❦</div>
     <div class="panel spotlight" style="max-width:680px;margin:0 auto">

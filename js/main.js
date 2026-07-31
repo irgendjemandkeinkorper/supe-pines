@@ -6,10 +6,10 @@ import { show, closeOverlay, initHistoryNav, applyFirstrunVisibility, dismissFir
 import { flipHeroCard } from './ui/cards.js';
 import { showIdleClicker, idleClick } from './ui/idle.js';
 import { showGallery, setGalleryStyle, setGalleryCat, openGalleryDetail,
-         closeGalleryDetail, galleryImgError } from './ui/gallery.js';
+         closeGalleryDetail, galleryImgError, flipGalleryCard } from './ui/gallery.js';
 import { renderHooks, chooseCase, renderPlayerInputs, confirmPlayers,
          beginArchSetup, saveArchSetup, finishVictim } from './ui/setup.js';
-import { renderHub, tradeSignal, forfeitScene, beginClose } from './ui/hub.js';
+import { renderHub, openLocalHand, tradeSignal, forfeitScene, beginClose } from './ui/hub.js';
 import { startSceneFor, pickSceneCard, pickArch, beginScene, pickContrib,
          pickContribScene, pickContribOmen, confirmContrib, cancelContrib,
          setContribHow, setSceneHappened, dismissScenePrimer } from './ui/scene.js';
@@ -28,14 +28,14 @@ import {
   onlineSetContribHow, onlineSetSceneHappened, onlineSetSecretAnswer,
   onlineConfirmContrib, onlineEndScene, onlineApplyResolve,
   onlineToggleSecretOmen, onlineConfirmSecret,
-  onlineAnswerForAbsent, onlineCopyRoomLink, onlineDismissScenePrimer
+  onlineAnswerForAbsent, onlineCopyRoomLink, onlineDismissScenePrimer, openOnlineHand
 } from './ui/online.js';
 
 Object.assign(window, {
   show, flipHeroCard, showIdleClicker, idleClick, dismissFirstrunHint,
-  showGallery, setGalleryStyle, setGalleryCat, openGalleryDetail, closeGalleryDetail, galleryImgError,
+  showGallery, setGalleryStyle, setGalleryCat, openGalleryDetail, closeGalleryDetail, galleryImgError, flipGalleryCard,
   chooseCase, renderPlayerInputs, confirmPlayers, beginArchSetup, saveArchSetup, finishVictim,
-  renderHub, tradeSignal, forfeitScene, beginClose,
+  renderHub, openLocalHand, tradeSignal, forfeitScene, beginClose,
   startSceneFor, pickSceneCard, pickArch, beginScene, pickContrib, pickContribScene, pickContribOmen,
   confirmContrib, cancelContrib, setContribHow, setSceneHappened, dismissScenePrimer,
   endScene, applyResolve, toggleSecretOmen, confirmSecret,
@@ -49,7 +49,7 @@ Object.assign(window, {
   onlineSetContribHow, onlineSetSceneHappened, onlineSetSecretAnswer,
   onlineConfirmContrib, onlineEndScene, onlineApplyResolve,
   onlineToggleSecretOmen, onlineConfirmSecret,
-  onlineAnswerForAbsent, onlineCopyRoomLink, onlineDismissScenePrimer
+  onlineAnswerForAbsent, onlineCopyRoomLink, onlineDismissScenePrimer, openOnlineHand
 });
 
 /* ---------------- init ---------------- */

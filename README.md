@@ -20,6 +20,10 @@ before the public page can open remote rooms. Until then the title screen labels
 online play as setup-required and gives players a useful explanation instead of
 letting a sign-in attempt fail. See "Firebase setup" below.
 
+The table UI includes a ready-to-lead turn board, full-card hand drawers, and a
+three-slot scene tracker that keeps the opening card, buy-ins, lead Hero, and
+live tone sources visible through resolution.
+
 **Content is a deliberately smaller starter set**, ported at the same structural
 scale as Bleakwood Vale but with less total content, meant to be expanded over
 time:
@@ -131,7 +135,9 @@ The launch build includes four matching Comic Ink Case covers, visible in the
 Case picker and Gallery. The Gallery supports the full image set at
 `art/images/<style>/<category>/<slug>.<ext>` (`style` is `ink` or `poster`;
 `category` is `heroes`, `cases`, `signals`, or `threats`) and falls back to
-intentional text cards whenever an image is absent.
+intentional text cards whenever an image is absent. Each Hero appears as one
+two-sided card with an explicit Side I/Side II control; the caption and flip
+condition follow the face being shown.
 
 The Bleakwood Vale manifest pipeline is now fully adapted for Supe Pines. It
 contains hand-authored art direction for all 12 Heroes (both sides), 4 Cases,

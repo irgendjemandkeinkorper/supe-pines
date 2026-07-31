@@ -20,7 +20,11 @@ function heroFaceHTML(h, sideIdx, turned){
 export function heroCard(h, selectable, idx){
   const frontIdx = h.flipped?1:0, backIdx = h.flipped?0:1;
   return `<div class="hero-flip${selectable?' selectable':''}" ${selectable?`onclick="${selectable}(${idx})" id="arch-pick-${idx}"`:''}>
-    <button class="flip-btn" type="button" onclick="event.stopPropagation();flipHeroCard(this)" aria-label="Peek at the other side" title="Peek at the other side">⟳</button>
+    <button class="flip-btn" type="button" onclick="event.stopPropagation();flipHeroCard(this)"
+      data-front-side="${frontIdx===0?'I':'II'}" data-back-side="${backIdx===0?'I':'II'}"
+      aria-label="View Side ${backIdx===0?'I':'II'}" aria-pressed="false" title="View Side ${backIdx===0?'I':'II'}">
+      <span aria-hidden="true">⟳</span><span class="flip-btn-label">Side ${backIdx===0?'I':'II'}</span>
+    </button>
     <div class="hero-flip-inner">
       <div class="hero-face hero-front">${heroFaceHTML(h, frontIdx, h.flipped)}</div>
       <div class="hero-face hero-back">${heroFaceHTML(h, backIdx, !h.flipped)}</div>
@@ -28,7 +32,14 @@ export function heroCard(h, selectable, idx){
   </div>`;
 }
 export function flipHeroCard(btn){
-  btn.closest('.hero-flip')?.classList.toggle('peeking');
+  const card = btn.closest('.hero-flip');
+  if(!card) return;
+  const peeking = card.classList.toggle('peeking');
+  const nextSide = peeking ? btn.dataset.frontSide : btn.dataset.backSide;
+  btn.setAttribute('aria-label',`View Side ${nextSide}`);
+  btn.setAttribute('aria-pressed',String(peeking));
+  btn.title = `View Side ${nextSide}`;
+  btn.innerHTML = `<span aria-hidden="true">${peeking?'↶':'⟳'}</span><span class="flip-btn-label">Side ${nextSide}</span>`;
 }
 
 /* The 4-step "Begin → Buy In → Narrate → Resolve" diagram. Shared by the
@@ -92,6 +103,130 @@ export function sceneCardHTML(c, selectable, idx){
     <div style="margin-top:8px">${toneBadge(c.tone)}</div>
   </div>`;
 }
+
+/* One shared view of everything physically on the table while a scene is
+   running. Local play, online play, and resolution all use it, keeping the
+   card slots, lead Hero, participation, and live tone count in sync. */
+export function sceneTrackerHTML(G, opts={}){
+  const c = G?.current;
+  if(!c?.card) return '';
+
+  const starter = G.players[c.starter];
+  const lead = G.heroes[c.archIdx];
+  const leadFace = lead.sides[lead.flipped?1:0];
+  const resolving = opts.phase === 'resolve';
+  const happened = opts.happened ?? c.happened;
+  const viewerSeat = Number.isInteger(opts.viewerSeat) ? opts.viewerSeat : null;
+  const animateSlot = Number.isInteger(opts.animateSlot) ? opts.animateSlot : null;
+  const cards = [
+    {kind:c.type==='close'?'close':'scene', card:c.card, owner:starter.name, opening:true},
+    ...c.contributions.map(x=>({kind:x.kind, card:x.card, owner:G.players[x.pi].name, how:x.how, pi:x.pi}))
+  ];
+  const cardCount = cards.length;
+  const slotRoman = ['I','II','III'];
+
+  const slotHTML = Array.from({length:3}, (_,i)=>{
+    const played = cards[i];
+    if(!played) return `<div class="scene-slot empty" aria-label="Open card slot">
+      <div class="scene-slot-head"><span>${slotRoman[i]} · Buy-in</span><span>Open</span></div>
+      <div class="scene-slot-empty-mark" aria-hidden="true">＋</div>
+      <p>Another storyteller may add a scene card or a Signal.</p>
+    </div>`;
+
+    const isSignal = played.kind === 'omen';
+    const kicker = played.kind === 'close' ? 'Act Close' : isSignal ? 'Signal' : `Scene · ${ACT_NAMES[G.act]}`;
+    return `<div class="scene-slot occupied${isSignal?' signal-slot':''}${i===animateSlot?' dealt-in':''}">
+      <div class="scene-slot-head">
+        <span>${slotRoman[i]} · ${i===0?'Opening':'Buy-in'}</span>
+        <span>${esc(played.owner)}</span>
+      </div>
+      <div class="card scene-table-card${isSignal?' signal':''}">
+        <div class="c-kicker">${kicker}</div>
+        ${isSignal?`<div class="glyph">${played.card.glyph}</div>`:''}
+        <div class="c-title">${esc(played.card.title)}</div>
+        <div class="c-prompt">${esc(played.card.prompt ?? played.card.line)}</div>
+        ${played.card.tone?`<div class="scene-card-tone">${toneBadge(played.card.tone)}</div>`:''}
+        ${played.opening && c.element?`<hr class="rule" style="border-color:rgba(60,45,25,.3)"><div class="small scene-close-element"><strong>Include:</strong> ${esc(c.element)}</div>`:''}
+      </div>
+      ${played.how!==undefined?`<div class="scene-manifest"><span>How it enters</span><p>${nl2br(played.how)||'<span class="muted">It manifests wordlessly.</span>'}</p></div>`:''}
+    </div>`;
+  }).join('');
+
+  const toneSources = [];
+  if(c.card.tone) toneSources.push({tone:c.card.tone, source:'opening card'});
+  c.contributions.forEach(x=>{
+    if(x.kind==='scene') toneSources.push({tone:x.card.tone, source:x.card.title});
+  });
+  toneSources.push({tone:leadFace.tone, source:`${lead.name||lead.role} · face-up`});
+  const hasSignal = c.contributions.some(x=>x.kind==='omen');
+
+  const contributed = new Map();
+  c.contributions.forEach(x=>contributed.set(x.pi, (contributed.get(x.pi)||0)+1));
+  const hasOpenSlot = cardCount < 3;
+  const playerRail = G.players.map((p,i)=>{
+    const mine = viewerSeat===i ? ' · you' : '';
+    const played = contributed.get(i)||0;
+    const handCount = Array.isArray(p.hand) ? p.hand.length : (p.handCount||0);
+    const canBuyIn = hasOpenSlot && (G.players.length===1 || i!==c.starter) &&
+      (G.players.length===1 || !played) && (handCount>0 || G.signalRow.length>0);
+    let status, cls;
+    if(i===c.starter && G.players.length===1){
+      status = played ? `Directing · ${played} buy-in${played===1?'':'s'}` : canBuyIn ? 'Directing · may buy in' : 'Directing';
+      cls = played ? 'played' : 'directing';
+    }
+    else if(i===c.starter){ status='Directing'; cls='directing'; }
+    else if(played){ status=G.players.length===1 ? `${played} buy-in${played===1?'':'s'}` : 'Card played'; cls='played'; }
+    else if(canBuyIn){ status='May buy in'; cls='ready'; }
+    else if(hasOpenSlot){ status='At the table'; cls='watching'; }
+    else { status='Scene full'; cls='watching'; }
+    return `<span class="scene-player ${cls}"><strong>${esc(p.name)}</strong><small>${status}${mine}</small></span>`;
+  }).join('');
+
+  const context = [G.case?.title, G.threat?.name ? `The Threat: ${G.threat.name}` : null].filter(Boolean).map(esc).join(' · ');
+  const arrived = animateSlot!==null ? cards[animateSlot] : null;
+  return `${arrived?`<div class="scene-arrival-callout" aria-live="polite"><span>${esc(arrived.owner)}</span> ${animateSlot===0?'opens the scene with':'adds'} <strong>${esc(arrived.card.title)}</strong></div>`:''}
+  <section class="scene-tracker${resolving?' resolving':''}${arrived?' card-arrival':''}" aria-label="Current scene tracker">
+    <div class="scene-tracker-head">
+      <div>
+        <p class="scene-tracker-kicker">${resolving?'Resolving':'Now Playing'} · ${ACT_NAMES[G.act]}</p>
+        <h2>${esc(c.card.title)}</h2>
+        ${context?`<p class="scene-context">${context}</p>`:''}
+      </div>
+      <div class="scene-card-meter" aria-label="${cardCount} of 3 cards in play">
+        <span class="scene-meter-label">Cards in play</span>
+        <span class="scene-meter-dots">${Array.from({length:3},(_,i)=>`<i class="${i<cardCount?'filled':''}"></i>`).join('')}</span>
+        <strong>${cardCount} / 3</strong>
+      </div>
+    </div>
+
+    <div class="scene-brief">
+      <span><small>Directed by</small><strong>${esc(starter.name)}</strong></span>
+      <span><small>Lead Hero</small><strong>${esc(lead.name||lead.role)}</strong></span>
+    </div>
+    ${c.opening?`<blockquote class="scene-opening"><span>The camera sees</span>${nl2br(c.opening)}</blockquote>`:''}
+
+    <div class="scene-table">
+      <div class="scene-slots">${slotHTML}</div>
+      <aside class="scene-lead-card">
+        <div class="scene-lead-label"><span>Lead in this scene</span>${toneBadge(leadFace.tone)}</div>
+        ${heroCard(lead)}
+        <p>Check the face-up condition when the scene ends. Its tone is counted after any turn.</p>
+      </aside>
+    </div>
+
+    <div class="scene-tone-tracker">
+      <div class="scene-tone-copy">
+        <span>Tones in play</span>
+        <small>The lead’s tone may change when the scene resolves.</small>
+      </div>
+      <div class="scene-tone-sources">${toneSources.map(x=>`<span>${toneBadge(x.tone)}<small>${esc(x.source)}</small></span>`).join('')}</div>
+      ${hasSignal?'<p class="scene-signal-note">Signals shape the fiction, but add no tone.</p>':''}
+    </div>
+
+    <div class="scene-player-rail" aria-label="Storyteller participation">${playerRail}</div>
+    ${resolving && happened?`<div class="scene-record"><span>The Dossier will remember</span><p>${nl2br(happened)}</p></div>`:''}
+  </section>`;
+}
 /* Compact recap of one resolved journal entry — who led it, what was
    played into it, and by whom. Shared by the hub's "last scene" panel
    and (in fuller form) the Dossier, so the two never drift apart. */
@@ -123,14 +258,15 @@ export function journalEntrySummaryHTML(entry, opts){
 
 export function playerPanel(p,i){
   const G = State.G;
-  return `<div class="ppanel">
+  return `<div class="ppanel" id="player-panel-${i}">
     <h4>${esc(p.name)}</h4>
-    <div class="handrow">
-      ${p.hand.map(c=>`<div class="minicard"><div class="mc-t">${esc(c.title)}</div><span class="tone ${c.tone}" style="font-size:.6rem">${c.tone}</span></div>`).join('') || '<span class="small muted"><span>No scene cards in hand.</span></span>'}
+    <p class="hand-section-label">Scene cards · ${p.hand.length}</p>
+    <div class="cardgrid hand-cardgrid">
+      ${p.hand.map(c=>sceneCardHTML(c)).join('') || '<span class="small muted">No scene cards in hand.</span>'}
     </div>
-    ${p.signals.length?`<div class="handrow">${p.signals.map((o,oi)=>`
-      <div class="minicard signal"><div class="mc-t">${o.glyph} ${esc(o.title)}</div>
-      ${G.sceneDeck.length?`<button class="ghost" style="margin-top:4px;font-size:.7rem;padding:2px 8px" onclick="tradeSignal(${i},${oi})">trade for a scene card</button>`:'<span class="small muted">deck empty</span>'}</div>`).join('')}</div>`:''}
+    ${p.signals.length?`<p class="hand-section-label">Held Signals · ${p.signals.length}</p><div class="cardgrid hand-cardgrid">${p.signals.map((o,oi)=>`
+      <div class="held-card">${signalCard(o)}
+      ${G.sceneDeck.length?`<button class="ghost" onclick="tradeSignal(${i},${oi})">Trade for a scene card</button>`:'<span class="small muted">Scene deck empty</span>'}</div>`).join('')}</div>`:''}
     ${p.secrets.map(s=>`
       <details class="secretbox"><summary>Buried Secret ${s.used?'— revealed':'(theirs alone to read)'}</summary>
         <div class="small" style="margin-top:6px">${s.combo.map(toneBadge).join(' ')}<br>

@@ -40,6 +40,22 @@ function milestoneRailHTML(G){
   </div>`;
 }
 
+function localTurnSeatHTML(G,p,i){
+  const noWayToLead = p.hand.length===0 && (p.signals.length===0 || G.sceneDeck.length===0);
+  const needsTrade = p.hand.length===0 && !noWayToLead;
+  const state = p.scenesLeft<=0 ? 'done' : noWayToLead ? 'blocked' : needsTrade ? 'trade' : 'ready';
+  const label = state==='done' ? 'Finished this act' : state==='blocked' ? 'No card to lead' : state==='trade' ? 'Trade first' : 'Ready to lead';
+  return `<div class="turn-seat ${state}">
+    <div class="turn-seat-head"><strong>${esc(p.name)}</strong><span>${label}</span></div>
+    <p>${p.scenesLeft} scene${p.scenesLeft===1?'':'s'} left to lead · ${p.hand.length} scene card${p.hand.length===1?'':'s'} · ${p.signals.length} held Signal${p.signals.length===1?'':'s'}</p>
+    <div class="turn-seat-actions">
+      ${state==='ready'?`<button class="primary" onclick="startSceneFor(${i})">Begin a scene</button>`:''}
+      ${state==='blocked' && p.scenesLeft>0?`<button class="blood" onclick="forfeitScene(${i})">Forfeit scene</button>`:''}
+      <button class="ghost" onclick="openLocalHand(${i})">View ${esc(p.name)}’s cards</button>
+    </div>
+  </div>`;
+}
+
 /* ---------------- acts ---------------- */
 export function startAct(act){
   const G = State.G;
@@ -59,7 +75,6 @@ export function startAct(act){
 
 export function renderHub(){
   const G = State.G;
-  const np = G.players.length;
   const close = G.actClose[G.act];
   const remaining = G.players.reduce((s,p)=>s+p.scenesLeft,0);
   $('scr-hub').innerHTML = `
@@ -68,19 +83,13 @@ export function renderHub(){
     ${actTrackHTML(G.act)}
     <div class="ornament">✦ ❦ ✦</div>
 
-    <div class="panel spotlight">
-      <h3 style="color:var(--gold)">The Table</h3>
-      <p class="small muted">Whoever has an idea first begins the next scene. ${remaining} scene${remaining===1?'':'s'} remain${remaining===1?'s':''} before the Act closes.</p>
-      <div class="btnrow">
-        ${G.players.map((p,i)=>{
-          if(p.scenesLeft<=0) return `<span class="pill" style="opacity:.5">${esc(p.name)} — done</span>`;
-          if(p.hand.length===0 && (p.signals.length===0 || G.sceneDeck.length===0))
-            return `<button class="blood" onclick="forfeitScene(${i})">${esc(p.name)} — forfeit scene (no cards)</button>`;
-          if(p.hand.length===0)
-            return `<span class="pill">${esc(p.name)} — must trade a signal for a scene card below</span>`;
-          return `<button class="primary" onclick="startSceneFor(${i})">${esc(p.name)} begins a scene${p.scenesLeft>1?` (${p.scenesLeft} left)`:''}</button>`;
-        }).join('')}
+    <div class="panel spotlight turn-board">
+      <div class="turn-board-head">
+        <div><span class="turn-kicker">Who acts now?</span><h3>Any ready storyteller may begin</h3></div>
+        <span class="pill">${remaining} scene${remaining===1?'':'s'} before the close</span>
       </div>
+      <p class="turn-guidance">There is no fixed turn order. Whoever has the next idea chooses <strong>Begin a scene</strong>; everyone else may buy in once play starts.</p>
+      <div class="turn-seats">${G.players.map((p,i)=>localTurnSeatHTML(G,p,i)).join('')}</div>
     </div>
 
     ${milestoneRailHTML(G)}
@@ -111,8 +120,8 @@ export function renderHub(){
       </div>
     </details>
 
-    <details class="disclose">
-      <summary>The Storytellers <span class="small muted">${G.players.length} in play · Scene deck ${G.sceneDeck.length} · Signal deck ${G.signalDeck.length}</span></summary>
+    <details class="disclose" id="storyteller-hands">
+      <summary>Hands &amp; Buried Secrets <span class="small muted">${G.players.length} storytellers · Scene deck ${G.sceneDeck.length} · Signal deck ${G.signalDeck.length}</span></summary>
       <div class="disclose-body">
         <div class="pgrid" style="margin-top:8px">
           ${G.players.map((p,i)=>playerPanel(p,i)).join('')}
@@ -120,6 +129,19 @@ export function renderHub(){
       </div>
     </details>`;
   renderTopbar();
+}
+
+export function openLocalHand(i){
+  const shelf = $('storyteller-hands');
+  const panel = $('player-panel-'+i);
+  if(!shelf || !panel) return;
+  shelf.open = true;
+  panel.classList.remove('hand-focus');
+  requestAnimationFrame(()=>{
+    panel.classList.add('hand-focus');
+    panel.scrollIntoView({behavior:'smooth',block:'center'});
+    setTimeout(()=>panel.classList.remove('hand-focus'),1400);
+  });
 }
 
 export function tradeSignal(pi,oi){
