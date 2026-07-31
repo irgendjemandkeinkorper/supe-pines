@@ -12,7 +12,7 @@ export const slugify = value => String(value).toLowerCase()
 
 export const STYLE_PROMPTS = {
   ink: 'Street-level superhero noir rendered as a hand-inked comic panel: aggressive black brushwork, sharp silhouettes, off-register halftone dots, newsprint texture, selective dirty-cream, oxblood-red, and electric-blue spot color, hard rain-slicked light, human scale and lived-in city detail. Dynamic but readable single composition. No text, letters, logos, captions, speech balloons, borders, panels, watermarks, or gore. One unified full-bleed image, never a grid, montage, triptych, card frame, or repeated subject.',
-  poster: 'Painted pulp superhero poster illustration: expressive gouache and dry-brush texture, dramatic low-angle noir lighting, deep midnight navy, smoke-grey, tarnished gold, brick red, and small electric-cyan accents, grounded 1980s-to-present neighborhood details, weathered and cinematic rather than glossy. One strong central composition with believable people and architecture. No text, letters, logos, captions, borders, frames, watermarks, or gore. One unified full-bleed image, never a grid, montage, triptych, or repeated subject.'
+  burden: 'Magical-realist portrait of an ordinary neighborhood under an impossible emotional weather: grounded human faces, tactile walls and worn objects, restrained painterly edges, warm sodium light against indigo shadow, and one lucid metaphor that physically embodies the subject’s Burden, shortcoming, or downfall. The impossible element must feel as matter-of-fact as a bus stop or a kitchen sink — intimate, specific, and consequential, never generic fantasy or glossy superhero spectacle. No text, letters, logos, captions, speech balloons, borders, panels, watermarks, or gore. One unified full-bleed image, never a grid, montage, triptych, card frame, or repeated subject.'
 };
 
 export const heroArt = {
@@ -154,7 +154,7 @@ export function buildPromptSheet(){
   const saveLine = (style, category, id) => `art/images/${style}/${category}/${id}.png`;
   write('# Supe Pines — Card Art Prompt Sheet');
   write('');
-  write('Noir-comic art direction for every Hero side, Case, Signal, and Threat. Each subject prompt is combined with one of the two master style blocks below by `scripts/gen-manifest.mjs`.');
+  write('Two visual languages for every Hero side, Case, Signal, and Threat. Each subject prompt is combined with one of the master style blocks below by `scripts/gen-manifest.mjs`.');
   write('');
   write('## Master styles');
   write('');
@@ -162,9 +162,9 @@ export function buildPromptSheet(){
   write('');
   write(`> ${STYLE_PROMPTS.ink}`);
   write('');
-  write('### Painted Poster');
+  write('### Burden Realist');
   write('');
-  write(`> ${STYLE_PROMPTS.poster}`);
+  write(`> ${STYLE_PROMPTS.burden}`);
   write('');
   write('Portrait art uses 3:4; Signals use 1:1. The Gallery also accepts JPG, JPEG, and WebP at the same extensionless paths.');
   write('');
@@ -178,7 +178,7 @@ export function buildPromptSheet(){
     write(`- Front: ${art.front}`);
     write(`- Turned: ${art.turned}`);
     write(`- Comic Ink: \`${saveLine('ink', 'heroes', `${id}--front`)}\`, \`${saveLine('ink', 'heroes', `${id}--turned`)}\``);
-    write(`- Painted Poster: \`${saveLine('poster', 'heroes', `${id}--front`)}\`, \`${saveLine('poster', 'heroes', `${id}--turned`)}\``);
+    write(`- Burden Realist: \`${saveLine('burden', 'heroes', `${id}--front`)}\`, \`${saveLine('burden', 'heroes', `${id}--turned`)}\``);
     write('');
   });
   write(`## Cases (${CASES.length * 2} images)`);
@@ -188,7 +188,7 @@ export function buildPromptSheet(){
     write('');
     write(caseArt[item.id]);
     write('');
-    write(`Save as \`${saveLine('ink', 'cases', item.id)}\` and \`${saveLine('poster', 'cases', item.id)}\`.`);
+    write(`Save as \`${saveLine('ink', 'cases', item.id)}\` and \`${saveLine('burden', 'cases', item.id)}\`.`);
     write('');
   });
   write(`## Signals (${SIGNALS.length * 2} images)`);
@@ -199,7 +199,7 @@ export function buildPromptSheet(){
     write('');
     write(signalArt[item.title]);
     write('');
-    write(`Save as \`${saveLine('ink', 'signals', id)}\` and \`${saveLine('poster', 'signals', id)}\`.`);
+    write(`Save as \`${saveLine('ink', 'signals', id)}\` and \`${saveLine('burden', 'signals', id)}\`.`);
     write('');
   });
   write(`## Threats (${CASES.length * 2} images)`);
@@ -209,7 +209,7 @@ export function buildPromptSheet(){
     write('');
     write(threatArt[item.id]);
     write('');
-    write(`Save as \`${saveLine('ink', 'threats', item.id)}\` and \`${saveLine('poster', 'threats', item.id)}\`.`);
+    write(`Save as \`${saveLine('ink', 'threats', item.id)}\` and \`${saveLine('burden', 'threats', item.id)}\`.`);
     write('');
   });
   write(`Total: ${HEROES.length * 4 + CASES.length * 4 + SIGNALS.length * 2} images across both styles.`);

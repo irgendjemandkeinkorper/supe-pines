@@ -290,6 +290,26 @@ label.fld{display:block;margin:12px 0 4px;color:var(--gold);font-family:'Work Sa
 .hero-flip.selectable{cursor:pointer}
 .hero-art{height:108px;margin:-15px -14px 10px;overflow:hidden;background:#0b0f18;border-bottom:1px solid rgba(242,169,31,.25)}
 .hero-art img{width:100%;height:100%;display:block;object-fit:cover;filter:saturate(.85) contrast(1.05)}
+.game-art{position:relative;overflow:hidden;background:#0b0f18}
+.game-art-fallback{position:absolute;inset:0;display:grid;place-items:center;padding:12px;text-align:center;color:#a7b0bd;font-family:'Bangers','Work Sans',sans-serif;letter-spacing:.04em;background:linear-gradient(145deg,#111a2b,#090c13)}
+.game-art>img{position:relative;z-index:1}
+.game-art.missing>img{display:none}
+.art-style-picker{border:1px solid rgba(242,169,31,.3);padding:12px 14px;margin:14px 0;background:rgba(8,12,20,.42)}
+.art-style-picker legend{padding:0 6px;color:var(--gold);font-family:'Bangers','Work Sans',sans-serif;font-size:1.05rem;letter-spacing:.04em}
+.art-style-picker>p{font-size:.8rem;color:#9ba3ad;margin:2px 0 10px}
+.art-style-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.art-style-option{display:block;cursor:pointer}
+.art-style-option>input{position:absolute;opacity:0;pointer-events:none}
+.art-style-choice{display:flex;gap:10px;align-items:stretch;border:1px solid rgba(242,169,31,.25);padding:8px;background:rgba(18,24,36,.7);height:100%;transition:border-color .15s ease,box-shadow .15s ease}
+.art-style-option>input:checked + .art-style-choice{border-color:var(--gold);box-shadow:0 0 0 2px rgba(242,169,31,.18)}
+.art-style-option>input:focus-visible + .art-style-choice{outline:2px solid var(--moon);outline-offset:3px}
+.art-style-preview{width:74px;height:92px;flex:0 0 74px;border:1px solid rgba(242,169,31,.2)}
+.art-style-preview img{width:100%;height:100%;object-fit:cover}
+.art-style-copy{display:flex;flex-direction:column;gap:3px;justify-content:center}
+.art-style-copy strong{color:#ffe8b0;font-size:.9rem}
+.art-style-copy small{color:#a7b0bd;line-height:1.35;font-size:.73rem}
+.art-style-copy em{color:var(--moon);font-size:.7rem;font-style:normal;margin-top:auto}
+.art-style-error{color:var(--blood-bright);min-height:1.1em}
 .hero-flip.selectable:hover .hero{border-color:var(--gold);box-shadow:0 0 10px rgba(242,169,31,.2)}
 .hero-flip.selected .hero{border-color:var(--blood-bright);box-shadow:0 0 0 1px var(--blood-bright)}
 .hero-flip-inner{
@@ -327,6 +347,7 @@ label.fld{display:block;margin:12px 0 4px;color:var(--gold);font-family:'Work Sa
 @media (max-width:720px){
   .case-grid{grid-template-columns:1fr}
   .casecard-art{height:190px}
+  .art-style-options{grid-template-columns:1fr}
 }
 
 /* ---------- rules: "Anatomy of a Scene" diagram ---------- */

@@ -7,6 +7,7 @@ import { ensureSignedIn, getUid } from './auth.js';
 import { HEROES, ACT_CLOSES } from '../data/index.js';
 import { shuffle } from '../engine/utils.js';
 import { HEROES_PER_GAME } from '../engine/rules.js';
+import { normalizeArtStyle } from '../ui/art.js';
 
 export let roomCode = null;
 let unsub = null;
@@ -28,11 +29,11 @@ function emptyPlayer(name, uid){
   return {name, uid, signals:[], handCount:0, secretsCount:0, unrevealedSecretsCount:0, scenesLeft:0};
 }
 
-export async function createRoom(theCase, hostName){
+export async function createRoom(theCase, hostName, artStyle='ink'){
   const uid = await ensureSignedIn();
   const code = genCode();
   await setDoc(roomRef(code), {
-    status:'lobby', phase:'lobby', hostUid:uid, case:theCase,
+    status:'lobby', phase:'lobby', hostUid:uid, case:theCase, artStyle:normalizeArtStyle(artStyle),
     players:[emptyPlayer(hostName||'Storyteller I', uid)],
     seats:{[uid]:0},
     act:0, heroes:[], threat:{name:'', facts:[]},

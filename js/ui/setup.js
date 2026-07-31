@@ -7,6 +7,7 @@ import { HEROES_PER_GAME } from '../engine/rules.js';
 import { hasSeenIntro } from '../engine/firstrun.js';
 import { clearSavedGame } from '../engine/persistence.js';
 import { saveGame } from '../engine/persistence.js';
+import { artStylePickerHTML, caseArtHTML, normalizeArtStyle } from './art.js';
 
 /* ---------------- setup: cases ---------------- */
 export function renderHooks(){
@@ -16,7 +17,7 @@ export function renderHooks(){
   if(hintEl) hintEl.style.display = hasSeenIntro() ? 'none' : 'flex';
   $('case-list').innerHTML = CASES.map((h,i)=>`
     <div class="casecard" role="button" tabindex="0" aria-label="Open Case ${ROMAN[i+1]}: ${esc(h.title)}" onclick="chooseCase(${i})" onkeydown="if((event.key==='Enter'||event.key===' ')&&event.target===this){event.preventDefault();chooseCase(${i})}">
-      <div class="casecard-art"><img src="art/images/ink/cases/${h.id}.png" data-fallback="art/images/ink/cases/${h.id}.jpg" alt="${esc(h.title)} Case cover" onerror="if(this.dataset.fallback){this.src=this.dataset.fallback;this.removeAttribute('data-fallback')}else{this.parentElement.remove()}"></div>
+      ${caseArtHTML(h, {className:'casecard-art', style:'ink', fallback:h.title})}
       <div class="sc" style="color:var(--blood-bright);font-size:.75rem;letter-spacing:.25em">CASE ${ROMAN[i+1]}</div>
       <h3>${esc(h.title)}</h3>
       <div class="h-epi">${esc(h.epigraph)}</div>
@@ -41,6 +42,11 @@ export function renderPlayerInputs(){
              <input type="text" id="pl-name-${i}" placeholder="Name (optional)">`;
   }
   $('pl-names').innerHTML = html;
+  const stylePicker = $('pl-art-style');
+  if(stylePicker && State.pendingCase){
+    const selected = document.querySelector('input[name="local-art-style"]:checked')?.value || State.artStyle || 'ink';
+    stylePicker.innerHTML = artStylePickerHTML('local-art-style', normalizeArtStyle(selected), State.pendingCase.id);
+  }
   $('pl-note').textContent =
     n===1 ? 'Solo mode: you will voice every Hero, play three scenes per act, and carry two Buried Secrets.' :
     n===2 ? 'Two storytellers: each of you begins two scenes per act.' :
@@ -48,13 +54,15 @@ export function renderPlayerInputs(){
 }
 export function confirmPlayers(){
   const n = +$('pl-count').value;
+  const selectedStyle = document.querySelector('input[name="local-art-style"]:checked')?.value;
+  State.artStyle = normalizeArtStyle(selectedStyle);
   const players=[];
   for(let i=0;i<n;i++){
     const v = ($('pl-name-'+i).value||'').trim();
     players.push({name: v || `Storyteller ${ROMAN[i+1]}`, hand:[], signals:[], secrets:[], scenesLeft:0});
   }
   State.G = {
-    case: State.pendingCase, players, act:0,
+    case: State.pendingCase, players, act:0, artStyle: State.artStyle,
     heroes: shuffle(HEROES).slice(0,HEROES_PER_GAME).map(a=>({...a, name:'', setupA:'', answeredBy:'', flipped:false})),
     threat:{name:'', facts:[]},
     sceneDeck:[], discardTones:[], signalDeck:[], signalRow:[],

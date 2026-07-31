@@ -112,6 +112,8 @@ reusing a project would mix the two games' rooms together.
    `js/sync/config.js`, replacing the `"REPLACE_ME"` placeholders — this file
    is safe to commit: it's a client identifier, not a secret. Access control
    lives entirely in `firestore.rules`, not in hiding this key.
+   Do not use a service-account JSON file here; that would be a private server
+   credential and must never ship in this static app.
 3. **Build → Authentication → Sign-in method** → enable **Anonymous**.
 4. **Build → Firestore Database → Create database** → choose **production
    mode** (not test mode — we ship our own rules instead of relying on the
@@ -168,7 +170,7 @@ The visual and copy rules live in [`docs/design-bible.md`](docs/design-bible.md)
 
 The launch build includes matching Comic Ink Case covers for the first five
 Cases, visible in the Case picker and Gallery. The Gallery supports the full image set at
-`art/images/<style>/<category>/<slug>.<ext>` (`style` is `ink` or `poster`;
+`art/images/<style>/<category>/<slug>.<ext>` (`style` is `ink` or `burden`;
 `category` is `heroes`, `cases`, `signals`, or `threats`) and falls back to
 intentional text cards whenever an image is absent. Each Hero appears as one
 two-sided card with an explicit Side I/Side II control; the caption and flip
@@ -176,8 +178,11 @@ condition follow the face being shown.
 
 The Bleakwood Vale manifest pipeline is now fully adapted for Supe Pines. It
 contains hand-authored art direction for all 12 Heroes (both sides), 8 Cases,
-32 Signals, and 8 obscured Threats in two noir-comic styles — 144 image slots
-total. Prompt coverage and manifest generation can be checked without Python,
+32 Signals, and 8 obscured Threats in two visual styles — 144 image slots
+total. Comic Ink is the hard-edged street-level language; Burden Realist is
+magical realism that makes a Hero's shortcoming, compromise, or downfall
+visible in the neighborhood. Prompt coverage and manifest generation can be
+checked without Python,
 credentials, or an API call:
 
 ```
@@ -187,13 +192,13 @@ node scripts/gen-prompts.mjs                 # writes art/IMAGE_PROMPTS.md
 node scripts/gen-manifest.mjs --no-vault     # writes manifest.json
 ```
 
-To generate images, create a virtual environment, install `google-genai` and
-`Pillow` (with `python-dotenv` optional for `.env` loading), set
-`GOOGLE_API_KEY`, then dry-run a small selection before making paid calls:
+To generate images, create a virtual environment, install the pinned local
+requirements, set `GOOGLE_API_KEY` in an untracked `.env`, then dry-run a small
+selection before making paid calls:
 
 ```
 python3 -m venv .venv
-.venv/bin/pip install google-genai Pillow python-dotenv
+.venv/bin/pip install -r requirements.txt
 .venv/bin/python generate.py --dry-run --category cases --style ink --limit 2
 .venv/bin/python generate.py --category cases --style ink --limit 2 --no-write-back
 ```

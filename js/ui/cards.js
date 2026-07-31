@@ -1,10 +1,11 @@
-import { esc, nl2br, toneBadge, ACT_NAMES, slugify } from '../engine/utils.js';
+import { esc, nl2br, toneBadge, ACT_NAMES } from '../engine/utils.js';
 import { State } from '../engine/state.js';
+import { heroArtHTML, currentArtStyle } from './art.js';
 
 function heroFaceHTML(h, sideIdx, turned){
   const s = h.sides[sideIdx];
   return `<div class="hero${turned?' flipped':''}">
-    <div class="hero-art" aria-hidden="true"><img src="art/images/ink/heroes/${slugify(h.role)}--${sideIdx===0?'front':'turned'}.png" alt="" loading="lazy" onerror="this.parentElement.remove()"></div>
+    ${heroArtHTML(h, sideIdx, {className:'hero-art', style:currentArtStyle()})}
     <div class="a-side">SIDE ${sideIdx===0?'I':'II'}${turned?' — TURNED':''}</div>
     <div class="a-name">${esc(h.name||h.role)}</div>
     <div class="a-role">${esc(h.role)}</div>

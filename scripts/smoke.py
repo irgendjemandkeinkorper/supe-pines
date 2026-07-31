@@ -52,11 +52,15 @@ with sync_playwright() as playwright:
     assert page.locator(".casecard").count() == 8
     assert page.locator(".case-phase-rail").count() == 1
     assert page.locator(".casecard-art img").count() >= 4
+    page.wait_for_timeout(250)
     assert page.locator(".casecard-art img").evaluate_all(
         "imgs => imgs.slice(0,4).every(img => img.complete && img.naturalWidth > 0)"
     )
 
     page.locator(".casecard").first.click()
+    assert page.locator("input[name='local-art-style'][value='ink']").count() == 1
+    assert page.locator("input[name='local-art-style'][value='burden']").count() == 1
+    page.locator("input[name='local-art-style'][value='burden']").check()
     page.select_option("#pl-count", "1")
     page.fill("#pl-name-0", "Smoke Tester")
     page.get_by_role("button", name="Suit Up").click()
@@ -77,7 +81,7 @@ with sync_playwright() as playwright:
     page.get_by_role("button", name="Resume saved Case").click()
     page.wait_for_selector("#scr-hub.active")
 
-    # Gallery: Hero faces remain separate and the unfinished style is honest.
+    # Gallery: Hero faces remain separate and both visual languages are exposed.
     page.get_by_role("button", name="The Gallery").click()
     page.wait_for_selector("#overlay", state="visible")
     assert page.locator(".gcat-heroes .gtile").count() == 12
@@ -88,7 +92,11 @@ with sync_playwright() as playwright:
     control.click()
     assert control.get_attribute("aria-pressed") == "true"
     assert tile.locator("[data-gallery-side-label]").inner_text() == "Side II — turned"
-    assert page.get_by_role("button", name="Painted Poster (coming later)").is_disabled()
+    assert page.get_by_role("button", name="Noir Comic").count() == 1
+    assert page.get_by_role("button", name="Burden Realist").count() == 1
+    page.get_by_role("button", name="Burden Realist").click()
+    assert page.locator(".gcat-heroes .gtile").count() == 12
+    page.get_by_role("button", name="Noir Comic").click()
     page.get_by_role("button", name="Back to Millhaven").click()
 
     # The in-progress Dossier is readable and does not throw before Act I.

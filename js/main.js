@@ -7,6 +7,7 @@ import { flipHeroCard } from './ui/cards.js';
 import { showIdleClicker, idleClick } from './ui/idle.js';
 import { showGallery, setGalleryStyle, setGalleryCat, openGalleryDetail,
          closeGalleryDetail, galleryImgError, flipGalleryCard } from './ui/gallery.js';
+import { gameArtImgError } from './ui/art.js';
 import { renderHooks, chooseCase, renderPlayerInputs, confirmPlayers,
          beginArchSetup, renderArchSetup, saveArchSetup, renderVictim, finishVictim } from './ui/setup.js';
 import { renderHub, renderCloseIntro, openLocalHand, tradeSignal, forfeitScene, beginClose } from './ui/hub.js';
@@ -23,6 +24,7 @@ import { ensureSignedIn } from './sync/auth.js';
 import { firebaseConfigured } from './sync/config.js';
 import {
   showOnlineEntry, onlineCreateRoom, onlineJoinRoom, leaveOnlineRoom, tryAutoRejoin,
+  onlineRefreshArtPicker,
   onlineBeginTale, onlineSaveArchSetup, onlineFinishVictim,
   onlineStartScene, onlineTradeOmen, onlineForfeitScene, onlineBeginClose,
   onlinePickSceneCard, onlinePickArch, onlineBeginScene, routeAndRenderCurrent,
@@ -35,7 +37,7 @@ import {
 
 Object.assign(window, {
   show, flipHeroCard, showIdleClicker, idleClick, dismissFirstrunHint,
-  showGallery, setGalleryStyle, setGalleryCat, openGalleryDetail, closeGalleryDetail, galleryImgError, flipGalleryCard,
+  showGallery, setGalleryStyle, setGalleryCat, openGalleryDetail, closeGalleryDetail, galleryImgError, flipGalleryCard, gameArtImgError,
   chooseCase, renderPlayerInputs, confirmPlayers, beginArchSetup, renderArchSetup, saveArchSetup, renderVictim, finishVictim,
   renderHub, openLocalHand, tradeSignal, forfeitScene, beginClose,
   startSceneFor, renderScenePick, renderScenePlay, pickSceneCard, pickArch, beginScene, pickContrib, pickContribScene, pickContribOmen,
@@ -44,6 +46,7 @@ Object.assign(window, {
   viewChronicle, returnFromChronicle, toggleStrike, showRules, closeOverlay,
   copyChronicle, downloadChronicle,
   showOnlineEntry, onlineCreateRoom, onlineJoinRoom, leaveOnlineRoom,
+  onlineRefreshArtPicker,
   onlineBeginTale, onlineSaveArchSetup, onlineFinishVictim,
   onlineStartScene, onlineTradeOmen, onlineForfeitScene, onlineBeginClose,
   onlinePickSceneCard, onlinePickArch, onlineBeginScene, routeAndRenderCurrent,

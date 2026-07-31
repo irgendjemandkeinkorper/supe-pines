@@ -7,7 +7,7 @@ import { buildManifest } from './gen-manifest.mjs';
 
 const repo = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const args = new Set(process.argv.slice(2));
-const records = buildManifest().filter(record => record.style === 'ink');
+const records = buildManifest();
 const extensions = ['png', 'jpg', 'jpeg', 'webp'];
 const existingPath = record => {
   const base = record.savePath.replace(/\.[^.]+$/, '');
@@ -15,9 +15,15 @@ const existingPath = record => {
 };
 const missing = records.filter(record => !existingPath(record));
 
-console.log(`Comic Ink art: ${records.length - missing.length}/${records.length} assets present.`);
+const byStyle = [...new Set(records.map(record => record.style))]
+  .map(style => {
+    const styleRecords = records.filter(record => record.style === style);
+    const styleMissing = missing.filter(record => record.style === style);
+    return `${style}: ${styleRecords.length - styleMissing.length}/${styleRecords.length}`;
+  }).join(' · ');
+console.log(`Art coverage: ${byStyle}.`);
 if(missing.length){
   console.log('Missing paths:');
   missing.forEach(record => console.log(`- ${record.savePath}`));
-  if(args.has('--strict-ink')) process.exitCode = 1;
+  if(args.has('--strict')) process.exitCode = 1;
 }

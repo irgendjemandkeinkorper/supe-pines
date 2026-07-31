@@ -22,6 +22,21 @@ and it should never look like a glossy franchise dashboard.
 
 ## Visual language
 
+The project carries two parallel art languages. They are not rarity tiers or
+unlockable skins; they are two ways of looking at the same neighborhood.
+
+- **Noir Comic:** the primary evidence language. Hand-inked silhouettes,
+  off-register halftone, rain-slick light, and a few dirty spot colours make
+  systems and consequences visible. Keep the camera close enough to recognize
+  a storefront, a face, or the thing left in a doorway.
+- **Burden Realist:** the interior language. Start with the same ordinary
+  block, bus, clinic, or kitchen, then let one impossible but matter-of-fact
+  metaphor embody the Hero's shortcoming, compromise, or downfall. A burden
+  can be a literal weight, a missing door, a shadow that arrives early, a room
+  that will not hold what must be protected. It should feel emotionally exact,
+  never like generic fantasy spectacle; the world stays human-sized and the
+  consequence stays legible.
+
 - **Palette:** near-black blue/green, dirty cream paper, oxblood danger,
   streetlamp amber, and restrained electric cyan. Cyan is orientation and
   information; oxblood is consequence; amber is the record.

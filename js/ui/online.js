@@ -9,6 +9,7 @@ import { hasSeenIntro, markIntroSeen } from '../engine/firstrun.js';
 import { createRoom, joinRoom, subscribeRoom, unsubscribeRoom, subscribeMyPrivate, unsubscribeMyPrivate } from '../sync/liveRoom.js';
 import { getUid, ensureSignedIn } from '../sync/auth.js';
 import { firebaseConfigured } from '../sync/config.js';
+import { ART_STYLES, artStylePickerHTML, normalizeArtStyle } from './art.js';
 import {
   liveBeginTale, liveSaveHeroSetup, liveFinishThreat, liveBeginScene, liveBeginClose,
   liveContribute, liveEndSceneAndResolve, liveConfirmSecret, liveClaimSecret,
@@ -130,7 +131,8 @@ export function showOnlineEntry(){
       <div class="panel">
         <h3 style="color:var(--gold)">Open a New Case</h3>
         <label class="fld">Choose the Case</label>
-        <select id="oe-case">${CASES.map((h,i)=>`<option value="${i}">${esc(h.title)}</option>`).join('')}</select>
+        <select id="oe-case" onchange="onlineRefreshArtPicker()">${CASES.map((h,i)=>`<option value="${i}">${esc(h.title)}</option>`).join('')}</select>
+        <div id="oe-art-style-picker">${artStylePickerHTML('oe-art-style', null, CASES[0].id)}</div>
         <label class="fld">Your name</label>
         <input type="text" id="oe-host-name" placeholder="Storyteller I">
         <div class="btnrow">
@@ -153,11 +155,17 @@ export function showOnlineEntry(){
     </div>`;
   show('scr-online-entry');
 }
+export function onlineRefreshArtPicker(){
+  const picker = $('oe-art-style-picker');
+  const item = CASES[+$('oe-case').value] || CASES[0];
+  if(picker) picker.innerHTML = artStylePickerHTML('oe-art-style', document.querySelector('input[name="oe-art-style"]:checked')?.value || null, item.id);
+}
 export async function onlineCreateRoom(){
   try{
     const chosenCase = CASES[+$('oe-case').value];
     const name = ($('oe-host-name').value||'').trim();
-    const code = await createRoom(chosenCase, name);
+    const artStyle = document.querySelector('input[name="oe-art-style"]:checked')?.value;
+    const code = await createRoom(chosenCase, name, normalizeArtStyle(artStyle));
     enterRoom(code);
   } catch(err){ fail(err); }
 }
@@ -244,6 +252,7 @@ function renderOnlineLobby(room){
     <div class="panel" style="max-width:640px;margin:0 auto">
       <p class="small" style="color:var(--gold)">${esc(room.case.title)}</p>
       <p class="small muted">${esc(room.case.epigraph)}</p>
+      <p class="small" style="color:var(--gold)">Visual language: ${esc(ART_STYLES.find(style=>style.id===normalizeArtStyle(room.artStyle))?.label || 'Noir Comic')}</p>
       <p class="center" style="margin:14px 0">
         <span class="sc" style="color:var(--gold);font-size:.85rem;letter-spacing:.15em">ROOM CODE</span><br>
         <span style="font-size:2.2rem;letter-spacing:.3em;color:#eddfba">${esc(State.onlineRoomCode)}</span>
