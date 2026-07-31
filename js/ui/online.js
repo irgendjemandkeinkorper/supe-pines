@@ -1,0 +1,655 @@
+import { $, esc, nl2br, toneBadge, ACT_NAMES, ROMAN, progressDotsHTML, actTrackHTML } from '../engine/utils.js';
+import { CASES, TONES } from '../data/index.js';
+import { State } from '../engine/state.js';
+import { show } from './screens.js';
+import { heroCard, signalCard, sceneCardHTML, journalEntrySummaryHTML, sceneAnatomyDiagramHTML } from './cards.js';
+import { faceUp, maxContrib, actToneCounts, HEROES_PER_GAME } from '../engine/rules.js';
+import { renderChronicle } from './renderChronicle.js';
+import { hasSeenIntro, markIntroSeen } from '../engine/firstrun.js';
+import { createRoom, joinRoom, subscribeRoom, unsubscribeRoom, subscribeMyPrivate, unsubscribeMyPrivate } from '../sync/liveRoom.js';
+import { getUid, ensureSignedIn } from '../sync/auth.js';
+import {
+  liveBeginTale, liveSaveHeroSetup, liveFinishThreat, liveBeginScene, liveBeginClose,
+  liveContribute, liveEndSceneAndResolve, liveConfirmSecret, liveClaimSecret,
+  liveAdvanceAfterClose, liveTradeSignal, liveForfeitScene
+} from '../sync/liveActions.js';
+
+/* Small per-device scratch state for in-progress, uncommitted composition
+   (which card/Hero picked, contribution draft, flip checkboxes,
+   secret-signal picks). None of this is synced — only the final submit
+   actions above write to Firestore. Reset whenever the underlying
+   room-driven phase changes shape from under it. */
+let draft = {};
+function resetDraft(){ draft = {}; }
+
+/* My own hand + Buried Secret(s) — kept live via a subscription to my own
+   private doc, never read from the public room object. */
+let myPrivate = {hand:[], secrets:[]};
+
+/* Guards against re-attempting a claim we already tried for the same
+   journal entry (e.g. if it fails, don't retry-spam on every snapshot). */
+let lastClaimAttempt = -1;
+/* Timer for the delayed advance-after-close cascade; cleared whenever the
+   underlying condition stops being true so it never fires stale. */
+let advanceTimer = null;
+
+function clearAdvanceTimer(){ if(advanceTimer){ clearTimeout(advanceTimer); advanceTimer = null; } }
+
+/* Called on every room snapshot. Reactively claims a Buried Secret if my
+   own private secrets match the newest journal entry, and schedules the
+   delayed act-advance once an Act Close has resolved with nothing
+   pending — see the file header in js/sync/liveActions.js for why this
+   can't just happen synchronously inside the resolving transaction. */
+function reactToRoom(room){
+  if(room.phase!=='playing'){ clearAdvanceTimer(); return; }
+  if(room.current===null && !room.pendingSecret && room.journal.length>0){
+    const idx = room.journal.length-1;
+    if(idx!==lastClaimAttempt){
+      lastClaimAttempt = idx;
+      const entry = room.journal[idx];
+      if(entry && (entry.type==='scene' || entry.type==='close')){
+        const counts = Object.fromEntries(TONES.map(t=>[t,0]));
+        entry.tones.forEach(t=>counts[t]++);
+        const haveMatch = myPrivate.secrets.some(s => !s.used &&
+          (()=>{ const need=Object.fromEntries(TONES.map(t=>[t,0])); s.combo.forEach(t=>need[t]++);
+                 return TONES.every(t=>counts[t]>=need[t]); })());
+        if(haveMatch) liveClaimSecret(State.onlineRoomCode, idx).catch(()=>{}); // lost the race or stale — fine, silent
+      }
+    }
+  }
+  if(room.current===null && !room.pendingSecret && room.closeDone){
+    if(!advanceTimer) advanceTimer = setTimeout(()=>{
+      advanceTimer = null;
+      liveAdvanceAfterClose(State.onlineRoomCode).catch(()=>{});
+    }, 1500);
+  } else {
+    clearAdvanceTimer();
+  }
+}
+
+function mySeatIndex(room){
+  const uid = getUid();
+  if(!room || !room.seats) return -1;
+  const idx = room.seats[uid];
+  return idx===undefined ? -1 : idx;
+}
+function fail(err){ alert(err && err.message ? err.message : String(err)); }
+
+/* ---------------- entry: create or join ---------------- */
+export function showOnlineEntry(){
+  unsubscribeRoom();
+  unsubscribeMyPrivate();
+  clearAdvanceTimer();
+  State.onlineRoomCode = null;
+  State.G = null;
+  $('scr-online-entry').innerHTML = `
+    <h2 class="center">Play Online</h2>
+    <p class="center muted">Gather your team across separate screens. One person opens the case; everyone else joins with the code.</p>
+    <div class="ornament">❦</div>
+    <div class="pgrid" style="grid-template-columns:repeat(auto-fit,minmax(320px,1fr));max-width:900px;margin:0 auto">
+      <div class="panel">
+        <h3 style="color:var(--gold)">Open a New Case</h3>
+        <label class="fld">Choose the Case</label>
+        <select id="oe-case">${CASES.map((h,i)=>`<option value="${i}">${esc(h.title)}</option>`).join('')}</select>
+        <label class="fld">Your name</label>
+        <input type="text" id="oe-host-name" placeholder="Storyteller I">
+        <div class="btnrow">
+          <button class="primary" onclick="onlineCreateRoom()">Open the Table</button>
+        </div>
+      </div>
+      <div class="panel">
+        <h3 style="color:var(--gold)">Join a Case in Progress</h3>
+        <label class="fld">Room code</label>
+        <input type="text" id="oe-join-code" placeholder="e.g. K7QRM" style="text-transform:uppercase">
+        <label class="fld">Your name</label>
+        <input type="text" id="oe-join-name" placeholder="Your name">
+        <div class="btnrow">
+          <button class="primary" onclick="onlineJoinRoom()">Join the Table</button>
+        </div>
+      </div>
+    </div>
+    <div class="btnrow" style="justify-content:center;margin-top:20px">
+      <button class="ghost" onclick="show('scr-title')">Back</button>
+    </div>`;
+  show('scr-online-entry');
+}
+export async function onlineCreateRoom(){
+  try{
+    const chosenCase = CASES[+$('oe-case').value];
+    const name = ($('oe-host-name').value||'').trim();
+    const code = await createRoom(chosenCase, name);
+    enterRoom(code);
+  } catch(err){ fail(err); }
+}
+export async function onlineJoinRoom(){
+  try{
+    const code = ($('oe-join-code').value||'').trim().toUpperCase();
+    const name = ($('oe-join-name').value||'').trim();
+    await joinRoom(code, name);
+    enterRoom(code);
+  } catch(err){ fail(err); }
+}
+function enterRoom(code){
+  State.onlineRoomCode = code;
+  try { history.replaceState(null, '', '?room='+code); } catch(e){}
+  myPrivate = {hand:[], secrets:[]};
+  lastClaimAttempt = -1;
+  subscribeMyPrivate(code, getUid(), priv => { myPrivate = priv; });
+  subscribeRoom(code, routeAndRender);
+}
+
+export function leaveOnlineRoom(){
+  unsubscribeRoom();
+  unsubscribeMyPrivate();
+  clearAdvanceTimer();
+  State.onlineRoomCode = null;
+  State.G = null;
+  try { history.replaceState(null, '', location.pathname); } catch(e){}
+  show('scr-title');
+}
+
+/* Auto-rejoin if the URL already carries ?room=CODE (e.g. a reopened tab). */
+export async function tryAutoRejoin(){
+  const params = new URLSearchParams(location.search);
+  const code = params.get('room');
+  if(!code) return false;
+  try {
+    await ensureSignedIn();
+    // joinRoom() is a no-op write if we're already seated, which is exactly
+    // the reconnect case; it throws if we're a stranger to a live game.
+    await joinRoom(code, '');
+    enterRoom(code);
+    return true;
+  } catch(err){
+    console.warn('[online] auto-rejoin failed', err);
+    return false;
+  }
+}
+
+/* ---------------- router ---------------- */
+function routeAndRender(room){
+  State.G = room;
+  resetDraft();
+  reactToRoom(room);
+  if(room.phase==='lobby'){ renderOnlineLobby(room); show('scr-online-lobby'); return; }
+  if(room.phase==='finished' || room.act>3){ renderChronicle(false); show('scr-chronicle'); return; }
+  if(room.phase==='herosetup'){ renderOnlineArchSetup(room); show('scr-archsetup'); return; }
+  if(room.phase==='threat'){ renderOnlineVictim(room); show('scr-victim'); return; }
+  // phase === 'playing'
+  if(room.pendingSecret){
+    if(mySeatIndex(room)===room.pendingSecret.pi){ renderOnlineSecret(room); show('scr-secret'); return; }
+    renderOnlineHub(room); show('scr-hub'); return; // banner inside renderOnlineHub explains the wait
+  }
+  if(room.current){ renderOnlineScene(room); show('scr-scene'); return; }
+  const remaining = room.players.reduce((s,p)=>s+p.scenesLeft,0);
+  if(remaining<=0 && !room.closeDone){ renderOnlineCloseIntro(room); show('scr-close'); return; }
+  renderOnlineHub(room); show('scr-hub');
+}
+
+/* ---------------- lobby ---------------- */
+function renderOnlineLobby(room){
+  const uid = getUid();
+  const isHost = uid===room.hostUid;
+  const seatCount = room.players.length;
+  const emptySeats = Math.max(0, 6-seatCount);
+  $('scr-online-lobby').innerHTML = `
+    <h2 class="center">The Team Gathers</h2>
+    <div class="ornament">❦</div>
+    <div class="panel" style="max-width:640px;margin:0 auto">
+      <p class="small" style="color:var(--gold)">${esc(room.case.title)}</p>
+      <p class="small muted">${esc(room.case.epigraph)}</p>
+      <p class="center" style="margin:14px 0">
+        <span class="sc" style="color:var(--gold);font-size:.85rem;letter-spacing:.15em">ROOM CODE</span><br>
+        <span style="font-size:2.2rem;letter-spacing:.3em;color:#eddfba">${esc(State.onlineRoomCode)}</span>
+      </p>
+      <p class="center"><button class="ghost" id="btn-copy-link" onclick="onlineCopyRoomLink()">Copy invite link</button></p>
+      <p class="small muted center">Share the code or link — everyone else joins from “Play Online.”</p>
+      <h3 style="color:var(--gold);margin-top:18px">Seated (${seatCount} of 6)</h3>
+      <div class="btnrow">
+        ${room.players.map((p,i)=>`<span class="pill">${i===0?'👑 ':''}${esc(p.name)}${p.uid===uid?' (you)':''}</span>`).join('')}
+        ${Array.from({length:emptySeats}).map(()=>`<span class="pill" style="opacity:.4">empty seat</span>`).join('')}
+      </div>
+      <div class="btnrow" style="margin-top:18px;justify-content:center">
+        ${isHost
+          ? `<button class="primary" onclick="onlineBeginTale()">Open the Case</button>`
+          : `<span class="pill">Waiting for the host to begin…</span>`}
+        <button class="ghost" onclick="leaveOnlineRoom()">Leave</button>
+      </div>
+    </div>`;
+}
+export async function onlineCopyRoomLink(){
+  const url = location.origin + location.pathname + '?room=' + State.onlineRoomCode;
+  const btn = $('btn-copy-link');
+  try {
+    await navigator.clipboard.writeText(url);
+    if(btn){ const orig = btn.textContent; btn.textContent = 'Copied!'; setTimeout(()=>{ if(btn.isConnected) btn.textContent = orig; }, 1800); }
+  } catch(err) {
+    fail(new Error('Could not copy automatically — the link is: ' + url));
+  }
+}
+export async function onlineBeginTale(){
+  try{ await liveBeginTale(State.onlineRoomCode); } catch(err){ fail(err); }
+}
+
+/* ---------------- hero setup ---------------- */
+function renderOnlineArchSetup(room){
+  const i = room.archIdx, a = room.heroes[i];
+  const answerer = room.players[i % room.players.length];
+  const isMe = mySeatIndex(room) === (i % room.players.length);
+  const showForm = isMe || draft.answeringForAbsent;
+  $('scr-archsetup').innerHTML = `
+    <p class="center muted sc" style="letter-spacing:.2em">PROFILING THE THREAT</p>
+    ${progressDotsHTML(i, HEROES_PER_GAME, `Question ${ROMAN[i+1]} of VI`)}
+    <div class="ornament">❦</div>
+    <div style="max-width:640px;margin:0 auto">
+      <div class="card">
+        <div class="c-kicker">Hero</div>
+        <div class="c-title" style="font-size:1.5rem">${a.role}</div>
+        <div class="c-prompt">${a.flavor}</div>
+        <hr class="rule" style="border-color:rgba(60,45,25,.3)">
+        <div style="font-size:1.05rem">“${a.setup[room.case.id]}”</div>
+        <div class="small" style="margin-top:8px;color:var(--blood)">${toneBadge(a.sides[0].tone)} <span style="color:var(--ink-soft)">— ${esc(a.sides[0].cond)} flip this card.</span></div>
+      </div>
+      <div class="panel">
+        ${showForm ? `
+          <p class="small muted">${isMe ? 'Answer in character, or plainly. The answer becomes a fact about the Threat and about this Hero.' : `Answering on behalf of ${esc(answerer.name)}, since they’re away.`}</p>
+          <label class="fld">Name this Hero</label>
+          <input type="text" id="arch-name" placeholder="e.g. The Nightwatch">
+          <label class="fld">The answer</label>
+          <textarea id="arch-answer" placeholder="What is established…"></textarea>
+          <div class="btnrow"><button class="primary" onclick="onlineSaveArchSetup()">${i<5?'Next Question':'To the Threat'}</button></div>
+        ` : `
+          <p class="small muted center">Waiting on ${esc(answerer.name)} to answer…</p>
+          <p class="center"><button class="ghost" onclick="onlineAnswerForAbsent()">Answer for them, if they’re away</button></p>
+        `}
+      </div>
+    </div>`;
+}
+export function onlineAnswerForAbsent(){ draft.answeringForAbsent = true; renderOnlineArchSetup(State.G); }
+export async function onlineSaveArchSetup(){
+  try{
+    const name = $('arch-name').value, answer = $('arch-answer').value;
+    await liveSaveHeroSetup(State.onlineRoomCode, name, answer);
+  } catch(err){ fail(err); }
+}
+
+/* ---------------- the threat ---------------- */
+function renderOnlineVictim(room){
+  $('scr-victim').innerHTML = `
+    <h2 class="center">The Threat</h2>
+    <p class="center muted" style="max-width:640px;margin:6px auto">${room.case.threatLine}</p>
+    <div class="ornament">❦</div>
+    <div style="max-width:680px;margin:0 auto">
+      <div class="panel tight">
+        ${room.threat.facts.map(f=>`<p class="small" style="margin:6px 0"><span style="color:var(--gold)">${esc(f.role)}:</span> <span>${esc(f.a)}</span></p>`).join('')}
+      </div>
+      <div class="panel">
+        <label class="fld">Together, name the Threat</label>
+        <input type="text" id="victim-name" placeholder="This is usually the hardest part.">
+        <div class="btnrow"><button class="primary" onclick="onlineFinishVictim()">Deal the Cards</button></div>
+      </div>
+    </div>`;
+}
+export async function onlineFinishVictim(){
+  try{ await liveFinishThreat(State.onlineRoomCode, $('victim-name').value); } catch(err){ fail(err); }
+}
+
+/* ---------------- hub ---------------- */
+function renderOnlineHub(room){
+  const mySeat = mySeatIndex(room);
+  const close = room.actClose[room.act];
+  const remaining = room.players.reduce((s,p)=>s+p.scenesLeft,0);
+  const banner = room.pendingSecret ? `<div class="notice">A Buried Secret is being revealed at the table right now…</div>` : '';
+  $('scr-hub').innerHTML = `
+    <h2 class="center" style="margin-top:8px">${ACT_NAMES[room.act]}</h2>
+    <p class="center muted">${esc(room.case.title)} · The Threat: ${esc(room.threat.name)}</p>
+    ${actTrackHTML(room.act)}
+    <div class="ornament">✦ ❦ ✦</div>
+    ${banner}
+    <div class="panel spotlight">
+      <h3 style="color:var(--gold)">The Table</h3>
+      <p class="small muted">${remaining} scene${remaining===1?'':'s'} remain${remaining===1?'s':''} before the Act closes.</p>
+      <div class="btnrow">
+        ${room.players.map((p,i)=>{
+          const isMe = i===mySeat;
+          if(p.scenesLeft<=0) return `<span class="pill" style="opacity:.5">${esc(p.name)} — done</span>`;
+          if(p.handCount===0 && (p.signals.length===0 || room.sceneDeck.length===0))
+            return isMe ? `<button class="blood" onclick="onlineForfeitScene(${i})">Forfeit my scene (no cards)</button>`
+                        : `<button class="ghost" onclick="onlineForfeitScene(${i})">${esc(p.name)} has no cards — forfeit for them</button>`;
+          if(p.handCount===0)
+            return `<span class="pill">${esc(p.name)} — must trade a signal for a scene card below</span>`;
+          if(isMe) return `<button class="primary" onclick="onlineStartScene()">Begin a scene${p.scenesLeft>1?` (${p.scenesLeft} left)`:''}</button>`;
+          return `<span class="pill">${esc(p.name)} may begin a scene</span>`;
+        }).join('')}
+      </div>
+    </div>
+    ${room.journal.length ? `<h3 style="color:var(--gold)">Last Scene</h3>${journalEntrySummaryHTML(room.journal[room.journal.length-1], {compact:true})}` : ''}
+    <div class="panel tight">
+      <h3 style="color:var(--blood-bright)">The Act Close — foreseen</h3>
+      <p><span class="sc" style="color:#eddfba">${esc(close.title)}.</span> <span class="muted small">${esc(close.cond)}</span></p>
+      <p class="small" style="color:#cfc2a2">${esc(close.prompt)}</p>
+      <p class="small muted">${TONES.map(t=>`${toneBadge(t)} <span>${esc(close.elements[t])}</span>`).join('<br>')}</p>
+    </div>
+    <details class="disclose" open>
+      <summary>The Heroes <span class="small muted">(${room.heroes.length})</span></summary>
+      <div class="disclose-body">
+        <div class="pgrid" style="grid-template-columns:repeat(auto-fill,minmax(280px,1fr));margin-top:8px">
+          ${room.heroes.map(a=>heroCard(a)).join('')}
+        </div>
+      </div>
+    </details>
+    <details class="disclose" open>
+      <summary>The Signal Row <span class="small muted">(${room.signalRow.length})</span></summary>
+      <div class="disclose-body">
+        <div class="cardgrid compact">${room.signalRow.map(o=>signalCard(o)).join('')}</div>
+      </div>
+    </details>
+    <details class="disclose">
+      <summary>The Storytellers <span class="small muted">${room.players.length} in play · Scene deck ${room.sceneDeck.length} · Signal deck ${room.signalDeck.length}</span></summary>
+      <div class="disclose-body">
+        <div class="pgrid" style="margin-top:8px">
+          ${room.players.map((p,i)=>onlinePlayerPanel(p,i,i===mySeat,room)).join('')}
+        </div>
+      </div>
+    </details>`;
+}
+function onlinePlayerPanel(p, i, isMe, room){
+  // Hand/secrets are private. My own panel shows the real cards (from
+  // myPrivate, kept live via my own private-doc subscription); everyone
+  // else's panel shows counts only. Deliberately NOT reusing cards.js's
+  // playerPanel() here: its trade button always calls the local/hotseat
+  // tradeSignal(pi,oi), which would mutate State.G directly and bypass
+  // Firestore if left in a panel that isn't mine.
+  const handHTML = isMe
+    ? (myPrivate.hand.map(c=>`<div class="minicard"><div class="mc-t">${esc(c.title)}</div><span class="tone ${c.tone}" style="font-size:.6rem">${c.tone}</span></div>`).join('')
+       || '<span class="small muted"><span>No scene cards in hand.</span></span>')
+    : `<span class="small muted"><span>${p.handCount} scene card${p.handCount===1?'':'s'} in hand.</span></span>`;
+  const secretsHTML = isMe
+    ? myPrivate.secrets.map(s=>`
+      <details class="secretbox"><summary>Buried Secret ${s.used?'— revealed':'(yours alone to read)'}</summary>
+        <div class="small" style="margin-top:6px">${s.combo.map(toneBadge).join(' ')}<br>
+        <span style="color:#c9b3de">${esc(s.q)}</span>
+        ${s.used?'':'<br><span class="muted">Unlocks when a scene’s tones contain this combination.</span>'}</div>
+      </details>`).join('')
+    : (p.secretsCount ? `<p class="small muted">${p.unrevealedSecretsCount} unrevealed Buried Secret${p.unrevealedSecretsCount===1?'':'s'}.</p>` : '');
+  return `<div class="ppanel">
+    <h4>${esc(p.name)}${isMe?' (you)':''}</h4>
+    <div class="handrow">${handHTML}</div>
+    ${p.signals.length?`<div class="handrow">${p.signals.map((o,oi)=>`
+      <div class="minicard signal"><div class="mc-t">${o.glyph} ${esc(o.title)}</div>
+      ${isMe && room.sceneDeck.length?`<button class="ghost" style="margin-top:4px;font-size:.7rem;padding:2px 8px" onclick="onlineTradeOmen(${oi})">trade for a scene card</button>`:''}</div>`).join('')}</div>`:''}
+    ${secretsHTML}
+  </div>`;
+}
+export function onlineStartScene(){
+  draft = {cardIdx:null, archIdx:null};
+  renderOnlineScenePick();
+  show('scr-scene');
+}
+export async function onlineTradeOmen(signalIdx){
+  try{ await liveTradeSignal(State.onlineRoomCode, signalIdx); } catch(err){ fail(err); }
+}
+export async function onlineForfeitScene(seat){
+  try{ await liveForfeitScene(State.onlineRoomCode, seat); } catch(err){ fail(err); }
+}
+
+/* ---------------- act close intro ---------------- */
+function renderOnlineCloseIntro(room){
+  const close = room.actClose[room.act];
+  const counts = actToneCounts();
+  const max = Math.max(...TONES.map(t=>counts[t]));
+  const tied = TONES.filter(t=>counts[t]===max);
+  const chosenTone = tied[0];
+  $('scr-close').innerHTML = `
+    <h2 class="center" style="color:var(--blood-bright)">${ACT_NAMES[room.act]} draws to a close</h2>
+    ${actTrackHTML(room.act)}
+    <div class="ornament">✦</div>
+    <div style="max-width:720px;margin:0 auto">
+      <div class="card">
+        <div class="c-kicker">Act Close</div>
+        <div class="c-title" style="font-size:1.4rem">${esc(close.title)}</div>
+        <div class="c-prompt">${esc(close.prompt)}</div>
+      </div>
+      <div class="panel spotlight">
+        <p class="small" style="color:var(--gold)">${esc(close.cond)}</p>
+        <p class="small muted">Tones this act: ${TONES.map(t=>`<span class="tone count ${t}">${counts[t]}</span>`).join(' ')}</p>
+        ${tied.length===1
+          ? `<p><strong style="color:var(--blood-bright)">Dominant tone: ${toneBadge(tied[0])}</strong> — must <span>${esc(close.elements[tied[0]])}</span></p>`
+          : `<label class="fld">The tones are tied — choose the element</label>
+             <select id="close-el">${tied.map(t=>`<option value="${t}">${t} — ${esc(close.elements[t])}</option>`).join('')}</select>`}
+        <label class="fld">Who begins the close?</label>
+        <select id="close-starter">${room.players.map((p,i)=>`<option value="${i}">${esc(p.name)}</option>`).join('')}</select>
+        <label class="fld">Which Hero leads it?</label>
+        <select id="close-arch">${room.heroes.map((a,i)=>`<option value="${i}">${esc(a.name||a.role)} — ${esc(a.role)}</option>`).join('')}</select>
+        <label class="fld">What the camera sees as the close opens</label>
+        <textarea id="close-opening" placeholder="The camera rises above Millhaven…"></textarea>
+        <div class="btnrow"><button class="primary" onclick="onlineBeginClose()">Play the Act Close</button></div>
+      </div>
+    </div>`;
+  draft.closeTone = chosenTone;
+}
+export async function onlineBeginClose(){
+  try{
+    const room = State.G;
+    const close = room.actClose[room.act];
+    const elHidden = $('close-el');
+    const tone = elHidden ? elHidden.value : draft.closeTone;
+    await liveBeginClose(State.onlineRoomCode, +$('close-arch').value, +$('close-starter').value,
+      close.elements[tone], $('close-opening').value, close.title, close.prompt);
+  } catch(err){ fail(err); }
+}
+
+/* ---------------- scene: pick ---------------- */
+function renderOnlineScenePick(){
+  const room = State.G;
+  const primerHTML = !hasSeenIntro() ? `
+    <div class="panel spotlight">
+      <h3 style="color:var(--gold)">Before your first scene</h3>
+      ${sceneAnatomyDiagramHTML()}
+      <div class="btnrow"><button class="primary" onclick="onlineDismissScenePrimer()">Got it — begin</button></div>
+    </div>` : '';
+  $('scr-scene').innerHTML = `
+    ${primerHTML}
+    <h2 class="center">You begin a scene</h2>
+    <div class="ornament">❦</div>
+    <h3 style="color:var(--gold)">Choose a scene card from your hand</h3>
+    <div class="cardgrid">${myPrivate.hand.map((sc,i)=>sceneCardHTML(sc,'onlinePickSceneCard',i)).join('')}</div>
+    <h3 style="color:var(--gold)">Choose the lead Hero</h3>
+    <div class="pgrid" style="grid-template-columns:repeat(auto-fill,minmax(280px,1fr));margin-top:8px">
+      ${room.heroes.map((a,i)=>heroCard(a,'onlinePickArch',i)).join('')}
+    </div>
+    <div class="panel">
+      <label class="fld">What the camera sees as the scene opens</label>
+      <textarea id="scene-opening" placeholder="The camera drifts through…"></textarea>
+      <div class="btnrow">
+        <button class="primary" id="btn-begin" disabled onclick="onlineBeginScene()">Begin the Scene</button>
+        <button class="ghost" onclick="routeAndRenderCurrent()">Back to the Table</button>
+      </div>
+    </div>`;
+}
+export function onlineDismissScenePrimer(){ markIntroSeen(); renderOnlineScenePick(); }
+export function onlinePickSceneCard(i){
+  draft.cardIdx = i;
+  document.querySelectorAll('[id^="scene-pick-"]').forEach(el=>el.classList.remove('selected'));
+  $('scene-pick-'+i).classList.add('selected');
+  onlineCheckBegin();
+}
+export function onlinePickArch(i){
+  draft.archIdx = i;
+  document.querySelectorAll('[id^="arch-pick-"]').forEach(el=>el.classList.remove('selected'));
+  $('arch-pick-'+i).classList.add('selected');
+  onlineCheckBegin();
+}
+function onlineCheckBegin(){
+  $('btn-begin').disabled = !(draft.cardIdx!=null && draft.archIdx!=null);
+}
+export async function onlineBeginScene(){
+  try{ await liveBeginScene(State.onlineRoomCode, draft.cardIdx, draft.archIdx, $('scene-opening').value); }
+  catch(err){ fail(err); }
+}
+export function routeAndRenderCurrent(){
+  // "Back to the Table" before a scene is actually begun — nothing was
+  // committed, so just re-render off the last known room state.
+  if(State.G) { resetDraft(); const remaining = State.G.players.reduce((s,p)=>s+p.scenesLeft,0);
+    if(remaining<=0 && !State.G.closeDone && !State.G.current){ renderOnlineCloseIntro(State.G); show('scr-close'); }
+    else { renderOnlineHub(State.G); show('scr-hub'); } }
+}
+
+/* ---------------- scene: play ---------------- */
+function renderOnlineScene(room){
+  const c = room.current, p = room.players[c.starter], a = room.heroes[c.archIdx];
+  const mySeat = mySeatIndex(room);
+  const isClose = c.type==='close';
+  const iAmStarter = mySeat===c.starter;
+  const iAlreadyContributed = c.contributions.some(x=>x.pi===mySeat);
+
+  const contribHTML = c.contributions.map(x=>`
+    <div class="chron-entry" style="margin:8px 0">
+      <div class="ce-head"><span class="ce-title" style="font-size:.95rem">${x.kind==='omen'?x.card.glyph+' ':''}${esc(x.card.title)}</span>
+      <span class="ce-meta">played by ${esc(room.players[x.pi].name)}${x.kind==='scene'?' · '+toneBadge(x.card.tone):' · signal'}</span></div>
+      <div class="small" style="color:#cfc2a2">${nl2br(x.how)||'<span class="muted">…manifests wordlessly.</span>'}</div>
+    </div>`).join('');
+
+  let addingHTML = '';
+  if(!iAmStarter && !iAlreadyContributed && c.contributions.length < maxContrib()){
+    if(!draft.adding){
+      addingHTML = `<div class="btnrow"><button class="ghost" onclick="onlineStartContrib()">Play a card into this scene</button></div>`;
+    } else if(!draft.adding.pick){
+      addingHTML = `
+        <p class="small" style="color:var(--gold)">Choose a scene card from your hand, or a signal from the row:</p>
+        ${myPrivate.hand.length?`<div class="cardgrid">${myPrivate.hand.map((sc,i)=>sceneCardHTML(sc,'onlinePickContribScene',i)).join('')}</div>`:''}
+        ${room.signalRow.length?`<div class="cardgrid compact">${room.signalRow.map((o,i)=>signalCard(o,'onlinePickContribOmen',i)).join('')}</div>`:''}
+        <button class="ghost" onclick="onlineCancelContrib()">Never mind</button>`;
+    } else {
+      const pk = draft.adding.pick;
+      const card = pk.kind==='scene' ? myPrivate.hand[pk.idx] : room.signalRow[pk.idx];
+      addingHTML = `
+        <div style="max-width:280px">${pk.kind==='scene'?sceneCardHTML(card):signalCard(card)}</div>
+        <label class="fld">How does it manifest in the scene?</label>
+        <textarea id="contrib-how" oninput="onlineSetContribHow(this.value)">${esc(draft.adding.how||'')}</textarea>
+        <div class="btnrow">
+          <button class="primary" onclick="onlineConfirmContrib()">Play It</button>
+          <button class="ghost" onclick="onlineCancelContrib()">Never mind</button>
+        </div>`;
+    }
+  }
+
+  const endSceneHTML = iAmStarter ? (!draft.resolving ? `
+    <div class="panel spotlight">
+      <label class="fld">The record of what happens</label>
+      <textarea id="scene-happened" style="min-height:130px" oninput="onlineSetSceneHappened(this.value)" placeholder="What the Dossier will remember of this scene…">${esc(draft.happened||'')}</textarea>
+      <div class="btnrow"><button class="blood" onclick="onlineEndScene()">The scene ends</button></div>
+    </div>` : renderOnlineResolveInline(room)) : '';
+
+  $('scr-scene').innerHTML = `
+    <p class="center muted sc" style="letter-spacing:.2em">${isClose?'THE ACT CLOSE':'A SCENE'} — ${ACT_NAMES[room.act].toUpperCase()}</p>
+    <div class="ornament">❦</div>
+    <div class="pgrid" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr))">
+      <div class="card">
+        <div class="c-kicker">${isClose?'Act Close':'Scene'}</div>
+        <div class="c-title">${esc(c.card.title)}</div>
+        <div class="c-prompt">${esc(c.card.prompt)}</div>
+        ${c.card.tone?`<div style="margin-top:8px">${toneBadge(c.card.tone)}</div>`:''}
+        ${c.element?`<hr class="rule" style="border-color:rgba(60,45,25,.3)"><div class="small" style="color:var(--blood)"><strong>Include:</strong> <span>${esc(c.element)}</span></div>`:''}
+      </div>
+      <div>${heroCard(a)}
+        <p class="small muted" style="margin-top:6px">Led by ${esc(p.name)}${iAmStarter?' (you)':''}.</p>
+      </div>
+    </div>
+    ${c.opening?`<div class="panel tight"><span class="sc small" style="color:var(--gold)">THE CAMERA SEES</span><p style="color:#e3d7b8">${nl2br(c.opening)}</p></div>`:''}
+    <div class="panel tight">
+      <h3 style="color:var(--gold)">Cards played into the scene <span class="muted small">(${1+c.contributions.length} of 3)</span></h3>
+      ${contribHTML || '<p class="small muted">None yet.</p>'}
+      ${addingHTML}
+    </div>
+    ${endSceneHTML || (iAmStarter?'':'<p class="small muted center">Waiting for '+esc(p.name)+' to end the scene…</p>')}`;
+}
+function renderOnlineSceneRefresh(){ renderOnlineScene(State.G); }
+export function onlineStartContrib(){ draft.adding = {pick:null, how:''}; renderOnlineSceneRefresh(); }
+export function onlinePickContribScene(i){ draft.adding.pick={kind:'scene', idx:i}; renderOnlineSceneRefresh(); }
+export function onlinePickContribOmen(i){ draft.adding.pick={kind:'omen', idx:i}; renderOnlineSceneRefresh(); }
+export function onlineCancelContrib(){ draft.adding = null; renderOnlineSceneRefresh(); }
+export function onlineSetContribHow(v){ if(draft.adding) draft.adding.how = v; }
+export function onlineSetSceneHappened(v){ draft.happened = v; }
+export function onlineSetSecretAnswer(v){ draft.secretAnswer = v; }
+export async function onlineConfirmContrib(){
+  try{
+    const {kind, idx, how} = draft.adding.pick.kind==='scene'
+      ? {kind:'scene', idx:draft.adding.pick.idx, how:draft.adding.how}
+      : {kind:'omen', idx:draft.adding.pick.idx, how:draft.adding.how};
+    await liveContribute(State.onlineRoomCode, kind, idx, how);
+    draft.adding = null;
+  } catch(err){ fail(err); }
+}
+export function onlineEndScene(){
+  draft.resolving = true;
+  renderOnlineSceneRefresh();
+}
+function renderOnlineResolveInline(room){
+  const c = room.current;
+  return `
+    <div class="panel spotlight">
+      <h3 style="color:var(--gold)">Consult each Hero’s face-up condition</h3>
+      <p class="small muted">If it was met in this scene, check it to turn the card.</p>
+      ${room.heroes.map((a,i)=>{
+        const s = faceUp(a);
+        return `<div class="panel tight" style="display:flex;gap:12px;align-items:flex-start">
+          <input type="checkbox" id="online-flip-${i}" style="width:auto;margin-top:6px;transform:scale(1.3)">
+          <label for="online-flip-${i}" style="cursor:pointer">
+            <span class="sc" style="color:#eddfba">${esc(a.name||a.role)}</span>
+            ${i===c.archIdx?'<span class="pill" style="border-color:var(--blood-bright);color:#e8c9c9">led this scene</span>':''}
+            <br><span class="small" style="color:#b3a687">${esc(s.cond)}</span> ${toneBadge(s.tone)}
+          </label>
+        </div>`;
+      }).join('')}
+      <div class="btnrow"><button class="primary" onclick="onlineApplyResolve()">Count the Tones</button></div>
+    </div>`;
+}
+export async function onlineApplyResolve(){
+  try{
+    const room = State.G;
+    const flips = [];
+    room.heroes.forEach((a,i)=>{ if($('online-flip-'+i).checked) flips.push(i); });
+    await liveEndSceneAndResolve(State.onlineRoomCode, draft.happened, flips);
+    draft.resolving = false; draft.happened = '';
+  } catch(err){ fail(err); }
+}
+
+/* ---------------- secret reveal ---------------- */
+function renderOnlineSecret(room){
+  const u = room.pendingSecret;
+  const p = room.players[u.pi]; // this screen only ever renders for its own owner (gated in routeAndRender)
+  const secret = myPrivate.secrets[u.secretIndex];
+  const sel = draft.secretSel || (draft.secretSel = []);
+  $('scr-secret').innerHTML = `
+    <div class="center" style="margin-top:20px">
+      <h2 style="color:#c9b3de;margin-top:6px">A Buried Secret Comes to Light</h2>
+      <p class="muted">${esc(p.name)}’s secret is unlocked.</p>
+    </div>
+    <div class="ornament" style="color:#8a63a8">✧</div>
+    <div style="max-width:720px;margin:0 auto">
+      <div class="secretbox" style="padding:16px">
+        <div>${secret.combo.map(toneBadge).join(' ')}</div>
+        <p style="font-size:1.15rem;color:#e0d4ec;margin-top:8px">“${esc(secret.q)}”</p>
+      </div>
+      <h3 style="color:#c9b3de;margin-top:16px">Choose three signals <span class="small">(${sel.length} of ${Math.min(3,room.signalRow.length)})</span></h3>
+      <div class="cardgrid compact">${room.signalRow.map((o,i)=>signalCard(o,'onlineToggleSecretOmen',i)).join('')}</div>
+      <div class="panel spotlight">
+        <label class="fld" style="color:#c9b3de">The vignette</label>
+        <textarea id="secret-answer" style="min-height:120px" oninput="onlineSetSecretAnswer(this.value)">${esc(draft.secretAnswer||'')}</textarea>
+        <div class="btnrow"><button class="primary" ${sel.length!==Math.min(3,room.signalRow.length)?'disabled':''} onclick="onlineConfirmSecret()">So It Is Revealed</button></div>
+      </div>
+    </div>`;
+  document.querySelectorAll('[id^="omen-pick-"]').forEach((el,idx)=>el.classList.toggle('selected', sel.includes(idx)));
+}
+export function onlineToggleSecretOmen(i){
+  const room = State.G, need = Math.min(3, room.signalRow.length);
+  const sel = draft.secretSel || (draft.secretSel=[]);
+  const at = sel.indexOf(i);
+  if(at>=0) sel.splice(at,1); else if(sel.length<need) sel.push(i);
+  renderOnlineSecret(room);
+}
+export async function onlineConfirmSecret(){
+  try{ await liveConfirmSecret(State.onlineRoomCode, draft.secretSel||[], draft.secretAnswer||''); draft={}; }
+  catch(err){ fail(err); }
+}

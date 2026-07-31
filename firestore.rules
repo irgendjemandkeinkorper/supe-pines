@@ -1,0 +1,54 @@
+rules_version = '2';
+
+// Fog-of-war schema for Supe Pines remote multiplayer:
+//   rooms/{roomCode}                 – public game state, readable by any
+//                                      signed-in (anonymous) participant.
+//                                      `seats` is a MAP KEYED BY UID (not an
+//                                      array) so membership is expressible
+//                                      here as `uid in resource.data.seats`.
+//   rooms/{roomCode}/private/{uid}   – that player's hand + Buried Secret(s),
+//                                      readable/writable only by that uid.
+//
+// Known, accepted limitation: without a Cloud Function, these rules can
+// verify WHO is writing to the public room doc (a seated participant) but
+// not the full SHAPE of the write (e.g. that they aren't setting their own
+// scenesLeft to 99). This mirrors the game's existing "trust the table"
+// design — the whole ruleset already runs on that same trust via the Strike
+// mechanic — so it's a deliberate tradeoff for staying serverless rather
+// than a bug to chase down. Revisit with a Cloud Function if that trust
+// model ever needs tightening.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /rooms/{roomCode} {
+      allow read: if request.auth != null;
+
+      // Either you're already a seated participant, or your write is the
+      // one adding you as a new seat (joining the lobby).
+      allow update: if request.auth != null
+                    && (request.auth.uid in resource.data.seats
+                        || request.auth.uid in request.resource.data.seats);
+
+      allow create: if request.auth != null; // hosting a brand-new room
+      allow delete: if false;                // reaped via Firestore TTL policy, not client code
+    }
+
+    match /rooms/{roomCode}/private/{uid} {
+      // Reads stay strictly owner-only — this is the actual privacy
+      // boundary (hands, Buried Secrets). Writes are opened to any seated
+      // participant of the room, because dealing (a new act's hands, or
+      // Buried Secrets at game start) is one player's transaction writing
+      // into every seated player's private doc — Firestore transactions
+      // run as a single request.auth.uid, so a strict "only the owner
+      // may write their own doc" rule would make dealing impossible
+      // without a Cloud Function. This mirrors the same "trust the
+      // table" tradeoff already accepted for the public room doc's
+      // write rule (see the comment above) — any seated player COULD
+      // write garbage into another's hand, but nothing stops them from
+      // narrating dishonestly at the table either.
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow write: if request.auth != null
+                   && request.auth.uid in get(/databases/$(database)/documents/rooms/$(roomCode)).data.seats;
+    }
+  }
+}
