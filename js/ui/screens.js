@@ -16,6 +16,11 @@ import { hasSeenIntro, markIntroSeen } from '../engine/firstrun.js';
    UI), it just won't step between game screens. */
 let suppressHistory = false;
 let lastFocusBeforeOverlay = null;
+/* In-memory game state does not survive a reload, so History entries from an
+   earlier page runtime must not be allowed to resurrect its now-empty screens.
+   A per-load token lets normal Back navigation work while this tab is alive
+   and safely collapses stale entries to the title after a refresh. */
+const historySession = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 
 export function show(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
@@ -49,22 +54,25 @@ function currentScreenState(){
 function pushHistory(state){
   if(suppressHistory || State.onlineRoomCode) return;
   const cur = history.state;
-  if(cur && cur.screen===state.screen && !!cur.overlay===!!state.overlay) return;
-  history.pushState(state, '');
+  if(cur && cur.session===historySession && cur.screen===state.screen && !!cur.overlay===!!state.overlay) return;
+  history.pushState({...state, session:historySession}, '');
 }
 /* Called once at startup. Seeds a baseline history entry (so the very
    first Back press has something defined to land on instead of an
    undefined state) and wires popstate to replay screen/overlay changes
    without re-pushing them — suppressHistory guards that reentrancy. */
 export function initHistoryNav(){
-  if(!history.state) history.replaceState({screen:'scr-title', overlay:false}, '');
+  history.replaceState({...currentScreenState(), overlay:false, session:historySession}, '');
   window.addEventListener('popstate', e=>{
-    const st = e.state || {screen:'scr-title', overlay:false};
+    const st = e.state?.session===historySession
+      ? e.state
+      : {screen:'scr-title', overlay:false, session:historySession};
     suppressHistory = true;
     try{
       if($('overlay').style.display==='block' && !st.overlay) closeOverlay();
       if(st.screen && $(st.screen) && !$(st.screen).classList.contains('active')) show(st.screen);
       if(st.overlay && $('overlay').style.display!=='block') $('overlay').style.display='block';
+      if(e.state?.session!==historySession) history.replaceState(st, '');
     } finally { suppressHistory = false; }
   });
 }

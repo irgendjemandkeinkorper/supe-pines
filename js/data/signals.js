@@ -14,5 +14,21 @@ export const SIGNALS = [
   {glyph:'⏱', title:'A Stopwatch, Still Running', line:'Counting up from a moment nobody will name.'},
   {glyph:'🎭', title:'A Costume Piece, Not Yours', line:'Found somewhere it has no business being.'},
   {glyph:'🚂', title:'The El, Running Late', line:'The whole schedule’s off tonight, and nobody at the station will say why.'},
-  {glyph:'🕊', title:'A Flock of Pigeons, All at Once', line:'They scatter from the same rooftop, every single time, right before something happens.'}
+  {glyph:'🕊', title:'A Flock of Pigeons, All at Once', line:'They scatter from the same rooftop, every single time, right before something happens.'},
+  {glyph:'▧', title:'A Chalk Mark Under Fresh Paint', line:'Someone covered it this morning. Someone else has already drawn it back.'},
+  {glyph:'🚌', title:'A Bus Transfer for a Dead Route', line:'Punched ten minutes from now, for a line the city closed years ago.'},
+  {glyph:'⚠', title:'Police Tape, Cut Clean', line:'Not torn down in a hurry. Opened carefully, then put back.'},
+  {glyph:'📼', title:'A Voicemail with No Voice', line:'Just footsteps, a closing door, and your name entered as the caller.'},
+  {glyph:'👣', title:'One Wet Footprint', line:'No trail leading in. No second step leading out.'},
+  {glyph:'▰', title:'A Matchbook from a Closed Club', line:'One match missing. The ink on the address is still fresh.'},
+  {glyph:'💊', title:'A Prescription Bottle, Wrong Name', line:'The pills are right. The patient has been dead for years.'},
+  {glyph:'↕', title:'An Elevator Between Floors', line:'The doors open onto brick, and something on the other side knocks back.'},
+  {glyph:'⛓', title:'A Broken Zip Tie', line:'Snapped from the inside, with one dark hair caught in the teeth.'},
+  {glyph:'🧱', title:'Fresh Concrete, Still Warm', line:'Poured overnight where no permit says anything should be.'},
+  {glyph:'☎', title:'A Payphone Ringing Once', line:'It stops before anyone answers. The receiver is already warm.'},
+  {glyph:'🧾', title:'A Grocery Receipt at 3:17 AM', line:'Three ordinary items, one impossible price, and an address on the back.'},
+  {glyph:'🧵', title:'Blue Thread on a Fire Escape', line:'Snagged three stories up, still tugging in a wind you cannot feel.'},
+  {glyph:'▦', title:'An Apartment Light Blinking in Code', line:'The message repeats until somebody looks up — then changes.'},
+  {glyph:'🚙', title:'Two Identical License Plates', line:'Same number, same dent, parked on opposite sides of the block.'},
+  {glyph:'🖍', title:'A Child’s Drawing of the Block', line:'Every window is black except the one nobody remembers being there.'}
 ];

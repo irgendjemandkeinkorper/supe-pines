@@ -11,7 +11,8 @@ export function renderHooks(){
   const hintEl = $('case-firsttime-hint');
   if(hintEl) hintEl.style.display = hasSeenIntro() ? 'none' : 'flex';
   $('case-list').innerHTML = CASES.map((h,i)=>`
-    <div class="casecard" onclick="chooseCase(${i})">
+    <div class="casecard" role="button" tabindex="0" onclick="chooseCase(${i})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();chooseCase(${i})}">
+      <div class="casecard-art"><img src="art/images/ink/cases/${h.id}.jpg" alt="" onerror="this.parentElement.remove()"></div>
       <div class="sc" style="color:var(--blood-bright);font-size:.75rem;letter-spacing:.25em">CASE ${ROMAN[i+1]}</div>
       <h3>${h.title}</h3>
       <div class="h-epi">${h.epigraph}</div>

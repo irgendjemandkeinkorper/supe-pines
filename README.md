@@ -8,12 +8,17 @@ men and women, Daredevil/Jessica Jones/Defenders tier, not global-power heroics 
 each carrying a limiting trauma or flaw that the case's Threat is built to exploit.
 Runs entirely in the browser.
 
+**Play the current public build:**
+[irgendjemandkeinkorper.github.io/supe-pines](https://irgendjemandkeinkorper.github.io/supe-pines/)
+
 ## Status
 
-Hotseat (one browser tab, shared screen) and real-time remote multiplayer via
-Firebase/Firestore (room codes, per-player privacy) both work — "Open the Case"
-and "Play Online" on the title screen. Online multiplayer needs a Firebase
-project of its own before it'll actually connect — see "Firebase setup" below.
+Hotseat (one browser tab, shared screen) is ready on the public page. The code
+for real-time remote multiplayer via Firebase/Firestore (room codes and
+per-player privacy) is also complete, but it needs a dedicated Firebase project
+before the public page can open remote rooms. Until then the title screen labels
+online play as setup-required and gives players a useful explanation instead of
+letting a sign-in attempt fail. See "Firebase setup" below.
 
 **Content is a deliberately smaller starter set**, ported at the same structural
 scale as Bleakwood Vale but with less total content, meant to be expanded over
@@ -23,15 +28,15 @@ time:
 |---|---|---|
 | Tones | 3 (Fury, Guilt, Dread) | 3 |
 | Cases | 4 | 12 |
-| Heroes | 8 (6 dealt per game) | 16 (6 dealt per game) |
-| Setup questions | 32 (every Hero × every Case) | 192 |
-| Scene cards | ~28/act (~84 total) | ~61/act (~183 total) |
-| Signals | 16 | 44 |
+| Heroes | 12 (6 dealt per game) | 16 (6 dealt per game) |
+| Setup questions | 48 (every Hero × every Case) | 192 |
+| Scene cards | 40/act (120 total) | 61/act (183 total) |
+| Signals | 32 | 44 |
 | Secrets | 10 (mathematically exhaustive over 3 tones — can't be fewer) | 10 |
-| Act Closes | 6 (2/act) | 6 |
+| Act Closes | 6 (2/act) | 9 |
 
 Expanding any category later is additive — e.g. a 5th Case just needs one new
-setup question per existing Hero (8 of them), not any code changes.
+setup question per existing Hero (12 of them), not any code changes.
 
 ## Running it locally
 
@@ -58,6 +63,9 @@ js/ui/              screen rendering + the mutation functions triggered by
                     inline onclick handlers
 js/ui/gallery.js     the in-app card-art Gallery (title screen + topbar)
 js/chronicle/       Markdown export of the finished/in-progress Dossier
+scripts/            zero-dependency data validation plus deterministic card-art
+                    prompt and manifest generation
+generate.py         optional Gemini image generation from manifest.json
 ```
 
 `js/main.js` is the only file that reaches into `window` — it's the bridge
@@ -114,32 +122,58 @@ reusing a project would mix the two games' rooms together.
    this, which can mask the fact that it's silently blocked once deployed —
    don't skip this step.
 
-Until `js/sync/config.js` has real values, "Play Online" will fail to connect
-— hotseat play is completely unaffected either way.
+Until `js/sync/config.js` has real values, the public page marks online play as
+setup-required. Hotseat play is completely unaffected either way.
 
 ## Card art
 
-Not generated yet, by design — Supe Pines shipped this pass with a deliberately
-smaller content set and text-only cards, deferring art entirely. `js/ui/gallery.js`
-(title screen + topbar "The Gallery") and every in-game card display already
-support generated art at `art/images/<style>/<category>/<slug>.<ext>` (`style`
-is `ink` or `poster`, `category` is `heroes`/`cases`/`signals`/`threats`) and
-fall back to a plain text card when it doesn't exist — nothing needs to change
-in the UI layer whenever art generation happens.
+The launch build includes four matching Comic Ink Case covers, visible in the
+Case picker and Gallery. The Gallery supports the full image set at
+`art/images/<style>/<category>/<slug>.<ext>` (`style` is `ink` or `poster`;
+`category` is `heroes`, `cases`, `signals`, or `threats`) and falls back to
+intentional text cards whenever an image is absent.
 
-Bleakwood Vale's art pipeline (`generate.py`, `scripts/gen-prompts.mjs`,
-`scripts/gen-manifest.mjs`) is a generic, manifest-driven Gemini image
-generator that isn't ported into this repo yet — when you're ready to
-generate Supe Pines art, copy those three files over from Bleakwood Vale and
-adapt: the `--category` choices list, the sibling-vault default path, the
-`PAGES_BASE` URL, and — the actual work — rewrite `gen-prompts.mjs`'s
-hand-authored prompt-text dictionaries (currently keyed to Bleakwood Vale's
-archetypes/hooks/omens/victims) for Supe Pines' Heroes/Cases/Signals/Threats
-and its noir-comic-book style, in place of the original's gothic-painterly
-and gothic-tarot styles.
+The Bleakwood Vale manifest pipeline is now fully adapted for Supe Pines. It
+contains hand-authored art direction for all 12 Heroes (both sides), 4 Cases,
+32 Signals, and 4 obscured Threats in two noir-comic styles — 128 image slots
+total. Prompt coverage and manifest generation can be checked without Python,
+credentials, or an API call:
+
+```
+node scripts/gen-prompts.mjs --check
+node scripts/gen-manifest.mjs --check
+node scripts/gen-prompts.mjs                 # writes art/IMAGE_PROMPTS.md
+node scripts/gen-manifest.mjs --no-vault     # writes manifest.json
+```
+
+To generate images, create a virtual environment, install `google-genai` and
+`Pillow` (with `python-dotenv` optional for `.env` loading), set
+`GOOGLE_API_KEY`, then dry-run a small selection before making paid calls:
+
+```
+python3 -m venv .venv
+.venv/bin/pip install google-genai Pillow python-dotenv
+.venv/bin/python generate.py --dry-run --category cases --style ink --limit 2
+.venv/bin/python generate.py --category cases --style ink --limit 2 --no-write-back
+```
+
+The default manifest records the public Pages URLs and the generator can write
+them back into a sibling `../supe-pines-vault`. Use `--no-write-back` when no
+vault is wanted; use `--help` on any of the three tools for all options.
+
+## Validating game content
+
+Run the zero-dependency validator whenever a card data module changes:
+
+```
+node scripts/validate-data.mjs
+```
+
+It checks Case/Hero compatibility, tones, scene hooks, unique titles, Secrets,
+Signals, and Act Close shape, and exits nonzero with collection-specific errors.
 
 ## Deploying to GitHub Pages
 
-Once this repo has a GitHub remote, enable Pages in the repo settings
-(Settings → Pages → Deploy from a branch → `main` → `/ (root)`). No build
-step is required since this is a static site.
+This repository is served directly from `main` at the public-build link above
+(Settings → Pages → Deploy from a branch → `main` → `/ (root)`). No build step
+is required; `.nojekyll` keeps the static tree untouched.

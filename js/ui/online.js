@@ -8,6 +8,7 @@ import { renderChronicle } from './renderChronicle.js';
 import { hasSeenIntro, markIntroSeen } from '../engine/firstrun.js';
 import { createRoom, joinRoom, subscribeRoom, unsubscribeRoom, subscribeMyPrivate, unsubscribeMyPrivate } from '../sync/liveRoom.js';
 import { getUid, ensureSignedIn } from '../sync/auth.js';
+import { firebaseConfigured } from '../sync/config.js';
 import {
   liveBeginTale, liveSaveHeroSetup, liveFinishThreat, liveBeginScene, liveBeginClose,
   liveContribute, liveEndSceneAndResolve, liveConfirmSecret, liveClaimSecret,
@@ -82,6 +83,21 @@ export function showOnlineEntry(){
   clearAdvanceTimer();
   State.onlineRoomCode = null;
   State.G = null;
+  if(!firebaseConfigured){
+    $('scr-online-entry').innerHTML = `
+      <div class="panel" style="max-width:680px;margin:36px auto;text-align:center">
+        <div class="sc" style="color:var(--blood-bright);letter-spacing:.22em">REMOTE TABLES</div>
+        <h2 style="margin-top:10px">The Switchboard Isn’t Live Yet</h2>
+        <p class="muted" style="max-width:540px;margin:12px auto 0">This public build is ready for hotseat play on one shared screen. Separate-screen rooms need a dedicated Firebase project before they can safely open.</p>
+        <p class="small" style="max-width:540px;margin:14px auto 0;color:#d9cca9">If you’re hosting tonight, choose <strong>Open the Case</strong>. Nothing in the local game depends on Firebase.</p>
+        <div class="btnrow" style="justify-content:center;margin-top:22px">
+          <button class="primary" onclick="show('scr-hook')">Open the Case</button>
+          <button class="ghost" onclick="show('scr-title')">Back</button>
+        </div>
+      </div>`;
+    show('scr-online-entry');
+    return;
+  }
   $('scr-online-entry').innerHTML = `
     <h2 class="center">Play Online</h2>
     <p class="center muted">Gather your team across separate screens. One person opens the case; everyone else joins with the code.</p>
@@ -150,6 +166,7 @@ export function leaveOnlineRoom(){
 
 /* Auto-rejoin if the URL already carries ?room=CODE (e.g. a reopened tab). */
 export async function tryAutoRejoin(){
+  if(!firebaseConfigured) return false;
   const params = new URLSearchParams(location.search);
   const code = params.get('room');
   if(!code) return false;

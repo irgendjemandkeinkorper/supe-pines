@@ -3,7 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="A free, browser-based street-level superhero story game for 1–6 players, told together in three acts.">
+<meta name="theme-color" content="#080b12">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Supe Pines — A Street-Level Case File">
+<meta property="og:description" content="Open a case, suit up, and tell a neighborhood superhero story together in one browser.">
+<meta property="og:url" content="https://irgendjemandkeinkorper.github.io/supe-pines/">
 <title>Supe Pines — A Street-Level Case File</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -40,7 +47,7 @@
       </div>
       <div class="btnrow" style="justify-content:center;margin-top:28px">
         <button class="primary" onclick="show('scr-hook')">Open the Case (this screen)</button>
-        <button class="primary" onclick="showOnlineEntry()">Play Online</button>
+        <button class="primary" id="title-online-button" onclick="showOnlineEntry()">Play Online</button>
         <button onclick="showRules()">How to Play</button>
         <button onclick="showGallery()">The Gallery</button>
       </div>
@@ -65,7 +72,7 @@
     <p class="center muted" style="font-style:italic">Each case colours the questions asked, the scenes dealt, and the shape of the truth.</p>
     <div class="ornament">❦</div>
     <p class="hint" id="case-firsttime-hint" style="max-width:620px;margin:0 auto 16px;justify-content:center">There is no wrong Case to choose — pick whichever premise sounds most interesting to your table.</p>
-    <div id="case-list" class="pgrid" style="grid-template-columns:repeat(auto-fit,minmax(320px,1fr))"></div>
+    <div id="case-list" class="pgrid case-grid"></div>
     <div class="btnrow" style="justify-content:center;margin-top:18px">
       <button class="ghost" onclick="show('scr-title')">Back</button>
     </div>

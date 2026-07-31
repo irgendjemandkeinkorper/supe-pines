@@ -110,5 +110,61 @@ export const HEROES = [
       {cond:'If you let a fight go further than it should have…', tone:'Fury'},
       {cond:'If you covered for someone who broke the only rules that matter…', tone:'Guilt'}
     ]
+  },
+  {
+    role:'Palisade',
+    flavor:'A legal-aid attorney who can hold a glowing barrier across one doorway at a time — useful in a siege, less useful when everyone needs saving at once.',
+    setup:{
+      toll:'Three Ferrous Avenue shopkeepers came to your clinic about the “insurance” racket, then withdrew their statements on the same afternoon. What identical phrase did each of them use when they asked for their papers back?',
+      casting:'The new vigilante has started leaving suspects bound outside your office, as if your approval is part of the performance. What did the last one whisper before the police took them away?',
+      renovation:'You found the one defect that could stop the Whitlock Initiative in court, and Councilwoman Voss found a way to make the hearing disappear. What was the defect — and what did she offer you afterward?',
+      lastcall:'The Anchor’s neutrality began as a settlement you found in a dead attorney’s files, signed by people who should never have shared a table. Whose signature did you recognize that makes the agreement dangerous now?'
+    },
+    sides:[
+      {cond:'If you treated someone as the enemy before they had a chance to speak…', tone:'Fury'},
+      {cond:'If someone was hurt because your protection could only face one direction…', tone:'Guilt'}
+    ]
+  },
+  {
+    role:'Secondhand',
+    flavor:'A watch repairer who can borrow five seconds from her own near future — long enough to stop a bullet, never long enough to avoid paying the time back.',
+    setup:{
+      toll:'Every Ferrous Avenue collection happens at the exact same second past midnight, according to four clocks that should not agree. What mark inside one of those clocks tells you who synchronized them?',
+      casting:'Footage of the new vigilante skips five seconds whenever they strike, exactly like security video does around you. What happened when you tried to catch them inside the missing time?',
+      renovation:'A pocket watch recovered from the Blue Note is running backward toward the hour the building vanished. Who brought it to your shop, and why did they refuse to take it back?',
+      lastcall:'No clock inside the Anchor has moved in thirty years, but tonight every one of them started ticking. What debt did the bartender say would come due when they reached midnight?'
+    },
+    sides:[
+      {cond:'If time you borrowed left someone else waiting when they needed you…', tone:'Guilt'},
+      {cond:'If you lost a moment and woke somewhere you could not explain…', tone:'Dread'}
+    ]
+  },
+  {
+    role:'Rook',
+    flavor:'A bicycle courier who can catch and redirect momentum with a touch — turning bad falls and fast escapes into somebody else’s problem.',
+    setup:{
+      toll:'You deliver to every shop on Ferrous Avenue, including sealed envelopes nobody admits sending. Where does the collection route really end, and what did you see unloaded there?',
+      casting:'The new vigilante copied your signature move for the cameras and nearly killed someone doing it. What tiny mistake proves they learned it by watching you in civilian clothes?',
+      renovation:'Your regular shortcut through Whitlock now ends at a spotless brick wall that was not there yesterday. What is still embedded in the mortar on the other side?',
+      lastcall:'Couriers know the Anchor as the one address where a package may be delivered without a name. What did you carry there tonight that was moving inside the bag?'
+    },
+    sides:[
+      {cond:'If you sent danger back harder than it came at you…', tone:'Fury'},
+      {cond:'If you realized someone had mapped the route between your mask and your front door…', tone:'Dread'}
+    ]
+  },
+  {
+    role:'Switchboard',
+    flavor:'Millhaven’s overnight emergency dispatcher, cursed to hear certain calls ninety seconds before the phone actually rings.',
+    setup:{
+      toll:'You heard Mrs. Odom’s call before her bakery burned, but when the phone finally rang somebody else answered from her line. What did that voice tell you not to dispatch?',
+      casting:'Calls about the new vigilante reach you before the violence starts, always from the same unlisted number. What did you hear in the background that connects the caller to someone you trust?',
+      renovation:'The night the Blue Note vanished, six people called from apartments that city records say were already empty. Which caller knew your real name, and what did they beg you to remember?',
+      lastcall:'The Anchor has no listed phone, yet it has called your board once every year on the same night. Tonight it called early. What did the bartender say before the line cut out?'
+    },
+    sides:[
+      {cond:'If you sent someone into danger because there was no time to explain…', tone:'Fury'},
+      {cond:'If you heard a call coming and still could not get help there in time…', tone:'Guilt'}
+    ]
   }
 ];

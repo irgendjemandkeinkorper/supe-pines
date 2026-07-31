@@ -14,3 +14,9 @@ export const firebaseConfig = {
   messagingSenderId: "REPLACE_ME",
   appId: "REPLACE_ME"
 };
+
+/* Keep the public build honest while this object still contains the starter
+   placeholders. The title screen can explain that remote rooms need their
+   Firebase project instead of leading players into a sign-in failure. */
+export const firebaseConfigured = Object.values(firebaseConfig)
+  .every(value => typeof value === 'string' && value.length > 0 && !value.includes('REPLACE_ME'));

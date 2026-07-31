@@ -18,6 +18,7 @@ import { viewChronicle, returnFromChronicle, toggleStrike, showRules,
          initOverlayDismiss } from './ui/renderChronicle.js';
 import { copyChronicle, downloadChronicle } from './chronicle/markdown.js';
 import { ensureSignedIn } from './sync/auth.js';
+import { firebaseConfigured } from './sync/config.js';
 import {
   showOnlineEntry, onlineCreateRoom, onlineJoinRoom, leaveOnlineRoom, tryAutoRejoin,
   onlineBeginTale, onlineSaveArchSetup, onlineFinishVictim,
@@ -57,6 +58,16 @@ renderPlayerInputs();
 applyFirstrunVisibility();
 initOverlayDismiss();
 initHistoryNav();
-ensureSignedIn()
-  .then(() => tryAutoRejoin())
-  .catch(err => console.warn('[sync] anonymous sign-in failed', err));
+if(firebaseConfigured){
+  ensureSignedIn()
+    .then(() => tryAutoRejoin())
+    .catch(err => console.warn('[sync] anonymous sign-in failed', err));
+} else {
+  const onlineButton = document.getElementById('title-online-button');
+  if(onlineButton){
+    onlineButton.classList.remove('primary');
+    onlineButton.classList.add('ghost');
+    onlineButton.textContent = 'Online (setup required)';
+    onlineButton.title = 'Remote rooms need the project Firebase configuration; hotseat play is ready.';
+  }
+}

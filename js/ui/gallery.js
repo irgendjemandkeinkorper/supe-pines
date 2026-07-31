@@ -8,10 +8,10 @@ import { openOverlay } from './screens.js';
    are entirely optional: see art/IMAGE_PROMPTS.md (once generated) for the
    exact path each tile below expects. Until a file exists at that path,
    the tile shows a plain text fallback card instead of a broken image —
-   the Gallery (and the game) never depends on art actually existing. No
-   art has been generated for Supe Pines yet, so every tile currently
-   shows its text fallback — that's expected, not a bug. */
-let gState = { style:'ink', cat:'heroes', detail:null };
+   the Gallery (and the game) never depends on art actually existing. The
+   launch set includes Comic Ink covers for all four Cases; every other tile
+   currently shows its text fallback — that's expected, not a bug. */
+let gState = { style:'ink', cat:'cases', detail:null };
 
 function heroTiles(style){
   return HEROES.flatMap(a=>{
@@ -79,7 +79,7 @@ function renderGallery(){
   const tiles = active.build(gState.style);
   $('overlay-content').innerHTML = `
     <h2 style="color:var(--gold)">The Gallery</h2>
-    <p class="small muted">Card art for Supe Pines — something to look through while the others plot. No art has been generated yet, so everything below shows its plain text card; drop generated images into <code>art/images/</code> (see <code>art/IMAGE_PROMPTS.md</code> once it exists for the exact paths) and they'll appear here automatically.</p>
+    <p class="small muted">Card art for Supe Pines — something to look through while the others plot. The four Comic Ink Case covers are the launch set; any missing slot shows an intentional text card until more art lands. The generation tools document every path under <code>art/images/</code>.</p>
     <div class="btnrow" style="margin-top:12px">
       <button class="${gState.style==='ink'?'primary':'ghost'}" onclick="setGalleryStyle('ink')">Comic Ink</button>
       <button class="${gState.style==='poster'?'primary':'ghost'}" onclick="setGalleryStyle('poster')">Painted Poster</button>
