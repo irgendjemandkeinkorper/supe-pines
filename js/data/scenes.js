@@ -39,7 +39,15 @@ export const SCENES = {
     {title:'The Condemned Notice', prompt:'A building marked for demolition, and someone still inside who has nowhere else to go.', tone:'Guilt', hook:'renovation'},
     {title:'City Hall After Hours', prompt:'A records office, and a file that keeps getting checked out by someone who was never issued a key.', tone:'Dread', hook:'renovation'},
     {title:'Last Orders', prompt:'A fight almost breaks out inside the Anchor’s supposedly neutral walls.', tone:'Fury', hook:'lastcall'},
-    {title:'The Bartender’s Silence', prompt:'A question asked across the bar, met with nothing but a long, careful pour.', tone:'Dread', hook:'lastcall'}
+    {title:'The Bartender’s Silence', prompt:'A question asked across the bar, met with nothing but a long, careful pour.', tone:'Dread', hook:'lastcall'},
+    {title:'The Clinic Door', prompt:'A patient is locked outside the place that promised to keep the lights on.', tone:'Guilt', hook:'afterhours'},
+    {title:'The Empty Exam Room', prompt:'A room prepared for someone who never arrived, with one piece of evidence left behind.', tone:'Dread', hook:'afterhours'},
+    {title:'A Voice Between Songs', prompt:'The radio signal cuts to a voice that knows which listener is alone.', tone:'Dread', hook:'deadair'},
+    {title:'The Station Window', prompt:'A broadcast studio after midnight, watched from the street by someone who should be inside.', tone:'Fury', hook:'deadair'},
+    {title:'The Missed Stop', prompt:'A bus passes a waiting passenger and keeps going into a part of Millhaven that is not on the map.', tone:'Guilt', hook:'lastroute'},
+    {title:'Under the Turnstile', prompt:'The last train has gone, but a locked station still has one light burning below ground.', tone:'Dread', hook:'lastroute'},
+    {title:'The Locked Gym', prompt:'An open house ends with the doors bolted, the sign-in sheet missing, and someone still inside.', tone:'Dread', hook:'openhouse'},
+    {title:'The Sign-Up Sheet', prompt:'A list of names is passed around as if it were a promise, a threat, or both.', tone:'Guilt', hook:'openhouse'}
   ],
   2:[
     {title:'The Ultimatum Delivered', prompt:'A message meant to provoke exactly the wrong response.', tone:'Fury', hook:null},
@@ -81,7 +89,15 @@ export const SCENES = {
     {title:'The Missing Tenants', prompt:'A list of names, all from condemned buildings, none of them anywhere in the city anymore.', tone:'Dread', hook:'renovation'},
     {title:'Voss’s Office', prompt:'A confrontation in a place with far too many witnesses to get physical, and far too much reason to anyway.', tone:'Fury', hook:'renovation'},
     {title:'The New Management', prompt:'Whoever’s taking the Anchor apart finally shows their face behind the bar.', tone:'Fury', hook:'lastcall'},
-    {title:'Calling in the Debt', prompt:'The bartender asks for the one favor nobody wanted to actually owe.', tone:'Guilt', hook:'lastcall'}
+    {title:'Calling in the Debt', prompt:'The bartender asks for the one favor nobody wanted to actually owe.', tone:'Guilt', hook:'lastcall'},
+    {title:'The Missing Chart', prompt:'A patient’s file has been replaced by a blank page, but everyone remembers what it said.', tone:'Dread', hook:'afterhours'},
+    {title:'No Ambulance Coming', prompt:'The call is cancelled, the street is blocked, and the clinic has to decide who it can carry.', tone:'Fury', hook:'afterhours'},
+    {title:'The Feed Cuts Out', prompt:'A live broadcast goes silent just as the caller says the one name the station cannot ignore.', tone:'Dread', hook:'deadair'},
+    {title:'The Caller Knows', prompt:'A voice on the line asks for help using a detail that was never broadcast.', tone:'Fury', hook:'deadair'},
+    {title:'The Closed Platform', prompt:'A station gate is chained shut while a train waits on the other side with its doors open.', tone:'Guilt', hook:'lastroute'},
+    {title:'Fare Evasion', prompt:'A driver makes a choice about who gets off the bus, and the cameras record only the aftermath.', tone:'Fury', hook:'lastroute'},
+    {title:'The Donation Drive', prompt:'Boxes arrive for the youth centre with every useful item tagged for someone else.', tone:'Guilt', hook:'openhouse'},
+    {title:'The Back Room', prompt:'Behind the gym is a room full of copied keys, old phones, and a chair facing the wall.', tone:'Dread', hook:'openhouse'}
   ],
   3:[
     {title:'The Last Stand', prompt:'Nowhere left to retreat to, and no reason left to hold back.', tone:'Fury', hook:null},
@@ -123,6 +139,14 @@ export const SCENES = {
     {title:'Voss’s Ledger', prompt:'The Whitlock Initiative’s true purpose, laid bare in paperwork nobody was ever supposed to read.', tone:'Dread', hook:'renovation'},
     {title:'The Last Building Standing', prompt:'Whatever’s left of Whitlock Street, and whether it can still be called home.', tone:'Guilt', hook:'renovation'},
     {title:'Last Call at the Anchor', prompt:'The truce breaks, or holds, in the one place it was never supposed to happen.', tone:'Fury', hook:'lastcall'},
-    {title:'The Bartender’s Price', prompt:'Whatever kept the Anchor neutral for thirty years finally has a cost, and someone has to pay it.', tone:'Dread', hook:'lastcall'}
+    {title:'The Bartender’s Price', prompt:'Whatever kept the Anchor neutral for thirty years finally has a cost, and someone has to pay it.', tone:'Dread', hook:'lastcall'},
+    {title:'The Last Bed', prompt:'The clinic has one bed, two emergencies, and a person at the door who knows the answer already.', tone:'Guilt', hook:'afterhours'},
+    {title:'The Door Stays Open', prompt:'The lights fail across the block, but Saint Agnes refuses to stop receiving people.', tone:'Dread', hook:'afterhours'},
+    {title:'Broadcast From the Roof', prompt:'A final transmission goes live from the station roof while the neighbourhood decides whether to listen.', tone:'Fury', hook:'deadair'},
+    {title:'Correction Required', prompt:'The story is corrected in public by someone who has to admit what their voice made happen.', tone:'Guilt', hook:'deadair'},
+    {title:'Terminus', prompt:'The 9B reaches the place the route was hiding, and every passenger has to choose whether to step off.', tone:'Dread', hook:'lastroute'},
+    {title:'The Driver’s Key', prompt:'A key changes hands at the final stop, carrying the whole route’s secret with it.', tone:'Guilt', hook:'lastroute'},
+    {title:'The Lights Come On', prompt:'The Franklin centre opens its doors again, and the people who stayed decide what protection means.', tone:'Fury', hook:'openhouse'},
+    {title:'The People Who Stayed', prompt:'The names are read once more, this time by the people who refuse to let them disappear.', tone:'Guilt', hook:'openhouse'}
   ]
 };

@@ -9,9 +9,11 @@ import { openOverlay } from './screens.js';
    exact path each tile below expects. Until a file exists at that path,
    the tile shows a plain text fallback card instead of a broken image —
    the Gallery (and the game) never depends on art actually existing. The
-   launch set includes Comic Ink covers for all four Cases; every other tile
-   currently shows its text fallback — that's expected, not a bug. */
+   launch set includes Comic Ink covers for the original four Cases plus the
+   first new Case; every other tile currently shows its text fallback — that's
+   expected, not a bug. */
 let gState = { style:'ink', cat:'heroes', detail:null };
+const STYLE_READY = { ink:true, poster:false };
 
 function heroTiles(style){
   return HEROES.map(a=>{
@@ -111,10 +113,10 @@ function renderGallery(){
   const tiles = active.build(gState.style);
   $('overlay-content').innerHTML = `
     <h2 style="color:var(--gold)">The Gallery</h2>
-    <p class="small muted">Browse every card face in Supe Pines. Hero cards have two distinct sides: use the turn button to compare their conditions and variants without opening the card. The four Comic Ink Case covers are the launch art set; missing images show intentional text cards until more art lands.</p>
+    <p class="small muted">Browse every card face in Supe Pines. Hero cards have two distinct sides: use the turn button to compare their conditions and variants without opening the card. Five Comic Ink Case covers are currently live; missing images show intentional text cards until more art lands.</p>
     <div class="btnrow" style="margin-top:12px">
       <button class="${gState.style==='ink'?'primary':'ghost'}" onclick="setGalleryStyle('ink')">Comic Ink</button>
-      <button class="${gState.style==='poster'?'primary':'ghost'}" onclick="setGalleryStyle('poster')">Painted Poster</button>
+      <button class="ghost" disabled title="Painted Poster art is planned for a later release">Painted Poster <span class="small">(coming later)</span></button>
     </div>
     <div class="btnrow" style="margin-top:6px">
       ${CATS.map(c=>`<button class="${c.id===gState.cat?'primary':'ghost'}" onclick="setGalleryCat('${c.id}')">${c.label}</button>`).join('')}
@@ -122,7 +124,7 @@ function renderGallery(){
     <div class="ggrid gcat-${gState.cat}" style="margin-top:16px">${tiles.map(tileHTML).join('')}</div>
     <div class="btnrow" style="justify-content:center;margin-top:20px"><button class="primary" onclick="closeOverlay()">Back to Millhaven</button></div>`;
 }
-export function setGalleryStyle(style){ gState.style = style; renderGallery(); }
+export function setGalleryStyle(style){ if(!STYLE_READY[style]) return; gState.style = style; renderGallery(); }
 export function setGalleryCat(cat){ gState.cat = cat; renderGallery(); }
 export function openGalleryDetail(cat, key){
   const c = CATS.find(x=>x.id===cat);

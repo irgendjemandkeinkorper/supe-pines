@@ -7,6 +7,28 @@ export const ACT_NAMES = ['','Act the First','Act the Second','Act the Third'];
 // Covers up to 12 so numbering a longer Case roster never silently breaks.
 export const ROMAN = ['','I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'];
 
+export const CASE_PHASES = [
+  {id:'case', label:'Choose Case'},
+  {id:'gather', label:'Gather'},
+  {id:'profile', label:'Profile Heroes'},
+  {id:'threat', label:'Name Threat'},
+  {id:'acts', label:'Run the Acts'},
+  {id:'dossier', label:'Write Dossier'}
+];
+
+export function casePhaseRail(active='case', caption=''){
+  const activeIndex = Math.max(0, CASE_PHASES.findIndex(phase => phase.id === active));
+  return `<nav class="case-phase-rail" aria-label="Case progress">
+    ${CASE_PHASES.map((phase, index) => `
+      ${index ? '<span class="cpr-line" aria-hidden="true"></span>' : ''}
+      <span class="cpr-node ${index<activeIndex?'done ':''}${index===activeIndex?'current':''}" aria-current="${index===activeIndex?'step':'false'}">
+        <span class="cpr-dot" aria-hidden="true">${index<activeIndex?'✓':index+1}</span>
+        <span class="cpr-label">${esc(phase.label)}</span>
+      </span>`).join('')}
+    ${caption?`<span class="cpr-caption">${esc(caption)}</span>`:''}
+  </nav>`;
+}
+
 /* A row of dots marking progress through a fixed sequence (e.g. the six
    hero setup questions) — done/current/upcoming, plus a text label
    for the current step. */

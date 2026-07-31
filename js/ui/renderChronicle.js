@@ -1,4 +1,4 @@
-import { $, esc, nl2br, toneBadge, ACT_NAMES } from '../engine/utils.js';
+import { $, esc, nl2br, toneBadge, ACT_NAMES, casePhaseRail } from '../engine/utils.js';
 import { TONES, TONE_GLOSS, EPILOGUE_QUESTIONS } from '../data/index.js';
 import { State } from '../engine/state.js';
 import { show, openOverlay, closeOverlay, dismissFirstrunHint } from './screens.js';
@@ -56,6 +56,7 @@ export function renderChronicle(interim){
     ${list.map(e=>{gi=G.journal.indexOf(e);return entryHTML(e,gi,ri++);}).join('')}` : '').join('');
 
   $('scr-chronicle').innerHTML = `
+    ${casePhaseRail('dossier', over ? 'Read the finished case together.' : 'Review what the table has made so far.')}
     <div class="masthead" style="padding-top:16px">
       <div class="m-over">${over?'The Case Is Closed':'The Dossier, So Far'}</div>
       <h1 style="font-size:2.4rem">THE MILLHAVEN DOSSIER</h1>
@@ -80,7 +81,7 @@ export function renderChronicle(interim){
       ${interim?`<button class="primary" onclick="returnFromChronicle()">Return to the Case</button>`:''}
       <button onclick="copyChronicle()" id="btn-copy">Copy as Markdown</button>
       <button onclick="downloadChronicle()">Download the Dossier</button>
-      ${over?`<button class="blood" onclick="location.reload()">Open Another Case</button>`:''}
+      ${over?`<button class="blood" onclick="startNewCase()">Open Another Case</button>`:''}
     </div>
     <p class="small muted center" style="margin-top:8px">Anything stricken from the record never was. No questions asked; no reasons owed.</p>`;
 }

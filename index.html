@@ -18,6 +18,7 @@
 <div id="topbar">
   <span class="tb-title">Supe Pines</span>
   <span class="tb-act" id="tb-act"></span>
+  <span class="tb-phase" id="tb-phase"></span>
   <span class="tb-tones" id="tb-tones"></span>
   <button class="ghost" onclick="showRules()">The Rules</button>
   <button class="ghost" onclick="viewChronicle(true)">The Dossier</button>
@@ -46,7 +47,8 @@
         <span class="hint-x" onclick="dismissFirstrunHint()" title="Don't show this again">✕</span>
       </div>
       <div class="btnrow" style="justify-content:center;margin-top:28px">
-        <button class="primary" onclick="show('scr-hook')">Open the Case (this screen)</button>
+        <button class="primary" onclick="startNewCase()">Open the Case (this screen)</button>
+        <button class="ghost" id="resume-local-button" onclick="resumeLocalGame()" hidden>Resume saved Case</button>
         <button class="primary" id="title-online-button" onclick="showOnlineEntry()">Play Online</button>
         <button onclick="showRules()">How to Play</button>
         <button onclick="showGallery()">The Gallery</button>
@@ -68,6 +70,7 @@
 
   <!-- ============ CASE SELECT ============ -->
   <div class="screen" id="scr-hook">
+    <div id="case-phase-rail"></div>
     <h2 class="center">Choose the Case</h2>
     <p class="center muted" style="font-style:italic">Each case colours the questions asked, the scenes dealt, and the shape of the truth.</p>
     <div class="ornament">❦</div>
@@ -102,6 +105,7 @@
 
   <!-- ============ INTRO READ-ALOUD ============ -->
   <div class="screen" id="scr-intro">
+    <div id="intro-phase-rail"></div>
     <div class="panel" style="max-width:720px;margin:30px auto">
       <div class="sc center" style="color:var(--blood-bright);letter-spacing:.3em;font-size:.8rem">READ ALOUD</div>
       <div class="ornament">❦</div>

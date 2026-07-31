@@ -24,23 +24,23 @@ The table UI includes a ready-to-lead turn board, full-card hand drawers, and a
 three-slot scene tracker that keeps the opening card, buy-ins, lead Hero, and
 live tone sources visible through resolution.
 
-**Content is a deliberately smaller starter set**, ported at the same structural
-scale as Bleakwood Vale but with less total content, meant to be expanded over
-time:
+The content roster now keeps the full eight-Case story spine while staying
+short enough for a single sitting:
 
 | | Supe Pines | (Bleakwood Vale, for reference) |
 |---|---|---|
 | Tones | 3 (Fury, Guilt, Dread) | 3 |
-| Cases | 4 | 12 |
+| Cases | 8 | 12 |
 | Heroes | 12 (6 dealt per game) | 16 (6 dealt per game) |
-| Setup questions | 48 (every Hero × every Case) | 192 |
-| Scene cards | 40/act (120 total) | 61/act (183 total) |
+| Setup questions | 96 (every Hero × every Case) | 192 |
+| Scene cards | 48/act (144 total) | 61/act (183 total) |
 | Signals | 32 | 44 |
 | Secrets | 10 (mathematically exhaustive over 3 tones — can't be fewer) | 10 |
 | Act Closes | 6 (2/act) | 9 |
 
-Expanding any category later is additive — e.g. a 5th Case just needs one new
-setup question per existing Hero (12 of them), not any code changes.
+Every Case owns two scenes in each act, layered over the shared scene deck.
+Adding a future Case remains additive: it needs one setup question per Hero,
+two scene prompts per act, and matching prompt/manifest entries.
 
 ## Running it locally
 
@@ -69,6 +69,7 @@ js/ui/gallery.js     the in-app card-art Gallery (title screen + topbar)
 js/chronicle/       Markdown export of the finished/in-progress Dossier
 scripts/            zero-dependency data validation plus deterministic card-art
                     prompt and manifest generation
+test/               zero-dependency Node regression tests
 generate.py         optional Gemini image generation from manifest.json
 ```
 
@@ -129,10 +130,44 @@ reusing a project would mix the two games' rooms together.
 Until `js/sync/config.js` has real values, the public page marks online play as
 setup-required. Hotseat play is completely unaffected either way.
 
+## Resume and verification
+
+Local hotseat games autosave committed transitions in a versioned
+`sp:save:v1` browser snapshot. Reloading the page exposes an explicit **Resume
+saved Case** button; choosing a new Case clears the old snapshot. Online rooms
+remain Firestore-authoritative and are never copied into local storage.
+
+Run the zero-dependency checks before changing card data or engine rules:
+
+```
+node scripts/validate-data.mjs
+node scripts/gen-prompts.mjs --check
+node scripts/gen-manifest.mjs --check
+node --test test/*.test.mjs
+node scripts/check-art.mjs
+```
+
+The browser smoke suite uses Playwright as a development-only dependency. It
+starts a local static server and covers the eight-Case picker, solo setup,
+resume, two-sided Gallery controls, in-progress Dossier, first scene and
+resolution, online fallback, and narrow-screen layout:
+
+```
+python3 -m pip install playwright
+playwright install chromium
+python3 scripts/smoke.py
+```
+
+GitHub Actions runs the same data and browser checks on pull requests and
+`main`; the production site remains a dependency-free static GitHub Pages
+build.
+
+The visual and copy rules live in [`docs/design-bible.md`](docs/design-bible.md).
+
 ## Card art
 
-The launch build includes four matching Comic Ink Case covers, visible in the
-Case picker and Gallery. The Gallery supports the full image set at
+The launch build includes matching Comic Ink Case covers for the first five
+Cases, visible in the Case picker and Gallery. The Gallery supports the full image set at
 `art/images/<style>/<category>/<slug>.<ext>` (`style` is `ink` or `poster`;
 `category` is `heroes`, `cases`, `signals`, or `threats`) and falls back to
 intentional text cards whenever an image is absent. Each Hero appears as one
@@ -140,8 +175,8 @@ two-sided card with an explicit Side I/Side II control; the caption and flip
 condition follow the face being shown.
 
 The Bleakwood Vale manifest pipeline is now fully adapted for Supe Pines. It
-contains hand-authored art direction for all 12 Heroes (both sides), 4 Cases,
-32 Signals, and 4 obscured Threats in two noir-comic styles — 128 image slots
+contains hand-authored art direction for all 12 Heroes (both sides), 8 Cases,
+32 Signals, and 8 obscured Threats in two noir-comic styles — 144 image slots
 total. Prompt coverage and manifest generation can be checked without Python,
 credentials, or an API call:
 

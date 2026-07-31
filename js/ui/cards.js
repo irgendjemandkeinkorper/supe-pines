@@ -1,9 +1,10 @@
-import { esc, nl2br, toneBadge, ACT_NAMES } from '../engine/utils.js';
+import { esc, nl2br, toneBadge, ACT_NAMES, slugify } from '../engine/utils.js';
 import { State } from '../engine/state.js';
 
 function heroFaceHTML(h, sideIdx, turned){
   const s = h.sides[sideIdx];
   return `<div class="hero${turned?' flipped':''}">
+    <div class="hero-art" aria-hidden="true"><img src="art/images/ink/heroes/${slugify(h.role)}--${sideIdx===0?'front':'turned'}.png" alt="" loading="lazy" onerror="this.parentElement.remove()"></div>
     <div class="a-side">SIDE ${sideIdx===0?'I':'II'}${turned?' — TURNED':''}</div>
     <div class="a-name">${esc(h.name||h.role)}</div>
     <div class="a-role">${esc(h.role)}</div>
@@ -19,7 +20,10 @@ function heroFaceHTML(h, sideIdx, turned){
    toggle (see flipHeroCard below), not game state. */
 export function heroCard(h, selectable, idx){
   const frontIdx = h.flipped?1:0, backIdx = h.flipped?0:1;
-  return `<div class="hero-flip${selectable?' selectable':''}" ${selectable?`onclick="${selectable}(${idx})" id="arch-pick-${idx}"`:''}>
+  const selectAttrs = selectable
+    ? `role="button" tabindex="0" aria-pressed="false" onclick="${selectable}(${idx})" onkeydown="if((event.key==='Enter'||event.key===' ')&&event.target===this){event.preventDefault();${selectable}(${idx})}" id="arch-pick-${idx}"`
+    : '';
+  return `<div class="hero-flip${selectable?' selectable':''}" ${selectAttrs}>
     <button class="flip-btn" type="button" onclick="event.stopPropagation();flipHeroCard(this)"
       data-front-side="${frontIdx===0?'I':'II'}" data-back-side="${backIdx===0?'I':'II'}"
       aria-label="View Side ${backIdx===0?'I':'II'}" aria-pressed="false" title="View Side ${backIdx===0?'I':'II'}">
@@ -87,7 +91,10 @@ export function sceneAnatomyDiagramHTML(){
   </div>`;
 }
 export function signalCard(o, selectable, idx){
-  return `<div class="card signal${selectable?' selectable':''}" ${selectable?`onclick="${selectable}(${idx})" id="omen-pick-${idx}"`:''}>
+  const selectAttrs = selectable
+    ? `role="button" tabindex="0" aria-pressed="false" onclick="${selectable}(${idx})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();${selectable}(${idx})}" id="omen-pick-${idx}"`
+    : '';
+  return `<div class="card signal${selectable?' selectable':''}" ${selectAttrs}>
     <div class="c-kicker">Signal</div>
     <div class="glyph">${o.glyph}</div>
     <div class="c-title">${esc(o.title)}</div>
@@ -96,7 +103,10 @@ export function signalCard(o, selectable, idx){
 }
 export function sceneCardHTML(c, selectable, idx){
   const G = State.G;
-  return `<div class="card${selectable?' selectable':''}" ${selectable?`onclick="${selectable}(${idx})" id="scene-pick-${idx}"`:''}>
+  const selectAttrs = selectable
+    ? `role="button" tabindex="0" aria-pressed="false" onclick="${selectable}(${idx})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();${selectable}(${idx})}" id="scene-pick-${idx}"`
+    : '';
+  return `<div class="card${selectable?' selectable':''}" ${selectAttrs}>
     <div class="c-kicker">Scene · ${ACT_NAMES[G.act]}</div>
     <div class="c-title">${esc(c.title)}</div>
     <div class="c-prompt">${esc(c.prompt)}</div>

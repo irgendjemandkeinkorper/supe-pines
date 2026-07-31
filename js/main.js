@@ -8,15 +8,17 @@ import { showIdleClicker, idleClick } from './ui/idle.js';
 import { showGallery, setGalleryStyle, setGalleryCat, openGalleryDetail,
          closeGalleryDetail, galleryImgError, flipGalleryCard } from './ui/gallery.js';
 import { renderHooks, chooseCase, renderPlayerInputs, confirmPlayers,
-         beginArchSetup, saveArchSetup, finishVictim } from './ui/setup.js';
-import { renderHub, openLocalHand, tradeSignal, forfeitScene, beginClose } from './ui/hub.js';
-import { startSceneFor, pickSceneCard, pickArch, beginScene, pickContrib,
+         beginArchSetup, renderArchSetup, saveArchSetup, renderVictim, finishVictim } from './ui/setup.js';
+import { renderHub, renderCloseIntro, openLocalHand, tradeSignal, forfeitScene, beginClose } from './ui/hub.js';
+import { startSceneFor, renderScenePick, renderScenePlay, pickSceneCard, pickArch, beginScene, pickContrib,
          pickContribScene, pickContribOmen, confirmContrib, cancelContrib,
          setContribHow, setSceneHappened, dismissScenePrimer } from './ui/scene.js';
-import { endScene, applyResolve, toggleSecretOmen, confirmSecret } from './ui/resolve.js';
+import { endScene, renderResolve, renderSecretUnlock, applyResolve, toggleSecretOmen, confirmSecret } from './ui/resolve.js';
 import { viewChronicle, returnFromChronicle, toggleStrike, showRules,
-         initOverlayDismiss } from './ui/renderChronicle.js';
+         initOverlayDismiss, renderChronicle } from './ui/renderChronicle.js';
 import { copyChronicle, downloadChronicle } from './chronicle/markdown.js';
+import { State } from './engine/state.js';
+import { clearSavedGame, hasSavedGame, readSave, saveGame } from './engine/persistence.js';
 import { ensureSignedIn } from './sync/auth.js';
 import { firebaseConfigured } from './sync/config.js';
 import {
@@ -34,11 +36,11 @@ import {
 Object.assign(window, {
   show, flipHeroCard, showIdleClicker, idleClick, dismissFirstrunHint,
   showGallery, setGalleryStyle, setGalleryCat, openGalleryDetail, closeGalleryDetail, galleryImgError, flipGalleryCard,
-  chooseCase, renderPlayerInputs, confirmPlayers, beginArchSetup, saveArchSetup, finishVictim,
+  chooseCase, renderPlayerInputs, confirmPlayers, beginArchSetup, renderArchSetup, saveArchSetup, renderVictim, finishVictim,
   renderHub, openLocalHand, tradeSignal, forfeitScene, beginClose,
-  startSceneFor, pickSceneCard, pickArch, beginScene, pickContrib, pickContribScene, pickContribOmen,
+  startSceneFor, renderScenePick, renderScenePlay, pickSceneCard, pickArch, beginScene, pickContrib, pickContribScene, pickContribOmen,
   confirmContrib, cancelContrib, setContribHow, setSceneHappened, dismissScenePrimer,
-  endScene, applyResolve, toggleSecretOmen, confirmSecret,
+  endScene, renderResolve, renderSecretUnlock, applyResolve, toggleSecretOmen, confirmSecret,
   viewChronicle, returnFromChronicle, toggleStrike, showRules, closeOverlay,
   copyChronicle, downloadChronicle,
   showOnlineEntry, onlineCreateRoom, onlineJoinRoom, leaveOnlineRoom,
@@ -52,9 +54,52 @@ Object.assign(window, {
   onlineAnswerForAbsent, onlineCopyRoomLink, onlineDismissScenePrimer, openOnlineHand
 });
 
+export function refreshResumeControl(){
+  const button = document.getElementById('resume-local-button');
+  if(button) button.hidden = !hasSavedGame();
+}
+
+export function resumeLocalGame(){
+  const snapshot = readSave();
+  if(!snapshot){ refreshResumeControl(); return; }
+  State.onlineRoomCode = null;
+  State.pendingCase = snapshot.game.case;
+  State.G = snapshot.game;
+  const screen = snapshot.screen;
+  if(screen==='scr-intro'){
+    const intro = document.getElementById('intro-text');
+    if(intro) intro.innerHTML = State.G.case.intro;
+    show('scr-intro');
+  } else if(screen==='scr-archsetup') { renderArchSetup(); show(screen); }
+  else if(screen==='scr-victim') { renderVictim(); }
+  else if(screen==='scr-scene') {
+    if(State.G.current?.phase==='pick') renderScenePick(); else renderScenePlay();
+    show(screen);
+  } else if(screen==='scr-resolve') { renderResolve(); show(screen); }
+  else if(screen==='scr-secret') {
+    const entry = State.G.journal?.[State.G.journal.length-1];
+    renderSecretUnlock(State.G.pendingSecret, entry?.tones || []); show(screen);
+  } else if(screen==='scr-close') { renderCloseIntro(); show(screen); }
+  else if(screen==='scr-chronicle') { renderChronicle(false); show(screen); }
+  else { renderHub(); show('scr-hub'); }
+  saveGame(screen);
+  refreshResumeControl();
+}
+
+export function startNewCase(){
+  clearSavedGame();
+  State.G = null;
+  State.pendingCase = null;
+  refreshResumeControl();
+  show('scr-hook');
+}
+
+Object.assign(window, { resumeLocalGame, refreshResumeControl, startNewCase });
+
 /* ---------------- init ---------------- */
 renderHooks();
 renderPlayerInputs();
+refreshResumeControl();
 applyFirstrunVisibility();
 initOverlayDismiss();
 initHistoryNav();

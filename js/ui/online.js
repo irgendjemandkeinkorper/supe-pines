@@ -21,7 +21,30 @@ import {
    actions above write to Firestore. Reset whenever the underlying
    room-driven phase changes shape from under it. */
 let draft = {};
-function resetDraft(){ draft = {}; }
+let draftContext = null;
+function resetDraft(){ draft = {}; draftContext = null; }
+
+/* Keep local composition state while a peer's snapshot updates the same
+   logical action. A new scene, phase, or Secret clears it deliberately. */
+function roomDraftContext(room){
+  if(!room) return null;
+  const journalLength = Array.isArray(room.journal) ? room.journal.length : 0;
+  if(room.phase==='herosetup') return `herosetup|${room.archIdx}`;
+  if(room.phase==='threat') return `threat|${room.threat?.facts?.length||0}`;
+  if(room.phase==='playing' && room.pendingSecret){
+    const pending = room.pendingSecret;
+    return `secret|${room.act}|${journalLength}|${pending.pi}|${pending.secretIndex ?? ''}`;
+  }
+  if(room.phase==='playing' && room.current){
+    const current = room.current;
+    return `scene|${room.act}|${journalLength}|${current.type}|${current.starter}|${current.archIdx ?? ''}|${current.card?.title||''}`;
+  }
+  return `${room.phase}|${room.act??0}|${journalLength}|${room.closeDone?'closed':'open'}`;
+}
+function preserveDraftFor(room){
+  const nextContext = roomDraftContext(room);
+  if(nextContext !== draftContext){ draft = {}; draftContext = nextContext; }
+}
 
 /* My own hand + Buried Secret(s) — kept live via a subscription to my own
    private doc, never read from the public room object. */
@@ -81,6 +104,7 @@ export function showOnlineEntry(){
   unsubscribeRoom();
   unsubscribeMyPrivate();
   clearAdvanceTimer();
+  resetDraft();
   State.onlineRoomCode = null;
   State.G = null;
   if(!firebaseConfigured){
@@ -149,15 +173,20 @@ function enterRoom(code){
   State.onlineRoomCode = code;
   try { history.replaceState(null, '', '?room='+code); } catch(e){}
   myPrivate = {hand:[], secrets:[]};
+  resetDraft();
   lastClaimAttempt = -1;
   subscribeMyPrivate(code, getUid(), priv => { myPrivate = priv; });
-  subscribeRoom(code, routeAndRender);
+  subscribeRoom(code, routeAndRender, error => {
+    console.warn('[online] room subscription lost', error);
+    fail(new Error('The remote case connection was lost. Reopen this room link to try again.'));
+  });
 }
 
 export function leaveOnlineRoom(){
   unsubscribeRoom();
   unsubscribeMyPrivate();
   clearAdvanceTimer();
+  resetDraft();
   State.onlineRoomCode = null;
   State.G = null;
   try { history.replaceState(null, '', location.pathname); } catch(e){}
@@ -184,9 +213,9 @@ export async function tryAutoRejoin(){
 }
 
 /* ---------------- router ---------------- */
-function routeAndRender(room){
+export function routeAndRender(room){
   State.G = room;
-  resetDraft();
+  preserveDraftFor(room);
   reactToRoom(room);
   if(room.phase==='lobby'){ renderOnlineLobby(room); show('scr-online-lobby'); return; }
   if(room.phase==='finished' || room.act>3){ renderChronicle(false); show('scr-chronicle'); return; }

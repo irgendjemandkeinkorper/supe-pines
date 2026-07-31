@@ -63,6 +63,8 @@ export function validateData(data = { ACT_CLOSES, CASES, EPILOGUE_QUESTIONS, HER
   }
 
   const allScenes = [];
+  const hookedScenesByCase = Object.fromEntries([...caseIds].map(id => [id, []]));
+  const sceneToneCounts = Object.fromEntries([1, 2, 3].map(act => [act, Object.fromEntries((data.TONES || []).map(tone => [tone, 0]))]));
   for(const act of [1, 2, 3]){
     const scenes = data.SCENES?.[act];
     if(!Array.isArray(scenes) || scenes.length === 0){
@@ -75,10 +77,19 @@ export function validateData(data = { ACT_CLOSES, CASES, EPILOGUE_QUESTIONS, HER
       if(!isText(item?.prompt)) fail('Scenes', label, 'prompt must be a non-empty string.');
       if(!tones.has(item?.tone)) fail('Scenes', label, `unknown tone "${item?.tone}".`);
       if(item?.hook !== null && !caseIds.has(item?.hook)) fail('Scenes', label, `hook references unknown Case "${item?.hook}".`);
+      if(item?.hook && hookedScenesByCase[item.hook]) hookedScenesByCase[item.hook].push(item);
+      if(item?.tone && sceneToneCounts[act]?.[item.tone] !== undefined) sceneToneCounts[act][item.tone]++;
       allScenes.push(item);
     });
   }
   duplicateValues(allScenes.map(item => item.title)).forEach(title => fail('Scenes', title, 'duplicate title across acts.'));
+  Object.entries(hookedScenesByCase).forEach(([id, scenes]) => {
+    if(scenes.length < 6) fail('Scenes', id, `expected at least six Case-specific scenes (two per act), found ${scenes.length}.`);
+    [1, 2, 3].forEach(act => {
+      const count = data.SCENES?.[act]?.filter(scene => scene?.hook === id).length || 0;
+      if(count < 2) fail('Scenes', id, `expected at least two Case-specific scenes in Act ${act}, found ${count}.`);
+    });
+  });
 
   if(!Array.isArray(data.SIGNALS) || data.SIGNALS.length === 0){
     fail('Signals', '', 'expected a non-empty array.');
@@ -142,6 +153,8 @@ export function validateData(data = { ACT_CLOSES, CASES, EPILOGUE_QUESTIONS, HER
       signals: data.SIGNALS?.length || 0,
       secrets: data.SECRETS?.length || 0,
       actCloses: [1, 2, 3].reduce((total, act) => total + (data.ACT_CLOSES?.[act]?.length || 0), 0)
+      ,sceneToneCounts
+      ,hookedScenesByCase: Object.fromEntries(Object.entries(hookedScenesByCase).map(([id, scenes]) => [id, scenes.length]))
     }
   };
 }

@@ -39,7 +39,11 @@ export async function createRoom(theCase, hostName){
     sceneDeck:[], discardTones:[], signalDeck:[], signalRow:[],
     actClose:{}, journal:[], current:null, archIdx:0,
     firstScenePlayer:null, closeDone:false, pendingSecret:null,
-    createdAt: Date.now()
+    createdAt: Date.now(),
+    // Firestore TTL can reap abandoned rooms once the project enables a
+    // policy on this field. Seven days leaves enough room for a long-running
+    // case without keeping a public room forever.
+    expireAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
   });
   // Pre-create my own private doc. Not strictly required by the rules
   // (I could write it lazily later, since I always have write access to
@@ -73,9 +77,9 @@ export async function joinRoom(code, name){
   roomCode = code;
 }
 
-export function subscribeRoom(code, onChange){
+export function subscribeRoom(code, onChange, onError){
   if(unsub) unsub();
-  unsub = onSnapshot(roomRef(code), snap => { if(snap.exists()) onChange(snap.data()); });
+  unsub = onSnapshot(roomRef(code), snap => { if(snap.exists()) onChange(snap.data()); }, error => onError?.(error));
   return unsub;
 }
 export function unsubscribeRoom(){ if(unsub){ unsub(); unsub=null; } }

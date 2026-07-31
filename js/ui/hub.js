@@ -1,4 +1,4 @@
-import { $, esc, shuffle, toneBadge, ACT_NAMES, actTrackHTML } from '../engine/utils.js';
+import { $, esc, shuffle, toneBadge, ACT_NAMES, actTrackHTML, casePhaseRail } from '../engine/utils.js';
 import { TONES, SCENES } from '../data/index.js';
 import { State } from '../engine/state.js';
 import { show, renderTopbar } from './screens.js';
@@ -6,6 +6,7 @@ import { heroCard, signalCard, playerPanel, journalEntrySummaryHTML } from './ca
 import { actToneCounts } from '../engine/rules.js';
 import { renderScenePlay } from './scene.js';
 import { viewChronicle } from './renderChronicle.js';
+import { saveGame } from '../engine/persistence.js';
 
 /* ---------------- milestone rail ----------------
    A compact, newest-first digest of the story's key beats — act
@@ -78,6 +79,7 @@ export function renderHub(){
   const close = G.actClose[G.act];
   const remaining = G.players.reduce((s,p)=>s+p.scenesLeft,0);
   $('scr-hub').innerHTML = `
+    ${casePhaseRail('acts', `Choose a storyteller to begin ${ACT_NAMES[G.act]}.`)}
     <h2 class="center" style="margin-top:8px">${ACT_NAMES[G.act]}</h2>
     <p class="center muted">${esc(G.case.title)} · The Threat: ${esc(G.threat.name)}</p>
     ${actTrackHTML(G.act)}
@@ -129,6 +131,7 @@ export function renderHub(){
       </div>
     </details>`;
   renderTopbar();
+  saveGame('scr-hub');
 }
 
 export function openLocalHand(i){
@@ -152,6 +155,7 @@ export function tradeSignal(pi,oi){
   G.signalDeck.unshift(o);
   p.hand.push(G.sceneDeck.pop());
   renderHub();
+  saveGame('scr-hub');
 }
 export function forfeitScene(pi){
   const G = State.G;
@@ -181,6 +185,7 @@ export function renderCloseIntro(){
     : `<p><strong style="color:var(--blood-bright)">The tones stand tied.</strong> The storyteller who begins may choose:</p>` +
       tied.map((t,i)=>`<p><label style="cursor:pointer"><input type="radio" name="close-el" value="${t}" style="width:auto" ${i===0?'checked':''}> ${toneBadge(t)} <span class="small">${esc(close.elements[t])}</span></label></p>`).join('');
   $('scr-close').innerHTML = `
+    ${casePhaseRail('acts', 'The Act Close is the next scene.')}
     <h2 class="center" style="color:var(--blood-bright)">${ACT_NAMES[G.act]} draws to a close</h2>
     ${actTrackHTML(G.act)}
     <div class="ornament">✦</div>

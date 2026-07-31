@@ -1,26 +1,36 @@
-import { $, esc, shuffle, ROMAN, toneBadge, progressDotsHTML } from '../engine/utils.js';
+import { $, esc, shuffle, ROMAN, toneBadge, progressDotsHTML, casePhaseRail } from '../engine/utils.js';
 import { CASES, HEROES, SECRETS, SIGNALS, ACT_CLOSES } from '../data/index.js';
 import { State } from '../engine/state.js';
 import { show } from './screens.js';
 import { startAct } from './hub.js';
 import { HEROES_PER_GAME } from '../engine/rules.js';
 import { hasSeenIntro } from '../engine/firstrun.js';
+import { clearSavedGame } from '../engine/persistence.js';
+import { saveGame } from '../engine/persistence.js';
 
 /* ---------------- setup: cases ---------------- */
 export function renderHooks(){
+  const phaseRail = $('case-phase-rail');
+  if(phaseRail) phaseRail.innerHTML = casePhaseRail('case', 'Choose the premise that sounds alive to your table.');
   const hintEl = $('case-firsttime-hint');
   if(hintEl) hintEl.style.display = hasSeenIntro() ? 'none' : 'flex';
   $('case-list').innerHTML = CASES.map((h,i)=>`
-    <div class="casecard" role="button" tabindex="0" onclick="chooseCase(${i})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();chooseCase(${i})}">
-      <div class="casecard-art"><img src="art/images/ink/cases/${h.id}.jpg" alt="" onerror="this.parentElement.remove()"></div>
+    <div class="casecard" role="button" tabindex="0" aria-label="Open Case ${ROMAN[i+1]}: ${esc(h.title)}" onclick="chooseCase(${i})" onkeydown="if((event.key==='Enter'||event.key===' ')&&event.target===this){event.preventDefault();chooseCase(${i})}">
+      <div class="casecard-art"><img src="art/images/ink/cases/${h.id}.png" data-fallback="art/images/ink/cases/${h.id}.jpg" alt="${esc(h.title)} Case cover" onerror="if(this.dataset.fallback){this.src=this.dataset.fallback;this.removeAttribute('data-fallback')}else{this.parentElement.remove()}"></div>
       <div class="sc" style="color:var(--blood-bright);font-size:.75rem;letter-spacing:.25em">CASE ${ROMAN[i+1]}</div>
-      <h3>${h.title}</h3>
-      <div class="h-epi">${h.epigraph}</div>
+      <h3>${esc(h.title)}</h3>
+      <div class="h-epi">${esc(h.epigraph)}</div>
       <hr class="rule">
-      <div class="small" style="color:#cfc2a2">${h.threatLine}</div>
+      <div class="small" style="color:#cfc2a2">${esc(h.threatLine)}</div>
     </div>`).join('');
 }
-export function chooseCase(i){ State.pendingCase = CASES[i]; show('scr-players'); renderPlayerInputs(); }
+export function chooseCase(i){
+  clearSavedGame();
+  State.G = null;
+  State.pendingCase = CASES[i];
+  show('scr-players');
+  renderPlayerInputs();
+}
 
 /* ---------------- setup: players ---------------- */
 export function renderPlayerInputs(){
@@ -53,6 +63,7 @@ export function confirmPlayers(){
   };
   const G = State.G;
   $('intro-text').innerHTML = G.case.intro;
+  $('intro-phase-rail').innerHTML = casePhaseRail('gather', 'Read the Case aloud, then begin profiling.');
   show('scr-intro');
 }
 
@@ -63,6 +74,7 @@ export function renderArchSetup(){
   const i = G.archIdx, a = G.heroes[i];
   const answerer = G.players[i % G.players.length];
   $('scr-archsetup').innerHTML = `
+    ${casePhaseRail('profile', `Hero question ${ROMAN[i+1]} of VI`)}
     <p class="center muted sc" style="letter-spacing:.2em">PROFILING THE THREAT</p>
     ${progressDotsHTML(i, 6, `Question ${ROMAN[i+1]} of VI`)}
     <div class="ornament">❦</div>
@@ -95,7 +107,7 @@ export function saveArchSetup(){
   a.answeredBy = G.players[G.archIdx % G.players.length].name;
   G.threat.facts.push({role:a.role, who:a.name, q:a.setup[G.case.id], a:a.setupA});
   G.archIdx++;
-  if(G.archIdx<6){ renderArchSetup(); window.scrollTo(0,0); }
+  if(G.archIdx<6){ renderArchSetup(); saveGame('scr-archsetup'); window.scrollTo(0,0); }
   else renderVictim();
 }
 
@@ -103,6 +115,7 @@ export function saveArchSetup(){
 export function renderVictim(){
   const G = State.G;
   $('scr-victim').innerHTML = `
+    ${casePhaseRail('threat', 'Bring the six answers together and name what they point toward.')}
     <h2 class="center">The Threat</h2>
     <p class="center muted" style="max-width:640px;margin:6px auto">${G.case.threatLine}</p>
     <div class="ornament">❦</div>
@@ -130,4 +143,5 @@ export function finishVictim(){
   G.players.forEach(p=>{ p.secrets=[{...secrets.pop(), used:false}]; });
   if(G.players.length===1) G.players[0].secrets.push({...secrets.pop(), used:false});
   startAct(1);
+  saveGame('scr-hub');
 }

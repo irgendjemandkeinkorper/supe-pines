@@ -26,5 +26,33 @@ export const CASES = [
     epigraph:'The Anchor’s been neutral ground for thirty years. Nobody remembers agreeing to that. Somebody’s decided it’s over.',
     threatLine:'The Threat: a violent new player seizing control of the Anchor, the dive bar that’s secretly Millhaven’s underworld truce ground — and whatever deal keeps it neutral is about to break.',
     intro:'Everybody in Millhaven who matters, on either side of the law, has had a drink at the Anchor. Nobody throws a punch inside its doors — that’s just always been true, the way gravity is true, and nobody remembers who decided it.<br><br>Until this week. The bartender who’s run the place since before anyone can remember — the one who trades favors instead of currency, who somehow always knows exactly what you need to hear — has gone quiet behind the bar. Someone new is buying up the Anchor’s debts, one favor at a time, and the old rules are curdling fast. If the truce breaks here, it breaks everywhere.<br><br>Together you’ll find out who’s really taking the Anchor apart, what the bartender knew that they aren’t telling, and whether Millhaven’s underworld can be kept from spilling out onto streets that were never supposed to be a battlefield. The file stays open until somebody closes it.'
+  },
+  {
+    id:'afterhours',
+    title:'After Hours',
+    epigraph:'The night clinic keeps the lights on for whoever walks through the door. Someone has started deciding which doors stay open.',
+    threatLine:'The Threat: a private emergency contractor turning Millhaven’s care network into a toll road, using missing supplies and impossible response times to choose who gets saved.',
+    intro:'The Saint Agnes night clinic has never asked who you are before it treats you. That is why people keep coming after the ambulances stop.<br><br>For weeks, medicine has vanished from locked cabinets, dispatch calls have been rerouted, and patients who should have made it home have been left waiting under a dead fluorescent light. A private contractor has offered to “solve” the problem, if the clinic agrees to send every difficult case somewhere else.<br><br>Together you’ll find out who is selling the neighbourhood’s emergencies back to it, what the missing supplies are really being used for, and how much care a place can give when someone else owns the clock. The file stays open until somebody closes it.'
+  },
+  {
+    id:'deadair',
+    title:'Dead Air',
+    epigraph:'Millhaven’s community station broadcasts the truth in small doses. Tonight, the signal is carrying something that sounds like a confession.',
+    threatLine:'The Threat: a broker of rumours hijacking a community radio station to steer panic, reputations, and real-world violence from behind a harmless voice.',
+    intro:'WMLH has one studio, two working microphones, and a call-in line that everyone in Millhaven trusts more than City Hall.<br><br>Then a voice started appearing between songs. It names private debts, predicts small crimes before they happen, and leaves listeners arguing about what they heard. The station manager says the signal is clean. The engineer says someone is inside the building after midnight. The callers are beginning to act on the broadcasts.<br><br>Together you’ll find out who is using the airwaves to move the neighbourhood, whose voice is hiding inside the static, and what happens when a community’s shared story becomes a weapon. The file stays open until somebody closes it.'
+  },
+  {
+    id:'lastroute',
+    title:'The Last Route',
+    epigraph:'The 9B still runs after midnight, though nobody can explain why the driver keeps skipping the same three stops.',
+    threatLine:'The Threat: a transit fixer using a neglected night route to move people, packages, and evidence through Millhaven without ever appearing on the schedule.',
+    intro:'The last 9B leaves the depot at 12:14 every night. It is supposed to make eleven stops. Lately, it makes eight.<br><br>Passengers remember stepping off somewhere they do not recognise. Cameras lose the same ninety seconds. The driver insists the missing stops are a scheduling correction, while a handwritten map keeps appearing under the windshield wiper with one more address crossed out each morning.<br><br>Together you’ll find out who owns the missing part of the route, what has been carried through the dark between stops, and whether getting everyone home means admitting where the bus has really been going. The file stays open until somebody closes it.'
+  },
+  {
+    id:'openhouse',
+    title:'Open House',
+    epigraph:'The Franklin youth centre is hosting an open house. Someone has locked the doors from the inside and started collecting names.',
+    threatLine:'The Threat: a private security outfit turning a youth centre’s mutual-aid network into a recruitment list, making protection feel indistinguishable from surveillance.',
+    intro:'The Franklin centre gives teenagers a place to charge a phone, finish homework, and stay out of the rain. The city calls it an underused property.<br><br>After a donor offered to “secure” the building, staff began finding copied sign-in sheets, cameras pointed at the wrong hallways, and kids being asked which adults they trust. The open house is supposed to prove everything is fine. Instead, the doors lock at sunset and someone starts reading the names aloud.<br><br>Together you’ll find out who is turning care into a catalogue, why the centre’s old basement still has power, and what it means to keep a place open when the people funding it want it empty. The file stays open until somebody closes it.'
   }
 ];

@@ -1,9 +1,10 @@
-import { $, esc } from '../engine/utils.js';
+import { $, esc, casePhaseRail } from '../engine/utils.js';
 import { State } from '../engine/state.js';
 import { show } from './screens.js';
 import { heroCard, signalCard, sceneCardHTML, sceneAnatomyDiagramHTML, sceneTrackerHTML } from './cards.js';
 import { eligibleContributors, maxContrib } from '../engine/rules.js';
 import { hasSeenIntro, markIntroSeen } from '../engine/firstrun.js';
+import { saveGame } from '../engine/persistence.js';
 
 /* ---------------- scenes ---------------- */
 export function startSceneFor(pi){
@@ -22,6 +23,7 @@ export function renderScenePick(){
       <div class="btnrow"><button class="primary" onclick="dismissScenePrimer()">Got it — begin</button></div>
     </div>` : '';
   $('scr-scene').innerHTML = `
+    ${casePhaseRail('acts', 'Choose a Scene card, choose a lead Hero, then describe what the camera sees.')}
     ${primerHTML}
     <h2 class="center">${esc(p.name)} begins a scene</h2>
     <div class="ornament">❦</div>
@@ -40,18 +42,21 @@ export function renderScenePick(){
         <button class="ghost" onclick="renderHub();show('scr-hub')">Back to the Table</button>
       </div>
     </div>`;
+  saveGame('scr-scene');
 }
 export function dismissScenePrimer(){ markIntroSeen(); renderScenePick(); }
 export function pickSceneCard(i){
   State.G.current.cardIdx = i;
-  document.querySelectorAll('[id^="scene-pick-"]').forEach(el=>el.classList.remove('selected'));
+  document.querySelectorAll('[id^="scene-pick-"]').forEach(el=>{ el.classList.remove('selected'); el.setAttribute('aria-pressed','false'); });
   $('scene-pick-'+i).classList.add('selected');
+  $('scene-pick-'+i).setAttribute('aria-pressed','true');
   checkBegin();
 }
 export function pickArch(i){
   State.G.current.archIdx = i;
-  document.querySelectorAll('[id^="arch-pick-"]').forEach(el=>el.classList.remove('selected'));
+  document.querySelectorAll('[id^="arch-pick-"]').forEach(el=>{ el.classList.remove('selected'); el.setAttribute('aria-pressed','false'); });
   $('arch-pick-'+i).classList.add('selected');
+  $('arch-pick-'+i).setAttribute('aria-pressed','true');
   checkBegin();
 }
 export function checkBegin(){
@@ -64,6 +69,7 @@ export function beginScene(){
   c.opening = ($('scene-opening').value||'').trim();
   c.phase = 'play';
   renderScenePlay(0);
+  saveGame('scr-scene');
   window.scrollTo(0,0);
 }
 
@@ -100,6 +106,7 @@ export function renderScenePlay(animateSlot=null){
   }
 
   $('scr-scene').innerHTML = `
+    ${casePhaseRail('acts', 'Narrate together. The starter decides when the scene ends.')}
     ${sceneTrackerHTML(G,{animateSlot})}
 
     ${addingHTML?`<div class="panel scene-action-panel${c.adding?' spotlight':''}">
@@ -118,6 +125,7 @@ export function renderScenePlay(animateSlot=null){
         <button class="blood" onclick="endScene()">The scene ends — ${esc(p.name)} says so</button>
       </div>
     </div>`;
+  saveGame('scr-scene');
 }
 export function pickContrib(pi){ State.G.current.adding = {pi, pick:null, how:''}; renderScenePlay(); }
 export function pickContribScene(i){ State.G.current.adding.pick={kind:'scene', idx:i}; renderScenePlay(); }
@@ -134,6 +142,7 @@ export function confirmContrib(){
   c.contributions.push({pi:ad.pi, kind:ad.pick.kind, card, how:(ad.how||'').trim()});
   c.adding = null;
   renderScenePlay(c.contributions.length);
+  saveGame('scr-scene');
 }
 
 /* small helpers used directly by inline handlers so no globals leak into onclick strings */

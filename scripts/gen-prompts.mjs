@@ -70,14 +70,22 @@ export const caseArt = {
   toll:'Ferrous Avenue at night beneath an El overpass, small storefronts shuttered one by one while three battered amusement-pier mascot figures — fox, rabbit, and one-eyed bear — collect envelopes under a flickering bakery sign with no readable lettering.',
   casting:'A spectacular new masked vigilante posing atop a wrecked car for phone cameras and television lights, adoring onlookers below while an injured petty criminal lies unnoticed at the edge of the frame.',
   renovation:'A lived-in brick block cut sharply in half by spotless luxury construction completed overnight, family belongings abandoned at the seam, a smiling councilwoman’s billboard present only as a faceless graphic with no readable text.',
-  lastcall:'The interior of a worn neighborhood dive bar at last call, stools and old photographs untouched while the first punch in thirty years hangs suspended above the counter and the silent bartender watches.'
+  lastcall:'The interior of a worn neighborhood dive bar at last call, stools and old photographs untouched while the first punch in thirty years hangs suspended above the counter and the silent bartender watches.',
+  afterhours:'A cramped night clinic under a failing fluorescent sign, nurses moving between tired patients while one locked medicine cabinet stands open and a private security car waits outside.',
+  deadair:'A small community radio studio after midnight, one microphone lit and the other dark while a rain-streaked window reflects an unseen listener in the street.',
+  lastroute:'A battered city bus stopped beneath an elevated track at 12:14 a.m., three empty seats lit inside while the route sign is deliberately unreadable and rain blurs the depot beyond.',
+  openhouse:'A neighbourhood youth centre gym prepared for an open house, folding chairs and donated boxes under harsh lights while a security camera points at the locked exit.'
 };
 
 export const threatArt = {
   toll:'An unidentified racketeer seen only as a long shadow behind hanging fox, rabbit, and bear mascot heads in the dark maintenance tunnel of a shuttered amusement pier, payment envelopes stacked like trophies.',
   casting:'An unknown copycat vigilante with a too-perfect costume standing before a wall of camera flashes, face erased by white light while damaged homemade versions of local Heroes’ gear hang behind them.',
   renovation:'A composed female developer-councilwoman seen through layered blueprints and demolition dust, her face partly obscured by a pristine hardhat visor as occupied buildings disappear into blank paper behind her.',
-  lastcall:'An unseen new owner seated in the Anchor’s darkest booth, only gloved hands and a ledger of crossed-out favors visible, while the bartender’s silhouette is reflected captive in a cracked mirror.'
+  lastcall:'An unseen new owner seated in the Anchor’s darkest booth, only gloved hands and a ledger of crossed-out favors visible, while the bartender’s silhouette is reflected captive in a cracked mirror.',
+  afterhours:'An unidentified contractor in a clean coat standing beyond a clinic’s locked triage doors, face hidden behind reflected ambulance lights while medicine crates and patient charts form a careful barrier.',
+  deadair:'A faceless broadcaster seated behind a community radio microphone, one hand on a mixing board and the other holding a cassette marked only by a blank label, city lights distorted in the studio glass.',
+  lastroute:'A shadowed transit fixer at the rear of an empty night bus, gloved hand holding a ring of route keys while the windows reflect stations that do not exist.',
+  openhouse:'An obscured security supervisor in a youth-centre hallway, clipboard and copied sign-in sheets in hand while a row of cameras watches an empty gym.'
 };
 
 export const signalArt = {

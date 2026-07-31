@@ -40,20 +40,27 @@ function currentMilestoneText(count){
 export function showIdleClicker(){
   renderIdlePanel();
   openOverlay();
+  const firstButton = document.querySelector('#overlay-content .idle-obj') || document.querySelector('#overlay-content .primary');
+  firstButton?.focus();
 }
 
 function renderIdlePanel(){
   const count = getCount();
   const unlocked = UNLOCKS.filter(u=>count>=u.at);
+  const active = document.activeElement;
+  const activeId = active?.className?.split(' ').find(name=>name.startsWith('idle-')) || null;
+  const returning = active?.classList.contains('primary');
   $('overlay-content').innerHTML = `
     <h2 style="color:var(--gold)">Stakeout</h2>
     <p class="small muted">Something to do with your hands while the others work the case.</p>
     <div class="idle-scene" id="idle-scene">
       ${unlocked.map(u=>`<button class="idle-obj idle-${u.id}" onclick="idleClick('${u.id}')" aria-label="${u.label}" title="${u.label}">${u.glyph}</button>`).join('')}
     </div>
-    <p class="center" style="margin-top:10px"><span class="idle-count" id="idle-count">${count}</span> <span class="small muted">counted</span></p>
-    <p class="small" id="idle-milestone" style="min-height:1.4em;color:#cfc2a2;text-align:center">${currentMilestoneText(count)}</p>
+    <p class="center" style="margin-top:10px" role="status" aria-live="polite" aria-atomic="true"><span class="idle-count" id="idle-count">${count}</span> <span class="small muted">counted</span></p>
+    <p class="small" id="idle-milestone" role="status" aria-live="polite" aria-atomic="true" style="min-height:1.4em;color:#cfc2a2;text-align:center">${currentMilestoneText(count)}</p>
     <div class="btnrow" style="justify-content:center"><button class="primary" onclick="closeOverlay()">Back to Millhaven</button></div>`;
+  if(returning) $('overlay-content').querySelector('.primary')?.focus();
+  else if(activeId) $('overlay-content').querySelector(`.${activeId}`)?.focus();
 }
 
 export function idleClick(id){
@@ -62,7 +69,8 @@ export function idleClick(id){
   setCount(after);
 
   const btn = document.querySelector(`.idle-${id}`);
-  if(btn && btn.animate){
+  const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+  if(!reduced && btn && btn.animate){
     btn.animate([
       {transform:'scale(1) rotate(0deg)'},
       {transform:'scale(1.18) rotate(-5deg)'},
@@ -76,7 +84,8 @@ export function idleClick(id){
     // Let the click's own reaction animation finish before the panel
     // re-renders to reveal the newly unlocked object — re-rendering
     // immediately would cancel the in-flight animation on `btn`.
-    setTimeout(renderIdlePanel, 380);
+    if(reduced) renderIdlePanel();
+    else setTimeout(renderIdlePanel, 380);
   } else {
     const countEl = $('idle-count'); if(countEl) countEl.textContent = after;
     const msgEl = $('idle-milestone'); if(msgEl) msgEl.textContent = currentMilestoneText(after);

@@ -4,6 +4,7 @@ import { show } from './screens.js';
 import { faceUp, matchSecret } from '../engine/rules.js';
 import { signalCard, sceneTrackerHTML } from './cards.js';
 import { afterSceneFlow } from './hub.js';
+import { saveGame } from '../engine/persistence.js';
 
 /* ---------------- resolution ---------------- */
 export function endScene(){
@@ -69,8 +70,9 @@ export function applyResolve(){
   if(c.type==='close') G.closeDone = true;
 
   const unlock = matchSecret(tones, c.starter);
-  if(unlock){ renderSecretUnlock(unlock, tones); show('scr-secret'); }
+  if(unlock){ unlock.tones = tones.slice(); renderSecretUnlock(unlock, tones); show('scr-secret'); }
   else afterSceneFlow();
+  saveGame(unlock ? 'scr-secret' : 'scr-hub');
 }
 
 /* ---------------- secret scenes ---------------- */
@@ -109,7 +111,11 @@ export function toggleSecretOmen(i){
   const at = State.secretSel.indexOf(i);
   if(at>=0) State.secretSel.splice(at,1);
   else if(State.secretSel.length<need) State.secretSel.push(i);
-  document.querySelectorAll('[id^="omen-pick-"]').forEach((el,idx)=>el.classList.toggle('selected', State.secretSel.includes(idx)));
+  document.querySelectorAll('[id^="omen-pick-"]').forEach((el,idx)=>{
+    const selected = State.secretSel.includes(idx);
+    el.classList.toggle('selected', selected);
+    el.setAttribute('aria-pressed', String(selected));
+  });
   $('secret-count').textContent = `(${State.secretSel.length} of ${need})`;
   $('btn-secret').disabled = State.secretSel.length!==need;
 }
@@ -125,4 +131,5 @@ export function confirmSecret(){
   });
   G.pendingSecret = null;
   afterSceneFlow();
+  saveGame('scr-hub');
 }

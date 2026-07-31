@@ -1,7 +1,8 @@
-import { $, ACT_NAMES } from '../engine/utils.js';
+import { $, ACT_NAMES, CASE_PHASES } from '../engine/utils.js';
 import { TONES } from '../data/index.js';
 import { actToneCounts } from '../engine/rules.js';
 import { State } from '../engine/state.js';
+import { saveGame } from '../engine/persistence.js';
 import { hasSeenIntro, markIntroSeen } from '../engine/firstrun.js';
 
 /* ---------------- browser history (Back button) ----------------
@@ -27,6 +28,7 @@ export function show(id){
   $(id).classList.add('active');
   window.scrollTo({top:0,behavior:'auto'});
   renderTopbar();
+  saveGame(id);
   pushHistory({screen:id, overlay:false});
 }
 
@@ -94,6 +96,17 @@ export function renderTopbar(){
   if(!G){ tb.style.display='none'; return; }
   tb.style.display='flex';
   $('tb-act').textContent = G.act<=3 ? `${ACT_NAMES[G.act]} — ${G.case.title}` : 'The Dossier';
+  const phase = $('tb-phase');
+  if(phase){
+    const screen = document.querySelector('.screen.active')?.id;
+    const phaseId = G.act>3 ? 'dossier'
+      : screen==='scr-intro' ? 'gather'
+      : screen==='scr-archsetup' ? 'profile'
+      : screen==='scr-victim' ? 'threat'
+      : 'acts';
+    const active = CASE_PHASES.find(item => item.id===phaseId);
+    phase.textContent = active ? active.label : '';
+  }
   const counts = actToneCounts();
   $('tb-tones').innerHTML = TONES.map(t=>`<span class="tone count ${t}" title="${t} this act">${counts[t]}</span>`).join('');
 }
