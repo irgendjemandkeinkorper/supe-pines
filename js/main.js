@@ -99,7 +99,7 @@ export function startNewCase(){
   show('scr-hook');
 }
 
-Object.assign(window, { resumeLocalGame, refreshResumeControl, startNewCase });
+Object.assign(window, { State, resumeLocalGame, refreshResumeControl, startNewCase });
 
 /* ---------------- init ---------------- */
 renderHooks();
