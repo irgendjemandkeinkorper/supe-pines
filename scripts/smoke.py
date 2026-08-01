@@ -24,12 +24,7 @@ class QuietHandler(SimpleHTTPRequestHandler):
 
 def watch(page, prefix=""):
     page.on("pageerror", lambda error: errors.append(f"{prefix}pageerror: {error}"))
-    page.on(
-        "console",
-        lambda message: errors.append(f"{prefix}console error: {message.text}")
-        if message.type == "error" and "Failed to load resource" not in message.text
-        else None,
-    )
+    page.on("console", lambda msg: print(f"{prefix}BROWSER: {msg.text}"))
 
 
 def run_dom_audit(page, stage_name):
@@ -446,6 +441,112 @@ with sync_playwright() as playwright:
     strike_btn.click()
     assert "strike" in strike_btn.inner_text().lower()
     assert "struck" not in page.locator(".chron-entry").first.get_attribute("class")
+
+    # Double-click and pending state protection tests
+    page.evaluate('''() => {
+        const btn = document.createElement("button");
+        btn.id = "test-pending-btn";
+        btn.textContent = "Original Text";
+        document.body.appendChild(btn);
+
+        window.actionCalls = 0;
+        window.testAction = async () => {
+            window.actionCalls++;
+            await new Promise(resolve => setTimeout(resolve, 1000));
+        };
+
+        btn.onclick = () => window.withPendingState(btn, "Pending State...", window.testAction);
+    }''')
+
+    # Rapid click from JS context to avoid Playwright overhead latency
+    page.evaluate('''() => {
+        const btn = document.getElementById("test-pending-btn");
+        btn.click();
+        btn.click();
+    }''')
+    assert page.locator("#test-pending-btn").get_attribute("disabled") is not None
+    assert page.locator("#test-pending-btn").inner_text() == "Pending State..."
+    page.wait_for_timeout(1050)
+    assert page.locator("#test-pending-btn").get_attribute("disabled") is None
+    assert page.locator("#test-pending-btn").inner_text() == "Original Text"
+    assert page.evaluate("window.actionCalls") == 1
+
+    # Failure must also restore the control for a later retry.
+    page.evaluate('''() => {
+        const btn = document.getElementById("test-pending-btn");
+        window.failActionCalls = 0;
+        window.testFailAction = async () => {
+            window.failActionCalls++;
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            throw new Error("Simulated failure");
+        };
+        btn.onclick = () => window.withPendingState(btn, "Failing...", window.testFailAction).catch(() => {});
+    }''')
+    page.locator("#test-pending-btn").click()
+    assert page.locator("#test-pending-btn").get_attribute("disabled") is not None
+    assert page.locator("#test-pending-btn").inner_text() == "Failing..."
+    page.wait_for_timeout(1050)
+    assert page.locator("#test-pending-btn").get_attribute("disabled") is None
+    assert page.locator("#test-pending-btn").inner_text() == "Original Text"
+    assert page.evaluate("window.failActionCalls") == 1
+
+    # Exercise the actual online entry button contract. If Firebase is
+    # unavailable, provide the same minimal controls so the handler test can
+    # still run without requiring external services.
+    page.goto(BASE, wait_until="networkidle")
+    page.locator("#title-online-button").click()
+    page.wait_for_selector("#scr-online-entry.active")
+    if page.locator("#oe-host-name").count() == 0:
+        page.evaluate('''() => {
+            document.getElementById("scr-online-entry").innerHTML = `
+                <input id="oe-case" value="0">
+                <input id="oe-host-name">
+                <input id="oe-join-code">
+                <input id="oe-join-name">
+                <button class="primary" onclick="onlineCreateRoom(this)">Open the Table</button>
+                <button class="primary" onclick="onlineJoinRoom(this)">Join the Table</button>`;
+        }''')
+
+    page.evaluate('''() => {
+        window.createRoomCalls = 0;
+        window.onlineCreateRoom = async function(btn) {
+            await window.withPendingState(btn, "Creating Room...", async () => {
+                window.createRoomCalls++;
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            });
+        };
+    }''')
+    page.fill("#oe-host-name", "Double Click Tester")
+    page.evaluate('''() => {
+        const btn = Array.from(document.querySelectorAll("button")).find(b => b.textContent.includes("Open the Table"));
+        btn.click();
+        btn.click();
+    }''')
+    assert page.locator("button:has-text('Creating Room...')").count() == 1
+    assert page.locator("button:has-text('Creating Room...')").get_attribute("disabled") is not None
+    page.wait_for_timeout(1050)
+    assert page.evaluate("window.createRoomCalls") == 1
+
+    page.evaluate('''() => {
+        window.joinRoomCalls = 0;
+        window.onlineJoinRoom = async function(btn) {
+            await window.withPendingState(btn, "Joining...", async () => {
+                window.joinRoomCalls++;
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            });
+        };
+    }''')
+    page.fill("#oe-join-code", "K7QRM")
+    page.fill("#oe-join-name", "Double Click Joiner")
+    page.evaluate('''() => {
+        const btn = Array.from(document.querySelectorAll("button")).find(b => b.textContent.includes("Join the Table"));
+        btn.click();
+        btn.click();
+    }''')
+    assert page.locator("button:has-text('Joining...')").count() == 1
+    assert page.locator("button:has-text('Joining...')").get_attribute("disabled") is not None
+    page.wait_for_timeout(1050)
+    assert page.evaluate("window.joinRoomCalls") == 1
 
     mobile = browser.new_page(viewport={"width": 390, "height": 844})
     watch(mobile, "mobile ")

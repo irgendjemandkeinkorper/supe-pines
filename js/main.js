@@ -34,7 +34,7 @@ import {
   onlineToggleSecretOmen, onlineConfirmSecret,
   onlineAnswerForAbsent, onlineCopyRoomLink, onlineDismissScenePrimer, openOnlineHand,
   showOnlineError, hideOnlineError, onlineRetryConnection, onlineFallbackToHotseat,
-  initFirebaseConnection, onlineVerifyAndProceed
+  initFirebaseConnection, onlineVerifyAndProceed, withPendingState
 } from './ui/online.js';
 
 Object.assign(window, {
@@ -58,7 +58,7 @@ Object.assign(window, {
   onlineToggleSecretOmen, onlineConfirmSecret,
   onlineAnswerForAbsent, onlineCopyRoomLink, onlineDismissScenePrimer, openOnlineHand,
   showOnlineError, hideOnlineError, onlineRetryConnection, onlineFallbackToHotseat,
-  onlineVerifyAndProceed
+  onlineVerifyAndProceed, withPendingState
 });
 
 export function refreshResumeControl(){

@@ -448,6 +448,23 @@ export function fail(err, forcedType) {
   }
 }
 
+export async function withPendingState(btn, pendingText, actionFn) {
+  if (!btn) {
+    await actionFn();
+    return;
+  }
+  if (btn.disabled) return;
+  const originalText = btn.textContent || btn.value;
+  btn.disabled = true;
+  btn.textContent = pendingText;
+  try {
+    await actionFn();
+  } finally {
+    btn.disabled = false;
+    btn.textContent = originalText;
+  }
+}
+
 /* ---------------- entry: create or join ---------------- */
 export function showOnlineEntry(){
   unsubscribeRoom();
@@ -481,21 +498,25 @@ export function onlineRefreshArtPicker(){
   const item = CASES[+$('oe-case').value] || CASES[0];
   if(picker) picker.innerHTML = artStylePickerHTML('oe-art-style', document.querySelector('input[name="oe-art-style"]:checked')?.value || null, item.id);
 }
-export async function onlineCreateRoom(){
+export async function onlineCreateRoom(btn){
   try{
     const chosenCase = CASES[+$('oe-case').value];
     const name = ($('oe-host-name').value||'').trim();
     const artStyle = document.querySelector('input[name="oe-art-style"]:checked')?.value;
-    const code = await createRoom(chosenCase, name, normalizeArtStyle(artStyle));
-    enterRoom(code);
+    await withPendingState(btn, "Creating Room...", async () => {
+      const code = await createRoom(chosenCase, name, normalizeArtStyle(artStyle));
+      enterRoom(code);
+    });
   } catch(err){ fail(err, 'create'); }
 }
-export async function onlineJoinRoom(){
+export async function onlineJoinRoom(btn){
   try{
     const code = ($('oe-join-code').value||'').trim().toUpperCase();
     const name = ($('oe-join-name').value||'').trim();
-    await joinRoom(code, name);
-    enterRoom(code);
+    await withPendingState(btn, "Joining...", async () => {
+      await joinRoom(code, name);
+      enterRoom(code);
+    });
   } catch(err){ fail(err, 'join'); }
 }
 function enterRoom(code){
@@ -511,15 +532,19 @@ function enterRoom(code){
   });
 }
 
-export function leaveOnlineRoom(){
-  unsubscribeRoom();
-  unsubscribeMyPrivate();
-  clearAdvanceTimer();
-  resetDraft();
-  State.onlineRoomCode = null;
-  State.G = null;
-  try { history.replaceState(null, '', location.pathname); } catch(e){}
-  show('scr-title');
+export async function leaveOnlineRoom(btn){
+  try {
+    await withPendingState(btn, "Leaving...", async () => {
+      unsubscribeRoom();
+      unsubscribeMyPrivate();
+      clearAdvanceTimer();
+      resetDraft();
+      State.onlineRoomCode = null;
+      State.G = null;
+      try { history.replaceState(null, '', location.pathname); } catch(e){}
+      show('scr-title');
+    });
+  } catch(err){ fail(err); }
 }
 
 /* Auto-rejoin if the URL already carries ?room=CODE (e.g. a reopened tab). */
@@ -587,9 +612,9 @@ function renderOnlineLobby(room){
       </div>
       <div class="btnrow" style="margin-top:18px;justify-content:center">
         ${isHost
-          ? `<button class="primary" onclick="onlineBeginTale()">Open the Case</button>`
+          ? `<button class="primary" onclick="onlineBeginTale(this)">Open the Case</button>`
           : `<span class="pill">Waiting for the host to begin…</span>`}
-        <button class="ghost" onclick="leaveOnlineRoom()">Leave</button>
+        <button class="ghost" onclick="leaveOnlineRoom(this)">Leave</button>
       </div>
     </div>`;
 }
@@ -603,8 +628,8 @@ export async function onlineCopyRoomLink(){
     fail(new Error('Could not copy automatically — the link is: ' + url));
   }
 }
-export async function onlineBeginTale(){
-  try{ await liveBeginTale(State.onlineRoomCode); } catch(err){ fail(err); }
+export async function onlineBeginTale(btn){
+  try{ await withPendingState(btn, "Opening Case...", () => liveBeginTale(State.onlineRoomCode)); } catch(err){ fail(err); }
 }
 
 /* ---------------- hero setup ---------------- */
@@ -633,7 +658,7 @@ function renderOnlineArchSetup(room){
           <input type="text" id="arch-name" placeholder="e.g. The Nightwatch">
           <label class="fld" for="arch-answer">The answer</label>
           <textarea id="arch-answer" placeholder="What is established…"></textarea>
-          <div class="btnrow"><button class="primary" onclick="onlineSaveArchSetup()">${i<5?'Next Question':'To the Threat'}</button></div>
+          <div class="btnrow"><button class="primary" onclick="onlineSaveArchSetup(this)">${i<5?'Next Question':'To the Threat'}</button></div>
         ` : `
           <p class="small muted center">Waiting on ${esc(answerer.name)} to answer…</p>
           <p class="center"><button class="ghost" onclick="onlineAnswerForAbsent()">Answer for them, if they’re away</button></p>
@@ -642,10 +667,10 @@ function renderOnlineArchSetup(room){
     </div>`;
 }
 export function onlineAnswerForAbsent(){ draft.answeringForAbsent = true; renderOnlineArchSetup(State.G); }
-export async function onlineSaveArchSetup(){
+export async function onlineSaveArchSetup(btn){
   try{
     const name = $('arch-name').value, answer = $('arch-answer').value;
-    await liveSaveHeroSetup(State.onlineRoomCode, name, answer);
+    await withPendingState(btn, "Saving...", () => liveSaveHeroSetup(State.onlineRoomCode, name, answer));
   } catch(err){ fail(err); }
 }
 
@@ -662,12 +687,12 @@ function renderOnlineVictim(room){
       <div class="panel">
         <label class="fld" for="victim-name">Together, name the Threat</label>
         <input type="text" id="victim-name" placeholder="This is usually the hardest part.">
-        <div class="btnrow"><button class="primary" onclick="onlineFinishVictim()">Deal the Cards</button></div>
+        <div class="btnrow"><button class="primary" onclick="onlineFinishVictim(this)">Deal the Cards</button></div>
       </div>
     </div>`;
 }
-export async function onlineFinishVictim(){
-  try{ await liveFinishThreat(State.onlineRoomCode, $('victim-name').value); } catch(err){ fail(err); }
+export async function onlineFinishVictim(btn){
+  try{ await withPendingState(btn, "Dealing Cards...", () => liveFinishThreat(State.onlineRoomCode, $('victim-name').value)); } catch(err){ fail(err); }
 }
 
 /* ---------------- hub ---------------- */
@@ -682,7 +707,7 @@ function onlineTurnSeatHTML(room,p,i,mySeat){
     <p>${p.scenesLeft} scene${p.scenesLeft===1?'':'s'} left to lead · ${p.handCount} scene card${p.handCount===1?'':'s'} · ${p.signals.length} held Signal${p.signals.length===1?'':'s'}</p>
     <div class="turn-seat-actions">
       ${state==='ready' && isMe?'<button class="primary" onclick="onlineStartScene()">Begin a scene</button>':''}
-      ${state==='blocked' && p.scenesLeft>0?`<button class="blood" onclick="onlineForfeitScene(${i})">${isMe?'Forfeit my scene':`Forfeit for ${esc(p.name)}`}</button>`:''}
+      ${state==='blocked' && p.scenesLeft>0?`<button class="blood" onclick="onlineForfeitScene(${i}, this)">${isMe?'Forfeit my scene':`Forfeit for ${esc(p.name)}`}</button>`:''}
       ${isMe?`<button class="ghost" onclick="openOnlineHand()">View my cards (${myPrivate.hand.length+p.signals.length})</button>`:''}
     </div>
   </div>`;
@@ -697,7 +722,7 @@ function onlineMyHandHTML(room,mySeat){
       <p class="hand-section-label">Scene cards · ${myPrivate.hand.length}</p>
       <div class="cardgrid hand-cardgrid">${myPrivate.hand.map(c=>sceneCardHTML(c)).join('') || '<span class="small muted">No scene cards in hand.</span>'}</div>
       ${me.signals.length?`<p class="hand-section-label">Held Signals · ${me.signals.length}</p><div class="cardgrid hand-cardgrid">${me.signals.map((o,oi)=>`
-        <div class="held-card">${signalCard(o)}${room.sceneDeck.length?`<button class="ghost" onclick="onlineTradeOmen(${oi})">Trade for a scene card</button>`:''}</div>`).join('')}</div>`:''}
+        <div class="held-card">${signalCard(o)}${room.sceneDeck.length?`<button class="ghost" onclick="onlineTradeOmen(${oi}, this)">Trade for a scene card</button>`:''}</div>`).join('')}</div>`:''}
       ${myPrivate.secrets.map(s=>`<details class="secretbox"><summary>Buried Secret ${s.used?'— revealed':'(yours alone to read)'}</summary>
         <div class="small" style="margin-top:6px">${s.combo.map(toneBadge).join(' ')}<br><span style="color:#c9b3de">${esc(s.q)}</span>
         ${s.used?'':'<br><span class="muted">Unlocks when a scene’s tones contain this combination.</span>'}</div></details>`).join('')}
@@ -786,11 +811,11 @@ export function onlineStartScene(){
   renderOnlineScenePick();
   show('scr-scene');
 }
-export async function onlineTradeOmen(signalIdx){
-  try{ await liveTradeSignal(State.onlineRoomCode, signalIdx); } catch(err){ fail(err); }
+export async function onlineTradeOmen(signalIdx, btn){
+  try{ await withPendingState(btn, "Trading...", () => liveTradeSignal(State.onlineRoomCode, signalIdx)); } catch(err){ fail(err); }
 }
-export async function onlineForfeitScene(seat){
-  try{ await liveForfeitScene(State.onlineRoomCode, seat); } catch(err){ fail(err); }
+export async function onlineForfeitScene(seat, btn){
+  try{ await withPendingState(btn, "Forfeiting...", () => liveForfeitScene(State.onlineRoomCode, seat)); } catch(err){ fail(err); }
 }
 
 /* ---------------- act close intro ---------------- */
@@ -823,19 +848,19 @@ function renderOnlineCloseIntro(room){
         <select id="close-arch">${room.heroes.map((a,i)=>`<option value="${i}">${esc(a.name||a.role)} — ${esc(a.role)}</option>`).join('')}</select>
         <label class="fld" for="close-opening">What the camera sees as the close opens</label>
         <textarea id="close-opening" placeholder="The camera rises above Millhaven…"></textarea>
-        <div class="btnrow"><button class="primary" onclick="onlineBeginClose()">Play the Act Close</button></div>
+        <div class="btnrow"><button class="primary" onclick="onlineBeginClose(this)">Play the Act Close</button></div>
       </div>
     </div>`;
   draft.closeTone = chosenTone;
 }
-export async function onlineBeginClose(){
+export async function onlineBeginClose(btn){
   try{
     const room = State.G;
     const close = room.actClose[room.act];
     const elHidden = $('close-el');
     const tone = elHidden ? elHidden.value : draft.closeTone;
-    await liveBeginClose(State.onlineRoomCode, +$('close-arch').value, +$('close-starter').value,
-      close.elements[tone], $('close-opening').value, close.title, close.prompt);
+    await withPendingState(btn, "Starting Act Close...", () => liveBeginClose(State.onlineRoomCode, +$('close-arch').value, +$('close-starter').value,
+      close.elements[tone], $('close-opening').value, close.title, close.prompt));
   } catch(err){ fail(err); }
 }
 
@@ -862,7 +887,7 @@ function renderOnlineScenePick(){
       <label class="fld" for="scene-opening">What the camera sees as the scene opens</label>
       <textarea id="scene-opening" placeholder="The camera drifts through…"></textarea>
       <div class="btnrow">
-        <button class="primary" id="btn-begin" disabled onclick="onlineBeginScene()">Begin the Scene</button>
+        <button class="primary" id="btn-begin" disabled onclick="onlineBeginScene(this)">Begin the Scene</button>
         <button class="ghost" onclick="routeAndRenderCurrent()">Back to the Table</button>
       </div>
     </div>`;
@@ -883,8 +908,8 @@ export function onlinePickArch(i){
 function onlineCheckBegin(){
   $('btn-begin').disabled = !(draft.cardIdx!=null && draft.archIdx!=null);
 }
-export async function onlineBeginScene(){
-  try{ await liveBeginScene(State.onlineRoomCode, draft.cardIdx, draft.archIdx, $('scene-opening').value); }
+export async function onlineBeginScene(btn){
+  try{ await withPendingState(btn, "Beginning Scene...", () => liveBeginScene(State.onlineRoomCode, draft.cardIdx, draft.archIdx, $('scene-opening').value)); }
   catch(err){ fail(err); }
 }
 export function routeAndRenderCurrent(){
@@ -920,7 +945,7 @@ function renderOnlineScene(room){
         <label class="fld" for="contrib-how">How does it manifest in the scene?</label>
         <textarea id="contrib-how" oninput="onlineSetContribHow(this.value)">${esc(draft.adding.how||'')}</textarea>
         <div class="btnrow">
-          <button class="primary" onclick="onlineConfirmContrib()">Play It</button>
+          <button class="primary" onclick="onlineConfirmContrib(this)">Play It</button>
           <button class="ghost" onclick="onlineCancelContrib()">Never mind</button>
         </div>`;
     }
@@ -953,13 +978,15 @@ export function onlineCancelContrib(){ draft.adding = null; renderOnlineSceneRef
 export function onlineSetContribHow(v){ if(draft.adding) draft.adding.how = v; }
 export function onlineSetSceneHappened(v){ draft.happened = v; }
 export function onlineSetSecretAnswer(v){ draft.secretAnswer = v; }
-export async function onlineConfirmContrib(){
+export async function onlineConfirmContrib(btn){
   try{
     const {kind, idx, how} = draft.adding.pick.kind==='scene'
       ? {kind:'scene', idx:draft.adding.pick.idx, how:draft.adding.how}
       : {kind:'omen', idx:draft.adding.pick.idx, how:draft.adding.how};
-    await liveContribute(State.onlineRoomCode, kind, idx, how);
-    draft.adding = null;
+    await withPendingState(btn, "Playing...", async () => {
+      await liveContribute(State.onlineRoomCode, kind, idx, how);
+      draft.adding = null;
+    });
   } catch(err){ fail(err); }
 }
 export function onlineEndScene(){
@@ -983,16 +1010,18 @@ function renderOnlineResolveInline(room){
           </label>
         </div>`;
       }).join('')}
-      <div class="btnrow"><button class="primary" onclick="onlineApplyResolve()">Count the Tones</button></div>
+      <div class="btnrow"><button class="primary" onclick="onlineApplyResolve(this)">Count the Tones</button></div>
     </div>`;
 }
-export async function onlineApplyResolve(){
+export async function onlineApplyResolve(btn){
   try{
     const room = State.G;
     const flips = [];
     room.heroes.forEach((a,i)=>{ if($('online-flip-'+i).checked) flips.push(i); });
-    await liveEndSceneAndResolve(State.onlineRoomCode, draft.happened, flips);
-    draft.resolving = false; draft.happened = '';
+    await withPendingState(btn, "Counting Tones...", async () => {
+      await liveEndSceneAndResolve(State.onlineRoomCode, draft.happened, flips);
+      draft.resolving = false; draft.happened = '';
+    });
   } catch(err){ fail(err); }
 }
 
@@ -1018,7 +1047,7 @@ function renderOnlineSecret(room){
       <div class="panel spotlight">
         <label class="fld" style="color:#c9b3de" for="secret-answer">The vignette</label>
         <textarea id="secret-answer" style="min-height:120px" oninput="onlineSetSecretAnswer(this.value)">${esc(draft.secretAnswer||'')}</textarea>
-        <div class="btnrow"><button class="primary" ${sel.length!==Math.min(3,room.signalRow.length)?'disabled':''} onclick="onlineConfirmSecret()">So It Is Revealed</button></div>
+        <div class="btnrow"><button class="primary" ${sel.length!==Math.min(3,room.signalRow.length)?'disabled':''} onclick="onlineConfirmSecret(this)">So It Is Revealed</button></div>
       </div>
     </div>`;
   document.querySelectorAll('[id^="omen-pick-"]').forEach((el,idx)=>el.classList.toggle('selected', sel.includes(idx)));
@@ -1030,7 +1059,7 @@ export function onlineToggleSecretOmen(i){
   if(at>=0) sel.splice(at,1); else if(sel.length<need) sel.push(i);
   renderOnlineSecret(room);
 }
-export async function onlineConfirmSecret(){
-  try{ await liveConfirmSecret(State.onlineRoomCode, draft.secretSel||[], draft.secretAnswer||''); draft={}; }
+export async function onlineConfirmSecret(btn){
+  try{ await withPendingState(btn, "Revealing...", () => liveConfirmSecret(State.onlineRoomCode, draft.secretSel||[], draft.secretAnswer||'')); draft={}; }
   catch(err){ fail(err); }
 }
