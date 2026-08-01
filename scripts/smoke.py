@@ -121,8 +121,8 @@ with sync_playwright() as playwright:
     assert page.title() == "Supe Pines — A Street-Level Case File"
     assert page.locator(".screen.active").get_attribute("id") == "scr-title"
     run_dom_audit(page, "title screen")
-    assert page.get_by_role("button", name="Play Online").count() == 1
     assert page.locator("#title-online-button").count() == 1
+    assert page.locator("#title-online-button").inner_text().startswith("Online")
     assert page.locator("#resume-local-button").is_hidden()
 
     # Wait for the background Firebase readiness check to complete (and fail/degrade)
