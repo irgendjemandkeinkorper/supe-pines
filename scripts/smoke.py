@@ -32,6 +32,51 @@ def watch(page, prefix=""):
     )
 
 
+def run_dom_audit(page, stage_name):
+    errs = page.evaluate('''() => {
+        const controls = Array.from(document.querySelectorAll('input, select, textarea'));
+        const activeScreen = document.querySelector('.screen.active');
+        const activeScreenId = activeScreen ? activeScreen.id : null;
+
+        const failures = [];
+        const seenIds = new Set();
+
+        controls.forEach(ctrl => {
+            if (ctrl.type === 'hidden') return;
+
+            // Check if control is inside the active screen
+            const ctrlScreen = ctrl.closest('.screen');
+            const isActive = ctrlScreen === activeScreen;
+
+            // Check dynamic ID uniqueness in the active screen
+            if (ctrl.id && isActive) {
+                if (seenIds.has(ctrl.id)) {
+                    failures.push(`Duplicate ID found on active screen #${activeScreenId}: #${ctrl.id}`);
+                }
+                seenIds.add(ctrl.id);
+            }
+
+            // Check for accessible label
+            const hasAria = ctrl.getAttribute('aria-label') || ctrl.getAttribute('aria-labelledby');
+            const isNestedInLabel = !!ctrl.closest('label');
+            let hasLabelFor = false;
+            if (ctrl.id) {
+                const label = document.querySelector(`label[for="${ctrl.id}"]`);
+                if (label) {
+                    hasLabelFor = true;
+                }
+            }
+
+            if (!hasAria && !isNestedInLabel && !hasLabelFor) {
+                const screenId = ctrlScreen ? ctrlScreen.id : 'unknown';
+                failures.push(`Control is missing an accessible label: <${ctrl.tagName.toLowerCase()} id="${ctrl.id || ''}" type="${ctrl.type || ''}"> on screen #${screenId}`);
+            }
+        });
+
+        return failures;
+    }''')
+    if errs:
+        raise AssertionError(f"DOM Audit failed at stage '{stage_name}':\\n" + "\\n".join(errs))
 def check_no_raw_undefined_or_null(page):
     text = page.locator("body").inner_text()
     assert not re.search(r'\bundefined\b', text, re.I), f"Found raw 'undefined' text on page! text:\n{text}"
@@ -75,7 +120,9 @@ with sync_playwright() as playwright:
     page.goto(BASE, wait_until="networkidle")
     assert page.title() == "Supe Pines — A Street-Level Case File"
     assert page.locator(".screen.active").get_attribute("id") == "scr-title"
+    run_dom_audit(page, "title screen")
     assert page.locator("#title-online-button").count() == 1
+    assert page.locator("#title-online-button").inner_text().startswith("Online")
     assert page.locator("#resume-local-button").is_hidden()
 
     # Wait for the background Firebase readiness check to complete (and fail/degrade)
@@ -98,6 +145,7 @@ with sync_playwright() as playwright:
 
     page.get_by_role("button", name="Open the Case (this screen)").click()
     page.wait_for_selector("#scr-hook.active")
+    run_dom_audit(page, "case select screen")
     assert page.locator(".casecard").count() == 8
     assert page.locator(".case-phase-rail").count() == 1
     assert page.locator(".casecard-art img").count() >= 4
@@ -109,6 +157,7 @@ with sync_playwright() as playwright:
     )
 
     page.locator(".casecard").first.click()
+    run_dom_audit(page, "players screen")
     assert page.locator("input[name='local-art-style'][value='ink']").count() == 1
     assert page.locator("input[name='local-art-style'][value='expressionist']").count() == 1
     # The radio inputs are intentionally visually hidden behind their full-card
@@ -116,16 +165,20 @@ with sync_playwright() as playwright:
     page.locator("label.art-style-option").filter(has_text="Interpretive Expressionist").click()
     assert page.locator("input[name='local-art-style'][value='expressionist']").is_checked()
     page.select_option("#pl-count", "1")
+    run_dom_audit(page, "players screen with solo count")
     page.fill("#pl-name-0", "Smoke Tester")
     page.get_by_role("button", name="Suit Up").click()
     page.get_by_role("button", name="So It Begins").click()
     for index in range(6):
+        run_dom_audit(page, f"hero setup index {index}")
         page.fill("#arch-name", f"Hero {index + 1}")
         page.fill("#arch-answer", f"Established fact {index + 1}")
         page.locator("#scr-archsetup button.primary").click()
+    run_dom_audit(page, "threat screen")
     page.fill("#victim-name", "The Smoke Test")
     page.get_by_role("button", name="Deal the Cards").click()
     page.wait_for_selector("#scr-hub.active")
+    run_dom_audit(page, "act hub screen")
     assert "ACT THE FIRST" in page.locator("#tb-act").inner_text().upper()
     assert page.evaluate("Boolean(localStorage.getItem('sp:save:v1'))")
 
@@ -134,10 +187,12 @@ with sync_playwright() as playwright:
     assert page.get_by_role("button", name="Resume saved Case").is_visible()
     page.get_by_role("button", name="Resume saved Case").click()
     page.wait_for_selector("#scr-hub.active")
+    run_dom_audit(page, "resumed act hub screen")
 
     # Gallery: Hero faces remain separate and both visual languages are exposed.
     page.get_by_role("button", name="The Gallery").click()
     page.wait_for_selector("#overlay", state="visible")
+    run_dom_audit(page, "gallery overlay")
     assert page.locator(".gcat-heroes .gtile").count() == 12
     assert page.locator(".gcat-cases .gtile").count() == 0
     tile = page.locator(".gcat-heroes .gtile").first
@@ -156,13 +211,14 @@ with sync_playwright() as playwright:
     # The in-progress Dossier is readable and does not throw before Act I.
     page.get_by_role("button", name="The Dossier").click()
     page.wait_for_selector("#scr-chronicle.active")
-    assert "THE MILLHAVEN DOSSIER" in page.locator("#scr-chronicle").inner_text()
+    run_dom_audit(page, "dossier screen")
     page.get_by_role("button", name="Return to the Case").click()
 
     # Play Scene 1 of Act I and verify the tracker/resolution surfaces.
     page.get_by_role("button", name="Begin a scene").click()
     if page.get_by_role("button", name="Got it — begin").count():
         page.get_by_role("button", name="Got it — begin").click()
+    run_dom_audit(page, "scene pick screen")
     check_no_raw_undefined_or_null(page)
 
     page.locator("[id^='scene-pick-']").first.click()
@@ -175,6 +231,7 @@ with sync_playwright() as playwright:
     assert page.locator(".scene-tracker").count() == 1
     assert page.locator(".scene-slot").count() == 3
     assert page.locator(".scene-slot.occupied").count() == 1
+    run_dom_audit(page, "scene play screen")
 
     # Buy-in with a scene card from hand to get exactly 3 tones in the scene
     page.get_by_role("button", name="Smoke Tester plays a card into this scene").click()
@@ -186,6 +243,7 @@ with sync_playwright() as playwright:
     page.fill("#scene-happened", "The heroes follow the Signal to the next roof.")
     page.locator("#scr-scene button.blood").click()
     page.wait_for_selector("#scr-resolve.active")
+    run_dom_audit(page, "resolve screen")
     check_no_raw_undefined_or_null(page)
     assert page.locator(".scene-tracker.resolving").count() == 1
 

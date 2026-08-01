@@ -182,8 +182,10 @@ export function renderCloseIntro(){
   const elementHTML = tied.length===1
     ? `<p><strong style="color:var(--blood-bright)">The act’s dominant tone is ${toneBadge(tied[0])}</strong> — the close must <span>${esc(close.elements[tied[0]])}</span></p>
        <input type="hidden" id="close-el" value="${tied[0]}">`
-    : `<p><strong style="color:var(--blood-bright)">The tones stand tied.</strong> The storyteller who begins may choose:</p>` +
-      tied.map((t,i)=>`<p><label style="cursor:pointer"><input type="radio" name="close-el" value="${t}" style="width:auto" ${i===0?'checked':''}> ${toneBadge(t)} <span class="small">${esc(close.elements[t])}</span></label></p>`).join('');
+    : `<fieldset class="close-el-picker" style="border:none;margin:0;padding:0">
+         <legend class="fld" style="color:var(--gold);font-weight:bold;margin-bottom:8px">The tones stand tied. Choose the dominant element:</legend>` +
+         tied.map((t,i)=>`<p><label style="cursor:pointer" for="close-el-${t}"><input type="radio" id="close-el-${t}" name="close-el" value="${t}" style="width:auto" ${i===0?'checked':''}> ${toneBadge(t)} <span class="small">${esc(close.elements[t])}</span></label></p>`).join('') +
+      `</fieldset>`;
   $('scr-close').innerHTML = `
     ${casePhaseRail('acts', 'The Act Close is the next scene.')}
     <h2 class="center" style="color:var(--blood-bright)">${ACT_NAMES[G.act]} draws to a close</h2>
@@ -200,11 +202,11 @@ export function renderCloseIntro(){
         <p class="small muted">The tally of tones this act — from every card played and every Hero’s face — stands at:
         ${TONES.map(t=>`<span class="tone count ${t}">${counts[t]}</span>`).join(' ')}</p>
         ${elementHTML}
-        <label class="fld">Who begins the close?</label>
+        <label class="fld" for="close-starter">Who begins the close?</label>
         <select id="close-starter">${G.players.map((p,i)=>`<option value="${i}">${esc(p.name)}</option>`).join('')}</select>
-        <label class="fld">Which Hero leads it?</label>
+        <label class="fld" for="close-arch">Which Hero leads it?</label>
         <select id="close-arch">${G.heroes.map((a,i)=>`<option value="${i}">${esc(a.name||a.role)} — ${esc(a.role)}</option>`).join('')}</select>
-        <label class="fld">What the camera sees as the close opens</label>
+        <label class="fld" for="close-opening">What the camera sees as the close opens</label>
         <textarea id="close-opening" placeholder="The camera rises above Millhaven…"></textarea>
         <div class="btnrow">
           <button class="primary" onclick="beginClose()">Play the Act Close</button>
