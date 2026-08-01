@@ -21,10 +21,11 @@ function heroFaceHTML(h, sideIdx, turned){
    toggle (see flipHeroCard below), not game state. */
 export function heroCard(h, selectable, idx){
   const frontIdx = h.flipped?1:0, backIdx = h.flipped?0:1;
+  const isSelected = selectable === 'pickArch' && State.G?.current?.archIdx === idx;
   const selectAttrs = selectable
-    ? `role="button" tabindex="0" aria-pressed="false" onclick="${selectable}(${idx})" onkeydown="if((event.key==='Enter'||event.key===' ')&&event.target===this){event.preventDefault();${selectable}(${idx})}" id="arch-pick-${idx}"`
+    ? `role="button" tabindex="0" aria-pressed="${isSelected?'true':'false'}" onclick="${selectable}(${idx})" onkeydown="if((event.key==='Enter'||event.key===' ')&&event.target===this){event.preventDefault();${selectable}(${idx})}" id="arch-pick-${idx}"`
     : '';
-  return `<div class="hero-flip${selectable?' selectable':''}" ${selectAttrs}>
+  return `<div class="hero-flip${selectable?' selectable':''}${isSelected?' selected':''}" ${selectAttrs}>
     <button class="flip-btn" type="button" onclick="event.stopPropagation();flipHeroCard(this)"
       data-front-side="${frontIdx===0?'I':'II'}" data-back-side="${backIdx===0?'I':'II'}"
       aria-label="View Side ${backIdx===0?'I':'II'}" aria-pressed="false" title="View Side ${backIdx===0?'I':'II'}">
@@ -92,10 +93,14 @@ export function sceneAnatomyDiagramHTML(){
   </div>`;
 }
 export function signalCard(o, selectable, idx){
+  let isSelected = false;
+  if (selectable === 'toggleSecretOmen' && State.G?.pendingSecret?.secretSel?.includes(idx)) {
+    isSelected = true;
+  }
   const selectAttrs = selectable
-    ? `role="button" tabindex="0" aria-pressed="false" onclick="${selectable}(${idx})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();${selectable}(${idx})}" id="omen-pick-${idx}"`
+    ? `role="button" tabindex="0" aria-pressed="${isSelected?'true':'false'}" onclick="${selectable}(${idx})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();${selectable}(${idx})}" id="omen-pick-${idx}"`
     : '';
-  return `<div class="card signal${selectable?' selectable':''}" ${selectAttrs}>
+  return `<div class="card signal${selectable?' selectable':''}${isSelected?' selected':''}" ${selectAttrs}>
     ${signalArtHTML(o, {className:'signalcard-art', style:currentArtStyle()})}
     <div class="c-kicker">Signal</div>
     <div class="glyph">${o.glyph}</div>
@@ -105,10 +110,11 @@ export function signalCard(o, selectable, idx){
 }
 export function sceneCardHTML(c, selectable, idx){
   const G = State.G;
+  const isSelected = selectable === 'pickSceneCard' && State.G?.current?.cardIdx === idx;
   const selectAttrs = selectable
-    ? `role="button" tabindex="0" aria-pressed="false" onclick="${selectable}(${idx})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();${selectable}(${idx})}" id="scene-pick-${idx}"`
+    ? `role="button" tabindex="0" aria-pressed="${isSelected?'true':'false'}" onclick="${selectable}(${idx})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();${selectable}(${idx})}" id="scene-pick-${idx}"`
     : '';
-  return `<div class="card${selectable?' selectable':''}" ${selectAttrs}>
+  return `<div class="card${selectable?' selectable':''}${isSelected?' selected':''}" ${selectAttrs}>
     <div class="c-kicker">Scene · ${ACT_NAMES[G.act]}</div>
     <div class="c-title">${esc(c.title)}</div>
     <div class="c-prompt">${esc(c.prompt)}</div>

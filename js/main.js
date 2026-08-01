@@ -13,8 +13,8 @@ import { renderHooks, chooseCase, renderPlayerInputs, confirmPlayers,
 import { renderHub, renderCloseIntro, openLocalHand, tradeSignal, forfeitScene, beginClose } from './ui/hub.js';
 import { startSceneFor, renderScenePick, renderScenePlay, pickSceneCard, pickArch, beginScene, pickContrib,
          pickContribScene, pickContribOmen, confirmContrib, cancelContrib,
-         setContribHow, setSceneHappened, dismissScenePrimer } from './ui/scene.js';
-import { endScene, renderResolve, renderSecretUnlock, applyResolve, toggleSecretOmen, confirmSecret } from './ui/resolve.js';
+         setContribHow, setSceneHappened, dismissScenePrimer, setSceneOpening } from './ui/scene.js';
+import { endScene, renderResolve, renderSecretUnlock, applyResolve, toggleSecretOmen, confirmSecret, toggleResolveFlip, setSecretAnswer } from './ui/resolve.js';
 import { viewChronicle, returnFromChronicle, toggleStrike, showRules,
          initOverlayDismiss, renderChronicle } from './ui/renderChronicle.js';
 import { copyChronicle, downloadChronicle } from './chronicle/markdown.js';
@@ -38,13 +38,14 @@ import {
 } from './ui/online.js';
 
 Object.assign(window, {
+  State,
   show, flipHeroCard, showIdleClicker, idleClick, dismissFirstrunHint,
   showGallery, setGalleryStyle, setGalleryCat, openGalleryDetail, closeGalleryDetail, galleryImgError, flipGalleryCard, gameArtImgError,
   chooseCase, renderPlayerInputs, confirmPlayers, beginArchSetup, renderArchSetup, saveArchSetup, renderVictim, finishVictim,
   renderHub, openLocalHand, tradeSignal, forfeitScene, beginClose,
   startSceneFor, renderScenePick, renderScenePlay, pickSceneCard, pickArch, beginScene, pickContrib, pickContribScene, pickContribOmen,
-  confirmContrib, cancelContrib, setContribHow, setSceneHappened, dismissScenePrimer,
-  endScene, renderResolve, renderSecretUnlock, applyResolve, toggleSecretOmen, confirmSecret,
+  confirmContrib, cancelContrib, setContribHow, setSceneHappened, dismissScenePrimer, setSceneOpening,
+  endScene, renderResolve, renderSecretUnlock, applyResolve, toggleSecretOmen, confirmSecret, toggleResolveFlip, setSecretAnswer,
   viewChronicle, returnFromChronicle, toggleStrike, showRules, closeOverlay,
   copyChronicle, downloadChronicle,
   showOnlineEntry, onlineCreateRoom, onlineJoinRoom, leaveOnlineRoom,
@@ -101,7 +102,7 @@ export function startNewCase(){
   show('scr-hook');
 }
 
-Object.assign(window, { State, resumeLocalGame, refreshResumeControl, startNewCase });
+Object.assign(window, { State, resumeLocalGame, refreshResumeControl, startNewCase, saveGame });
 
 /* ---------------- init ---------------- */
 renderHooks();

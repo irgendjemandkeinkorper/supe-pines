@@ -9,12 +9,16 @@ import { saveGame } from '../engine/persistence.js';
 /* ---------------- resolution ---------------- */
 export function endScene(){
   State.G.current.happened = ($('scene-happened').value||'').trim();
+  State.G.current.flipsChecked = [];
   renderResolve();
   show('scr-resolve');
 }
 export function renderResolve(){
   const G = State.G;
   const c = G.current;
+  if (!c.flipsChecked) {
+    c.flipsChecked = [];
+  }
   $('scr-resolve').innerHTML = `
     ${sceneTrackerHTML(G,{phase:'resolve'})}
     <h2 class="center" style="margin-top:24px">The scene concludes</h2>
@@ -23,8 +27,9 @@ export function renderResolve(){
     <div class="panel spotlight" style="max-width:680px;margin:0 auto">
       ${G.heroes.map((a,i)=>{
         const s = faceUp(a);
+        const isChecked = c.flipsChecked.includes(i);
         return `<div class="panel tight" style="display:flex;gap:12px;align-items:flex-start">
-          <input type="checkbox" id="flip-${i}" style="width:auto;margin-top:6px;transform:scale(1.3)">
+          <input type="checkbox" id="flip-${i}" onchange="toggleResolveFlip(${i})" ${isChecked ? 'checked' : ''} style="width:auto;margin-top:6px;transform:scale(1.3)">
           <label for="flip-${i}" style="cursor:pointer">
             <span class="sc" style="color:#eddfba">${esc(a.name||a.role)}</span>
             ${i===c.archIdx?'<span class="pill" style="border-color:var(--blood-bright);color:#e8c9c9">led this scene</span>':''}
@@ -36,6 +41,23 @@ export function renderResolve(){
         <button class="primary" onclick="applyResolve()">Count the Tones</button>
       </div>
     </div>`;
+  saveGame('scr-resolve');
+}
+export function toggleResolveFlip(i){
+  const G = State.G;
+  const c = G.current;
+  if (!c.flipsChecked) c.flipsChecked = [];
+  const checkbox = document.getElementById(`flip-${i}`);
+  if (checkbox) {
+    const isChecked = checkbox.checked;
+    const idx = c.flipsChecked.indexOf(i);
+    if (isChecked && idx === -1) {
+      c.flipsChecked.push(i);
+    } else if (!isChecked && idx !== -1) {
+      c.flipsChecked.splice(idx, 1);
+    }
+    saveGame('scr-resolve');
+  }
 }
 export function applyResolve(){
   const G = State.G;
@@ -78,9 +100,15 @@ export function applyResolve(){
 /* ---------------- secret scenes ---------------- */
 export function renderSecretUnlock(unlock, tones){
   const G = State.G;
-  State.secretSel = [];
+  if (!unlock.secretSel) unlock.secretSel = [];
+  if (!unlock.answer) unlock.answer = '';
+  State.secretSel = unlock.secretSel; // Keep in sync
   G.pendingSecret = unlock;
   const p = G.players[unlock.pi];
+  const need = Math.min(3, G.signalRow.length);
+  const selLen = unlock.secretSel.length;
+  const btnDisabled = selLen !== need;
+
   $('scr-secret').innerHTML = `
     <div class="center" style="margin-top:20px">
       <div class="sc" style="color:#c9b3de;letter-spacing:.35em;font-size:.85rem">THE TONES ALIGN — ${tones.map(t=>t.toUpperCase()).join(', ')}</div>
@@ -93,41 +121,54 @@ export function renderSecretUnlock(unlock, tones){
         <div>${unlock.secret.combo.map(toneBadge).join(' ')}</div>
         <p style="font-size:1.15rem;color:#e0d4ec;margin-top:8px">“${esc(unlock.secret.q)}”</p>
       </div>
-      <h3 style="color:#c9b3de;margin-top:16px">Choose three signals to answer with <span class="small" id="secret-count">(0 of 3)</span></h3>
+      <h3 style="color:#c9b3de;margin-top:16px">Choose three signals to answer with <span class="small" id="secret-count">(${selLen} of ${need})</span></h3>
       <div class="cardgrid compact">${G.signalRow.map((o,i)=>signalCard(o,'toggleSecretOmen',i)).join('')}</div>
       <div class="panel spotlight">
         <label class="fld" style="color:#c9b3de" for="secret-answer">The vignette</label>
         <p class="small muted" style="margin-bottom:6px">Use the three signals — literally, metaphorically, obliquely — to show us the answer.</p>
-        <textarea id="secret-answer" style="min-height:120px" placeholder="Show us…"></textarea>
+        <textarea id="secret-answer" style="min-height:120px" oninput="setSecretAnswer(this.value)" placeholder="Show us…">${esc(unlock.answer)}</textarea>
         <div class="btnrow">
-          <button class="primary" id="btn-secret" disabled onclick="confirmSecret()">So It Is Revealed</button>
+          <button class="primary" id="btn-secret" ${btnDisabled ? 'disabled' : ''} onclick="confirmSecret()">So It Is Revealed</button>
         </div>
       </div>
     </div>`;
+  saveGame('scr-secret');
 }
 export function toggleSecretOmen(i){
   const G = State.G;
   const need = Math.min(3, G.signalRow.length);
-  const at = State.secretSel.indexOf(i);
-  if(at>=0) State.secretSel.splice(at,1);
-  else if(State.secretSel.length<need) State.secretSel.push(i);
+  const sel = G.pendingSecret ? (G.pendingSecret.secretSel || (G.pendingSecret.secretSel = [])) : State.secretSel;
+  const at = sel.indexOf(i);
+  if(at>=0) sel.splice(at,1);
+  else if(sel.length<need) sel.push(i);
   document.querySelectorAll('[id^="omen-pick-"]').forEach((el,idx)=>{
-    const selected = State.secretSel.includes(idx);
+    const selected = sel.includes(idx);
     el.classList.toggle('selected', selected);
     el.setAttribute('aria-pressed', String(selected));
   });
-  $('secret-count').textContent = `(${State.secretSel.length} of ${need})`;
-  $('btn-secret').disabled = State.secretSel.length!==need;
+  $('secret-count').textContent = `(${sel.length} of ${need})`;
+  $('btn-secret').disabled = sel.length!==need;
+  if (G.pendingSecret) {
+    saveGame('scr-secret');
+  }
+}
+export function setSecretAnswer(v){
+  if (State.G?.pendingSecret) {
+    State.G.pendingSecret.answer = v;
+    saveGame('scr-secret');
+  }
 }
 export function confirmSecret(){
   const G = State.G;
   const u = G.pendingSecret, p = G.players[u.pi];
   u.secret.used = true;
+  const sel = u.secretSel?.length ? u.secretSel : (State.secretSel || []);
+  const ans = u.answer || $('secret-answer').value || '';
   G.journal.push({
     type:'secret', act:G.act, playerName:p.name,
     question:u.secret.q, combo:u.secret.combo.slice(),
-    signals:State.secretSel.map(i=>({glyph:G.signalRow[i].glyph, title:G.signalRow[i].title})),
-    answer:($('secret-answer').value||'').trim(), struck:false
+    signals:sel.map(i=>({glyph:G.signalRow[i].glyph, title:G.signalRow[i].title})),
+    answer:ans.trim(), struck:false
   });
   G.pendingSecret = null;
   afterSceneFlow();

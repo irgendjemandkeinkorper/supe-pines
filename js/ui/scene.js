@@ -36,12 +36,13 @@ export function renderScenePick(){
     <div class="panel">
       <label class="fld" for="scene-opening">What the camera sees as the scene opens</label>
       <p class="small muted" style="margin-bottom:6px">Every scene begins as if filmed. The block, the light, the hour, who stands where. Then narrate freely, aloud.</p>
-      <textarea id="scene-opening" placeholder="The camera drifts through…"></textarea>
+      <textarea id="scene-opening" oninput="setSceneOpening(this.value)" placeholder="The camera drifts through…">${esc(c.opening||'')}</textarea>
       <div class="btnrow">
         <button class="primary" id="btn-begin" disabled onclick="beginScene()">Begin the Scene</button>
         <button class="ghost" onclick="renderHub();show('scr-hub')">Back to the Table</button>
       </div>
     </div>`;
+  checkBegin();
   saveGame('scr-scene');
 }
 export function dismissScenePrimer(){ markIntroSeen(); renderScenePick(); }
@@ -51,6 +52,7 @@ export function pickSceneCard(i){
   $('scene-pick-'+i).classList.add('selected');
   $('scene-pick-'+i).setAttribute('aria-pressed','true');
   checkBegin();
+  saveGame('scr-scene');
 }
 export function pickArch(i){
   State.G.current.archIdx = i;
@@ -58,6 +60,7 @@ export function pickArch(i){
   $('arch-pick-'+i).classList.add('selected');
   $('arch-pick-'+i).setAttribute('aria-pressed','true');
   checkBegin();
+  saveGame('scr-scene');
 }
 export function checkBegin(){
   $('btn-begin').disabled = !(State.G.current.cardIdx!==null && State.G.current.archIdx!==null);
@@ -147,5 +150,17 @@ export function confirmContrib(){
 
 /* small helpers used directly by inline handlers so no globals leak into onclick strings */
 export function cancelContrib(){ State.G.current.adding = null; renderScenePlay(); }
-export function setContribHow(v){ if(State.G.current.adding) State.G.current.adding.how = v; }
-export function setSceneHappened(v){ State.G.current.happened = v; }
+export function setContribHow(v){
+  if(State.G.current.adding) {
+    State.G.current.adding.how = v;
+    saveGame('scr-scene');
+  }
+}
+export function setSceneHappened(v){
+  State.G.current.happened = v;
+  saveGame('scr-scene');
+}
+export function setSceneOpening(v){
+  State.G.current.opening = v;
+  saveGame('scr-scene');
+}

@@ -219,6 +219,17 @@ with sync_playwright() as playwright:
     page.locator("[id^='scene-pick-']").first.click()
     page.locator("#arch-pick-0").click()
     page.fill("#scene-opening", "Rain stripes the roof while the scanner hisses.")
+
+    # 1. Reload/Resume on Scene-Pick screen
+    page.reload(wait_until="networkidle")
+    assert page.get_by_role("button", name="Resume saved Case").is_visible()
+    page.get_by_role("button", name="Resume saved Case").click()
+    page.wait_for_selector("#scr-scene.active")
+    assert "selected" in page.locator("[id^='scene-pick-']").first.get_attribute("class")
+    assert "selected" in page.locator("#arch-pick-0").get_attribute("class")
+    assert page.locator("#scene-opening").input_value() == "Rain stripes the roof while the scanner hisses."
+    assert page.locator("#btn-begin").is_enabled()
+
     page.get_by_role("button", name="Begin the Scene").click()
     page.wait_for_selector("#scr-scene.active")
     check_no_raw_undefined_or_null(page)
@@ -228,20 +239,104 @@ with sync_playwright() as playwright:
     assert page.locator(".scene-slot.occupied").count() == 1
     run_dom_audit(page, "scene play screen")
 
-    # Buy-in with a scene card from hand to get exactly 3 tones in the scene
-    page.get_by_role("button", name="Smoke Tester plays a card into this scene").click()
-    page.wait_for_selector("[id^='scene-pick-']")
-    page.locator("[id^='scene-pick-']").first.click()
-    page.fill("#contrib-how", "A shadow stretches across the alley.")
-    page.get_by_role("button", name="Play It").click()
-
     page.fill("#scene-happened", "The heroes follow the Signal to the next roof.")
+    page.get_by_role("button", name="plays a card into this scene").first.click()
+    page.locator("[id^='scene-pick-']").first.click()
+    page.fill("#contrib-how", "Suddenly, a shadow falls across the street.")
+
+    # 2. Reload/Resume on Scene-Play screen (with pending contribution & happened text)
+    page.reload(wait_until="networkidle")
+    page.get_by_role("button", name="Resume saved Case").click()
+    page.wait_for_selector("#scr-scene.active")
+    assert page.locator("#scene-happened").input_value() == "The heroes follow the Signal to the next roof."
+    assert page.locator("#contrib-how").input_value() == "Suddenly, a shadow falls across the street."
+
+    page.get_by_role("button", name="Play It").click()
+    assert page.locator(".scene-slot.occupied").count() == 2
+
     page.locator("#scr-scene button.blood").click()
     page.wait_for_selector("#scr-resolve.active")
     run_dom_audit(page, "resolve screen")
     check_no_raw_undefined_or_null(page)
     assert page.locator(".scene-tracker.resolving").count() == 1
 
+    # Exercise resume coverage in a second page while this page remains on
+    # the original resolution screen for the full three-act smoke path.
+    resume_snapshot = page.evaluate("localStorage.getItem('sp:save:v1')")
+    assert resume_snapshot
+    resume_page = browser.new_page(viewport={"width": 1440, "height": 1000})
+    watch(resume_page, "resume ")
+    resume_page.goto(BASE, wait_until="networkidle")
+    if resume_page.get_by_role("button", name="Resume saved Case").count() == 0:
+        resume_page.evaluate(
+            "(snapshot) => localStorage.setItem('sp:save:v1', snapshot)",
+            resume_snapshot,
+        )
+        resume_page.reload(wait_until="networkidle")
+    resume_page.get_by_role("button", name="Resume saved Case").click()
+    resume_page.wait_for_selector("#scr-resolve.active")
+    resume_page.locator("#flip-0").check()
+
+    # 3. Reload/Resume on Resolution screen (verifying flip checkbox state)
+    resume_page.reload(wait_until="networkidle")
+    resume_page.get_by_role("button", name="Resume saved Case").click()
+    resume_page.wait_for_selector("#scr-resolve.active")
+    assert resume_page.locator("#flip-0").is_checked()
+
+    # Force the player's first secret combo to match the scene tones so a secret is guaranteed to unlock.
+    resume_page.evaluate("""() => {
+        const G = window.State.G;
+        const c = G.current;
+        const lead = G.heroes[c.archIdx];
+        const isFlipped = document.getElementById('flip-' + c.archIdx).checked ? !lead.flipped : lead.flipped;
+        const s = lead.sides[isFlipped ? 1 : 0];
+        const tones = [c.card.tone];
+        c.contributions.forEach(x => { if (x.kind === 'scene') tones.push(x.card.tone); });
+        tones.push(s.tone);
+        G.players[0].secrets[0].combo = tones.slice(0, 3);
+        G.players[0].secrets[0].used = false;
+    }""")
+
+    resume_page.get_by_role("button", name="Count the Tones").click()
+    resume_page.wait_for_selector("#scr-secret.active")
+
+    # Pick 3 signals and write the vignette answer
+    resume_page.locator("#omen-pick-0").click()
+    resume_page.locator("#omen-pick-1").click()
+    resume_page.locator("#omen-pick-2").click()
+    resume_page.fill("#secret-answer", "The shadows knew the truth all along.")
+
+    # 4. Reload/Resume on Secret reveal screen
+    resume_page.reload(wait_until="networkidle")
+    assert resume_page.get_by_role("button", name="Resume saved Case").is_visible()
+    resume_page.get_by_role("button", name="Resume saved Case").click()
+    resume_page.wait_for_selector("#scr-secret.active")
+    assert "selected" in resume_page.locator("#omen-pick-0").get_attribute("class")
+    assert "selected" in resume_page.locator("#omen-pick-1").get_attribute("class")
+    assert "selected" in resume_page.locator("#omen-pick-2").get_attribute("class")
+    assert resume_page.locator("#secret-answer").input_value() == "The shadows knew the truth all along."
+    assert resume_page.locator("#btn-secret").is_enabled()
+
+    # Verify no undefined or null output exists on the resumed screens
+    visible_text = resume_page.locator("body").inner_text().lower()
+    assert "undefined" not in visible_text
+    assert "null" not in visible_text
+
+    resume_page.get_by_role("button", name="So It Is Revealed").click()
+    resume_page.wait_for_selector("#scr-hub.active")
+
+    # 5. Verify online room state is never copied into localStorage.
+    resume_page.goto(BASE, wait_until="networkidle")
+    resume_page.locator("#title-online-button").click()
+    resume_page.wait_for_selector("#scr-online-entry.active")
+    resume_page.evaluate("window.State.onlineRoomCode = 'XYZ123'")
+    resume_page.evaluate("window.saveGame('scr-online-entry')")
+    save_data = resume_page.evaluate("localStorage.getItem('sp:save:v1')")
+    if save_data:
+        import json
+        snap = json.loads(save_data)
+        assert snap.get("screen") != "scr-online-entry"
+    resume_page.close()
     # Check flip-0 to turn the first Hero
     page.locator("#flip-0").check()
 
