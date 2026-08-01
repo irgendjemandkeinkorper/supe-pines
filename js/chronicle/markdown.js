@@ -96,7 +96,7 @@ export function copyChronicle(){
 export function fallbackCopy(md){
   $('overlay-content').innerHTML = `
     <h2 style="color:var(--gold)">Copy the Dossier</h2>
-    <p class="small muted">Select all and copy:</p>
+    <label class="small muted" for="fallback-md" style="display:block;margin-bottom:6px">Select all and copy:</label>
     <textarea style="min-height:340px" id="fallback-md">${esc(md)}</textarea>
     <div class="btnrow"><button onclick="closeOverlay()">Close</button></div>`;
   openOverlay();

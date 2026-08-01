@@ -130,10 +130,10 @@ export function showOnlineEntry(){
     <div class="pgrid" style="grid-template-columns:repeat(auto-fit,minmax(320px,1fr));max-width:900px;margin:0 auto">
       <div class="panel">
         <h3 style="color:var(--gold)">Open a New Case</h3>
-        <label class="fld">Choose the Case</label>
+        <label class="fld" for="oe-case">Choose the Case</label>
         <select id="oe-case" onchange="onlineRefreshArtPicker()">${CASES.map((h,i)=>`<option value="${i}">${esc(h.title)}</option>`).join('')}</select>
         <div id="oe-art-style-picker">${artStylePickerHTML('oe-art-style', null, CASES[0].id)}</div>
-        <label class="fld">Your name</label>
+        <label class="fld" for="oe-host-name">Your name</label>
         <input type="text" id="oe-host-name" placeholder="Storyteller I">
         <div class="btnrow">
           <button class="primary" onclick="onlineCreateRoom()">Open the Table</button>
@@ -141,9 +141,9 @@ export function showOnlineEntry(){
       </div>
       <div class="panel">
         <h3 style="color:var(--gold)">Join a Case in Progress</h3>
-        <label class="fld">Room code</label>
+        <label class="fld" for="oe-join-code">Room code</label>
         <input type="text" id="oe-join-code" placeholder="e.g. K7QRM" style="text-transform:uppercase">
-        <label class="fld">Your name</label>
+        <label class="fld" for="oe-join-name">Your name</label>
         <input type="text" id="oe-join-name" placeholder="Your name">
         <div class="btnrow">
           <button class="primary" onclick="onlineJoinRoom()">Join the Table</button>
@@ -308,9 +308,9 @@ function renderOnlineArchSetup(room){
       <div class="panel">
         ${showForm ? `
           <p class="small muted">${isMe ? 'Answer in character, or plainly. The answer becomes a fact about the Threat and about this Hero.' : `Answering on behalf of ${esc(answerer.name)}, since they’re away.`}</p>
-          <label class="fld">Name this Hero</label>
+          <label class="fld" for="arch-name">Name this Hero</label>
           <input type="text" id="arch-name" placeholder="e.g. The Nightwatch">
-          <label class="fld">The answer</label>
+          <label class="fld" for="arch-answer">The answer</label>
           <textarea id="arch-answer" placeholder="What is established…"></textarea>
           <div class="btnrow"><button class="primary" onclick="onlineSaveArchSetup()">${i<5?'Next Question':'To the Threat'}</button></div>
         ` : `
@@ -339,7 +339,7 @@ function renderOnlineVictim(room){
         ${room.threat.facts.map(f=>`<p class="small" style="margin:6px 0"><span style="color:var(--gold)">${esc(f.role)}:</span> <span>${esc(f.a)}</span></p>`).join('')}
       </div>
       <div class="panel">
-        <label class="fld">Together, name the Threat</label>
+        <label class="fld" for="victim-name">Together, name the Threat</label>
         <input type="text" id="victim-name" placeholder="This is usually the hardest part.">
         <div class="btnrow"><button class="primary" onclick="onlineFinishVictim()">Deal the Cards</button></div>
       </div>
@@ -494,13 +494,13 @@ function renderOnlineCloseIntro(room){
         <p class="small muted">Tones this act: ${TONES.map(t=>`<span class="tone count ${t}">${counts[t]}</span>`).join(' ')}</p>
         ${tied.length===1
           ? `<p><strong style="color:var(--blood-bright)">Dominant tone: ${toneBadge(tied[0])}</strong> — must <span>${esc(close.elements[tied[0]])}</span></p>`
-          : `<label class="fld">The tones are tied — choose the element</label>
+          : `<label class="fld" for="close-el">The tones are tied — choose the element</label>
              <select id="close-el">${tied.map(t=>`<option value="${t}">${t} — ${esc(close.elements[t])}</option>`).join('')}</select>`}
-        <label class="fld">Who begins the close?</label>
+        <label class="fld" for="close-starter">Who begins the close?</label>
         <select id="close-starter">${room.players.map((p,i)=>`<option value="${i}">${esc(p.name)}</option>`).join('')}</select>
-        <label class="fld">Which Hero leads it?</label>
+        <label class="fld" for="close-arch">Which Hero leads it?</label>
         <select id="close-arch">${room.heroes.map((a,i)=>`<option value="${i}">${esc(a.name||a.role)} — ${esc(a.role)}</option>`).join('')}</select>
-        <label class="fld">What the camera sees as the close opens</label>
+        <label class="fld" for="close-opening">What the camera sees as the close opens</label>
         <textarea id="close-opening" placeholder="The camera rises above Millhaven…"></textarea>
         <div class="btnrow"><button class="primary" onclick="onlineBeginClose()">Play the Act Close</button></div>
       </div>
@@ -538,7 +538,7 @@ function renderOnlineScenePick(){
       ${room.heroes.map((a,i)=>heroCard(a,'onlinePickArch',i)).join('')}
     </div>
     <div class="panel">
-      <label class="fld">What the camera sees as the scene opens</label>
+      <label class="fld" for="scene-opening">What the camera sees as the scene opens</label>
       <textarea id="scene-opening" placeholder="The camera drifts through…"></textarea>
       <div class="btnrow">
         <button class="primary" id="btn-begin" disabled onclick="onlineBeginScene()">Begin the Scene</button>
@@ -596,7 +596,7 @@ function renderOnlineScene(room){
       const card = pk.kind==='scene' ? myPrivate.hand[pk.idx] : room.signalRow[pk.idx];
       addingHTML = `
         <div style="max-width:280px">${pk.kind==='scene'?sceneCardHTML(card):signalCard(card)}</div>
-        <label class="fld">How does it manifest in the scene?</label>
+        <label class="fld" for="contrib-how">How does it manifest in the scene?</label>
         <textarea id="contrib-how" oninput="onlineSetContribHow(this.value)">${esc(draft.adding.how||'')}</textarea>
         <div class="btnrow">
           <button class="primary" onclick="onlineConfirmContrib()">Play It</button>
@@ -607,7 +607,7 @@ function renderOnlineScene(room){
 
   const endSceneHTML = iAmStarter ? (!draft.resolving ? `
     <div class="panel spotlight">
-      <label class="fld">The record of what happens</label>
+      <label class="fld" for="scene-happened">The record of what happens</label>
       <p class="small muted" style="margin-bottom:6px">Play the scene aloud. Note what the Dossier should remember: who appeared, what was said, and what was discovered.</p>
       <textarea id="scene-happened" style="min-height:130px" oninput="onlineSetSceneHappened(this.value)" placeholder="What the Dossier will remember of this scene…">${esc(draft.happened||'')}</textarea>
       <div class="btnrow"><button class="blood" onclick="onlineEndScene()">The scene ends</button></div>
@@ -695,7 +695,7 @@ function renderOnlineSecret(room){
       <h3 style="color:#c9b3de;margin-top:16px">Choose three signals <span class="small">(${sel.length} of ${Math.min(3,room.signalRow.length)})</span></h3>
       <div class="cardgrid compact">${room.signalRow.map((o,i)=>signalCard(o,'onlineToggleSecretOmen',i)).join('')}</div>
       <div class="panel spotlight">
-        <label class="fld" style="color:#c9b3de">The vignette</label>
+        <label class="fld" style="color:#c9b3de" for="secret-answer">The vignette</label>
         <textarea id="secret-answer" style="min-height:120px" oninput="onlineSetSecretAnswer(this.value)">${esc(draft.secretAnswer||'')}</textarea>
         <div class="btnrow"><button class="primary" ${sel.length!==Math.min(3,room.signalRow.length)?'disabled':''} onclick="onlineConfirmSecret()">So It Is Revealed</button></div>
       </div>

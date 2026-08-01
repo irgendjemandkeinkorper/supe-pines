@@ -1,0 +1,187 @@
+127.0.0.1 - - [01/Aug/2026 04:47:58] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2026 04:47:58] "GET /css/style.css HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2026 04:47:58] "GET /js/main.js HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2026 04:47:58] "GET /js/ui/setup.js HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2026 04:47:58] "GET /js/ui/art.js HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2026 04:47:58] "GET /js/ui/gallery.js HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2026 04:47:58] "GET /js/ui/screens.js HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2026 04:47:58] "GET /js/ui/cards.js HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2026 04:47:58] "GET /js/ui/idle.js HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2026 04:47:58] "GET /js/ui/scene.js HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2026 04:47:58] "GET /js/ui/hub.js HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2026 04:47:58] "GET /js/ui/renderChronicle.js HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2026 04:47:58] "GET /js/ui/resolve.js HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2026 04:47:58] "GET /js/chronicle/markdown.js HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2026 04:47:58] "GET /js/engine/state.js HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2026 04:47:58] "GET /js/engine/persistence.js HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2026 04:47:58] "GET /js/sync/auth.js HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2026 04:47:58] "GET /js/sync/config.js HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2026 04:47:58] "GET /js/engine/utils.js HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2026 04:47:58] "GET /js/engine/firstrun.js HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2026 04:47:58] "GET /js/data/index.js HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2026 04:47:58] "GET /js/engine/rules.js HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2026 04:47:58] "GET /js/ui/online.js HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2026 04:47:58] "GET /js/sync/liveActions.js HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2026 04:47:58] "GET /js/sync/firebase-init.js HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2026 04:47:58] "GET /js/data/heroes.js HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2026 04:47:58] "GET /js/data/tones.js HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2026 04:47:58] "GET /js/data/scenes.js HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2026 04:47:58] "GET /js/data/cases.js HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2026 04:47:58] "GET /js/data/signals.js HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2026 04:47:58] "GET /js/data/secrets.js HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2026 04:47:58] "GET /js/data/actCloses.js HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2026 04:47:58] "GET /js/data/epilogue.js HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2026 04:47:58] "GET /js/sync/liveRoom.js HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2026 04:47:59] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:47:59] "GET /art/images/ink/cases/toll.png HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:47:59] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:47:59] "GET /art/images/ink/cases/casting.png HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:47:59] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:47:59] "GET /art/images/ink/cases/renovation.png HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:47:59] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:47:59] "GET /art/images/ink/cases/lastcall.png HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:47:59] "GET /art/images/ink/cases/afterhours.png HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2026 04:47:59] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:47:59] "GET /art/images/ink/cases/deadair.png HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:47:59] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:47:59] "GET /art/images/ink/cases/lastroute.png HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:47:59] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:47:59] "GET /art/images/ink/cases/openhouse.png HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:47:59] "GET /art/images/ink/cases/toll.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2026 04:47:59] "GET /art/images/ink/cases/renovation.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2026 04:47:59] "GET /art/images/ink/cases/casting.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2026 04:47:59] "GET /art/images/ink/cases/lastcall.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2026 04:47:59] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:47:59] "GET /art/images/ink/cases/deadair.jpg HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:47:59] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:47:59] "GET /art/images/ink/cases/lastroute.jpg HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:47:59] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:47:59] "GET /art/images/ink/cases/openhouse.jpg HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:47:59] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:47:59] "GET /art/images/ink/cases/deadair.jpeg HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:47:59] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:47:59] "GET /art/images/ink/cases/openhouse.jpeg HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:47:59] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:47:59] "GET /art/images/ink/cases/lastroute.jpeg HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:47:59] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:47:59] "GET /art/images/ink/cases/deadair.webp HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:47:59] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:47:59] "GET /art/images/ink/cases/openhouse.webp HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:47:59] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:47:59] "GET /art/images/ink/cases/lastroute.webp HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:48:00] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:48:00] "GET /art/images/ink/cases/toll.png HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:48:00] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:48:00] "GET /art/images/expressionist/cases/toll.png HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:48:00] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:48:00] "GET /art/images/expressionist/cases/toll.jpg HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:48:00] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:48:00] "GET /art/images/expressionist/cases/toll.jpeg HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:48:00] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:48:00] "GET /art/images/expressionist/cases/toll.webp HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:48:02] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:48:02] "GET /art/images/ink/cases/toll.png HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:48:02] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:48:02] "GET /art/images/expressionist/cases/toll.png HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:48:02] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:48:02] "GET /art/images/expressionist/cases/toll.jpg HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:48:02] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:48:02] "GET /art/images/expressionist/cases/toll.jpeg HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:48:02] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:48:02] "GET /art/images/expressionist/cases/toll.webp HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:48:11] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:48:11] "GET /art/images/expressionist/heroes/the-nightwatch--front.png HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:48:11] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:48:11] "GET /art/images/expressionist/heroes/the-nightwatch--turned.png HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:48:11] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:48:11] "GET /art/images/expressionist/heroes/palisade--front.png HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:48:11] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:48:11] "GET /art/images/expressionist/heroes/palisade--turned.png HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:48:11] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:48:11] "GET /art/images/expressionist/heroes/rook--front.png HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:48:11] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:48:11] "GET /art/images/expressionist/heroes/rook--turned.png HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:48:11] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:48:11] "GET /art/images/expressionist/heroes/the-ref--front.png HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:48:11] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:48:11] "GET /art/images/expressionist/heroes/the-ref--turned.png HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:48:11] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:48:11] "GET /art/images/expressionist/heroes/backline--front.png HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:48:11] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:48:11] "GET /art/images/expressionist/heroes/backline--turned.png HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:48:11] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:48:11] "GET /art/images/expressionist/heroes/switchboard--front.png HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:48:11] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:48:11] "GET /art/images/expressionist/heroes/switchboard--turned.png HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:48:11] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:48:11] "GET /art/images/expressionist/heroes/the-nightwatch--front.jpg HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:48:11] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:48:11] "GET /art/images/expressionist/heroes/the-nightwatch--turned.jpg HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:48:11] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:48:11] "GET /art/images/expressionist/heroes/palisade--front.jpg HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:48:11] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:48:11] "GET /art/images/expressionist/heroes/rook--front.jpg HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:48:11] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:48:11] "GET /art/images/expressionist/heroes/palisade--turned.jpg HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:48:11] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:48:11] "GET /art/images/expressionist/heroes/rook--turned.jpg HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:48:11] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:48:11] "GET /art/images/expressionist/heroes/the-ref--front.jpg HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:48:11] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:48:11] "GET /art/images/expressionist/heroes/the-ref--turned.jpg HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:48:11] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:48:11] "GET /art/images/expressionist/heroes/backline--front.jpg HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:48:11] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:48:11] "GET /art/images/expressionist/heroes/backline--turned.jpg HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:48:11] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:48:11] "GET /art/images/expressionist/heroes/switchboard--front.jpg HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:48:11] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:48:11] "GET /art/images/expressionist/heroes/switchboard--turned.jpg HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:48:11] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:48:11] "GET /art/images/expressionist/heroes/the-nightwatch--front.jpeg HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:48:11] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:48:11] "GET /art/images/expressionist/heroes/the-nightwatch--turned.jpeg HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:48:11] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:48:11] "GET /art/images/expressionist/heroes/palisade--front.jpeg HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:48:11] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:48:11] "GET /art/images/expressionist/heroes/rook--front.jpeg HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:48:11] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:48:11] "GET /art/images/expressionist/heroes/palisade--turned.jpeg HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:48:11] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:48:11] "GET /art/images/expressionist/heroes/rook--turned.jpeg HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:48:11] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:48:11] "GET /art/images/expressionist/heroes/the-ref--front.jpeg HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:48:11] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:48:11] "GET /art/images/expressionist/heroes/backline--front.jpeg HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:48:11] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:48:11] "GET /art/images/expressionist/heroes/the-ref--turned.jpeg HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:48:11] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:48:11] "GET /art/images/expressionist/heroes/backline--turned.jpeg HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:48:11] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:48:11] "GET /art/images/expressionist/heroes/switchboard--front.jpeg HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:48:11] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:48:11] "GET /art/images/expressionist/heroes/switchboard--turned.jpeg HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:48:11] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:48:11] "GET /art/images/expressionist/heroes/the-nightwatch--front.webp HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:48:11] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:48:11] "GET /art/images/expressionist/heroes/palisade--front.webp HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:48:11] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:48:11] "GET /art/images/expressionist/heroes/the-nightwatch--turned.webp HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:48:11] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:48:11] "GET /art/images/expressionist/heroes/rook--front.webp HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:48:11] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:48:11] "GET /art/images/expressionist/heroes/palisade--turned.webp HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:48:11] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:48:11] "GET /art/images/expressionist/heroes/rook--turned.webp HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:48:11] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:48:11] "GET /art/images/expressionist/heroes/the-ref--front.webp HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:48:11] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:48:11] "GET /art/images/expressionist/heroes/backline--front.webp HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:48:11] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:48:11] "GET /art/images/expressionist/heroes/the-ref--turned.webp HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:48:11] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:48:11] "GET /art/images/expressionist/heroes/backline--turned.webp HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:48:11] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:48:11] "GET /art/images/expressionist/heroes/switchboard--front.webp HTTP/1.1" 404 -
+127.0.0.1 - - [01/Aug/2026 04:48:11] code 404, message File not found
+127.0.0.1 - - [01/Aug/2026 04:48:11] "GET /art/images/expressionist/heroes/switchboard--turned.webp HTTP/1.1" 404 -

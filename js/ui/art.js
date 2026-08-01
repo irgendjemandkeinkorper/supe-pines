@@ -80,13 +80,16 @@ export function artStylePickerHTML(name, selected=null, sampleCase='toll'){
     <legend>Choose the visual language</legend>
     <p>Both styles tell the same story. The choice sets the art for this Case.</p>
     <div class="art-style-options">
-      ${ART_STYLES.map(style => `<label class="art-style-option">
-        <input type="radio" name="${esc(name)}" value="${style.id}" ${selected===style.id?'checked':''} required>
+      ${ART_STYLES.map(style => {
+        const inputId = `${esc(name)}-${style.id}`;
+        return `<label class="art-style-option" for="${inputId}">
+        <input type="radio" id="${inputId}" name="${esc(name)}" value="${style.id}" ${selected===style.id?'checked':''} aria-label="${esc(style.label)}" required>
         <span class="art-style-choice">
           ${gameArtHTML('cases', sampleCase, style.label, {style:style.id, className:'art-style-preview', fallback:style.label})}
           <span class="art-style-copy"><strong>${style.label}</strong><small>${style.note}</small><em>Use this style</em></span>
         </span>
-      </label>`).join('')}
+      </label>`;
+      }).join('')}
     </div>
     <p class="art-style-error" id="${esc(name)}-error" aria-live="polite"></p>
   </fieldset>`;
