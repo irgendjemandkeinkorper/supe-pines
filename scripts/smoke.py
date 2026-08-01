@@ -61,8 +61,11 @@ with sync_playwright() as playwright:
 
     page.locator(".casecard").first.click()
     assert page.locator("input[name='local-art-style'][value='ink']").count() == 1
-    assert page.locator("input[name='local-art-style'][value='burden']").count() == 1
-    page.locator("input[name='local-art-style'][value='burden']").check()
+    assert page.locator("input[name='local-art-style'][value='expressionist']").count() == 1
+    # The radio inputs are intentionally visually hidden behind their full-card
+    # labels, so click the visible style choice rather than the hidden input.
+    page.locator("label.art-style-option").filter(has_text="Interpretive Expressionist").click()
+    assert page.locator("input[name='local-art-style'][value='expressionist']").is_checked()
     page.select_option("#pl-count", "1")
     page.fill("#pl-name-0", "Smoke Tester")
     page.get_by_role("button", name="Suit Up").click()
@@ -95,8 +98,8 @@ with sync_playwright() as playwright:
     assert control.get_attribute("aria-pressed") == "true"
     assert tile.locator("[data-gallery-side-label]").inner_text() == "Side II — turned"
     assert page.get_by_role("button", name="Noir Comic").count() == 1
-    assert page.get_by_role("button", name="Burden Realist").count() == 1
-    page.get_by_role("button", name="Burden Realist").click()
+    assert page.get_by_role("button", name="Interpretive Expressionist").count() == 1
+    page.get_by_role("button", name="Interpretive Expressionist").click()
     assert page.locator(".gcat-heroes .gtile").count() == 12
     page.get_by_role("button", name="Noir Comic").click()
     page.get_by_role("button", name="Back to Millhaven").click()

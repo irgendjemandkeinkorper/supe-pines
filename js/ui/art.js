@@ -12,15 +12,16 @@ export const ART_STYLES = [
     note:'Hard ink, halftone weather, and street-level color — the city as evidence.'
   },
   {
-    id:'burden',
-    label:'Burden Realist',
-    note:'Magical realism that makes each Hero’s shortcoming visible in the world around them.'
+    id:'expressionist',
+    label:'Interpretive Expressionist',
+    note:'Symbolic, painterly card art that turns each Hero’s flaw into a visual omen.'
   }
 ];
 
 const ART_EXTS = ['png','jpg','jpeg','webp'];
 
 export function normalizeArtStyle(style){
+  if(style === 'burden') return 'expressionist';
   return ART_STYLES.some(item => item.id === style) ? style : 'ink';
 }
 

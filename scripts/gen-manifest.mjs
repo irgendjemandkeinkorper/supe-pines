@@ -11,7 +11,7 @@ import {
 const REPO = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const DEFAULT_VAULT = process.env.SUPE_PINES_VAULT || path.join(REPO, '..', 'supe-pines-vault');
 const PAGES_BASE = (process.env.SUPE_PINES_PAGES_BASE || 'https://irgendjemandkeinkorper.github.io/supe-pines').replace(/\/$/, '');
-const STYLES = ['ink', 'burden'];
+const STYLES = ['ink', 'expressionist'];
 const ASPECTS = { heroes:'3:4', cases:'3:4', signals:'1:1', threats:'3:4' };
 
 function artField(style, side){ return side ? `image_${style}_${side}` : `image_${style}`; }

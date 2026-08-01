@@ -13,7 +13,7 @@ import { ART_STYLES, normalizeArtStyle } from './art.js';
    both visual languages are available even while their generated files are
    still being filled in; every missing tile shows an intentional text fallback. */
 let gState = { style:'ink', cat:'heroes', detail:null };
-const STYLE_READY = { ink:true, burden:true };
+const STYLE_READY = { ink:true, expressionist:true };
 
 function heroTiles(style){
   return HEROES.map(a=>{

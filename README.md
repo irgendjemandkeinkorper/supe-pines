@@ -168,7 +168,7 @@ The visual and copy rules live in [`docs/design-bible.md`](docs/design-bible.md)
 
 The launch build includes matching Comic Ink Case covers for the first five
 Cases, visible in the Case picker and Gallery. The Gallery supports the full image set at
-`art/images/<style>/<category>/<slug>.<ext>` (`style` is `ink` or `burden`;
+`art/images/<style>/<category>/<slug>.<ext>` (`style` is `ink` or `expressionist`;
 `category` is `heroes`, `cases`, `signals`, or `threats`) and falls back to
 intentional text cards whenever an image is absent. Each Hero appears as one
 two-sided card with an explicit Side I/Side II control; the caption and flip
@@ -177,9 +177,9 @@ condition follow the face being shown.
 The Bleakwood Vale manifest pipeline is now fully adapted for Supe Pines. It
 contains hand-authored art direction for all 12 Heroes (both sides), 8 Cases,
 32 Signals, and 8 obscured Threats in two visual styles — 144 image slots
-total. Comic Ink is the hard-edged street-level language; Burden Realist is
-magical realism that makes a Hero's shortcoming, compromise, or downfall
-visible in the neighborhood. Prompt coverage and manifest generation can be
+total. Comic Ink is the hard-edged street-level language; Interpretive
+Expressionist is symbolic, painterly trading-card art that makes a Hero's
+shortcoming, compromise, or downfall visible in the neighborhood. Prompt coverage and manifest generation can be
 checked without Python,
 credentials, or an API call:
 
@@ -197,13 +197,15 @@ selection before making paid calls:
 ```
 python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt
-.venv/bin/python generate.py --dry-run --category cases --style ink --limit 2
-.venv/bin/python generate.py --category cases --style ink --limit 2 --no-write-back
+.venv/bin/python generate.py --dry-run --category cases --style expressionist --limit 2
+.venv/bin/python generate.py --category cases --style expressionist --limit 2 --no-write-back
 ```
 
 The default manifest records the public Pages URLs and the generator can write
 them back into a sibling `../supe-pines-vault`. Use `--no-write-back` when no
-vault is wanted; use `--help` on any of the three tools for all options.
+vault is wanted; the companion [Supe Pines Obsidian vault](https://github.com/irgendjemandkeinkorper/supe-pines-vault)
+keeps the generated notes, templates, and entity index in a separate repo. Use
+`--help` on any of the three tools for all options.
 
 ## Validating game content
 

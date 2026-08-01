@@ -26,7 +26,7 @@ REPO = Path(__file__).resolve().parent
 DEFAULT_MANIFEST = REPO / "manifest.json"
 DEFAULT_VAULT = Path(os.environ.get("SUPE_PINES_VAULT", REPO.parent / "supe-pines-vault"))
 SUPPORTED_CATEGORIES = ("heroes", "cases", "signals", "threats")
-SUPPORTED_STYLES = ("ink", "burden")
+SUPPORTED_STYLES = ("ink", "expressionist")
 FRONTMATTER_RE = re.compile(r"^---\n(.*?)\n---\n(.*)$", re.DOTALL)
 
 
@@ -45,7 +45,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--category", choices=SUPPORTED_CATEGORIES,
                         help="only process one card category")
     parser.add_argument("--style", choices=SUPPORTED_STYLES,
-                        help="only process Noir Comic or Burden Realist art")
+                        help="only process Noir Comic or Interpretive Expressionist art")
     parser.add_argument("--limit", type=int,
                         help="cap the selected records (useful for a test batch)")
     parser.add_argument("--dry-run", action="store_true",
