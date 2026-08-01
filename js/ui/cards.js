@@ -1,6 +1,6 @@
 import { esc, nl2br, toneBadge, ACT_NAMES } from '../engine/utils.js';
 import { State } from '../engine/state.js';
-import { heroArtHTML, currentArtStyle } from './art.js';
+import { heroArtHTML, signalArtHTML, currentArtStyle } from './art.js';
 
 function heroFaceHTML(h, sideIdx, turned){
   const s = h.sides[sideIdx];
@@ -96,6 +96,7 @@ export function signalCard(o, selectable, idx){
     ? `role="button" tabindex="0" aria-pressed="false" onclick="${selectable}(${idx})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();${selectable}(${idx})}" id="omen-pick-${idx}"`
     : '';
   return `<div class="card signal${selectable?' selectable':''}" ${selectAttrs}>
+    ${signalArtHTML(o, {className:'signalcard-art', style:currentArtStyle()})}
     <div class="c-kicker">Signal</div>
     <div class="glyph">${o.glyph}</div>
     <div class="c-title">${esc(o.title)}</div>
@@ -152,6 +153,7 @@ export function sceneTrackerHTML(G, opts={}){
         <span>${esc(played.owner)}</span>
       </div>
       <div class="card scene-table-card${isSignal?' signal':''}">
+        ${isSignal?signalArtHTML(played.card, {className:'signalcard-art', style:currentArtStyle()}):''}
         <div class="c-kicker">${kicker}</div>
         ${isSignal?`<div class="glyph">${played.card.glyph}</div>`:''}
         <div class="c-title">${esc(played.card.title)}</div>
