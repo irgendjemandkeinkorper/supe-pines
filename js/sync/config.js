@@ -1,22 +1,15 @@
-/* PLACEHOLDER — online multiplayer will not work until this is replaced.
-   Hotseat play works fine regardless (this file is only ever touched by
-   js/sync/firebase-init.js, and the app never requires online mode to
-   function).
-
-   To enable online multiplayer, see the "Firebase setup" section of
-   README.md, then replace the object below with the real firebaseConfig
-   shown to you when you register a Web app in the Firebase console. */
+// Firebase project config for Supe Pines. This is a client-side identifier,
+// not a service-account secret. Firestore rules and Firebase Auth settings
+// provide the access control for remote rooms.
 export const firebaseConfig = {
-  apiKey: "REPLACE_ME",
-  authDomain: "REPLACE_ME.firebaseapp.com",
-  projectId: "REPLACE_ME",
-  storageBucket: "REPLACE_ME.firebasestorage.app",
-  messagingSenderId: "REPLACE_ME",
-  appId: "REPLACE_ME"
+  apiKey: "AIzaSyDKzNktpABqEvyoxVH_usylJadHwdlqSb8",
+  authDomain: "supe-pine.firebaseapp.com",
+  projectId: "supe-pine",
+  storageBucket: "supe-pine.firebasestorage.app",
+  messagingSenderId: "1072717573853",
+  appId: "1:1072717573853:web:60ad7a40b793fc39c77534",
+  measurementId: "G-GSC3PZ1TZS"
 };
 
-/* Keep the public build honest while this object still contains the starter
-   placeholders. The title screen can explain that remote rooms need their
-   Firebase project instead of leading players into a sign-in failure. */
 export const firebaseConfigured = Object.values(firebaseConfig)
   .every(value => typeof value === 'string' && value.length > 0 && !value.includes('REPLACE_ME'));

@@ -44,7 +44,7 @@ with sync_playwright() as playwright:
     page.goto(BASE, wait_until="networkidle")
     assert page.title() == "Supe Pines — A Street-Level Case File"
     assert page.locator(".screen.active").get_attribute("id") == "scr-title"
-    assert page.get_by_role("button", name="Online (setup required)").count() == 1
+    assert page.get_by_role("button", name="Play Online").count() == 1
     assert page.locator("#resume-local-button").is_hidden()
 
     page.get_by_role("button", name="Open the Case (this screen)").click()
@@ -136,4 +136,4 @@ if server:
     server.shutdown()
 if errors:
     raise SystemExit("\n".join(errors))
-print("Browser smoke test passed: eight Cases, resume, Gallery flip, Dossier, first scene, resolution, online fallback, and mobile layout.")
+print("Browser smoke test passed: eight Cases, resume, Gallery flip, Dossier, first scene, resolution, online entry, and mobile layout.")

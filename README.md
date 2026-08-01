@@ -13,12 +13,11 @@ Runs entirely in the browser.
 
 ## Status
 
-Hotseat (one browser tab, shared screen) is ready on the public page. The code
-for real-time remote multiplayer via Firebase/Firestore (room codes and
-per-player privacy) is also complete, but it needs a dedicated Firebase project
-before the public page can open remote rooms. Until then the title screen labels
-online play as setup-required and gives players a useful explanation instead of
-letting a sign-in attempt fail. See "Firebase setup" below.
+Hotseat (one browser tab, shared screen) and the real-time remote multiplayer
+code are ready on the public page. Remote rooms use Firebase/Firestore for room
+codes and per-player privacy; the remaining Firebase work is enabling Anonymous
+Auth, publishing the included rules, and authorizing the GitHub Pages domain.
+See "Firebase setup" below.
 
 The table UI includes a ready-to-lead turn board, full-card hand drawers, and a
 three-slot scene tracker that keeps the opening card, buy-ins, lead Hero, and
@@ -103,10 +102,9 @@ cloud accounts for you. Supe Pines needs its **own** Firebase project — it mus
 not reuse Bleakwood Vale's, since Firestore has no per-game partitioning and
 reusing a project would mix the two games' rooms together.
 
-1. Go to the [Firebase console](https://console.firebase.google.com) → **Add
-   project** → give it a name (e.g. `supe-pines`) → Analytics is optional,
-   fine to skip.
-2. Register a **Web app** (the `</>` icon on the project overview page) — give
+1. Open your `supe-pine` project in the [Firebase console](https://console.firebase.google.com).
+2. Register a **Web app** (the `</>` icon on the project overview page) if you
+   have not already — give
    it a nickname, skip "also set up Firebase Hosting" (this project uses
    GitHub Pages instead). Copy the `firebaseConfig` object it shows you into
    `js/sync/config.js`, replacing the `"REPLACE_ME"` placeholders — this file
@@ -129,8 +127,8 @@ reusing a project would mix the two games' rooms together.
    this, which can mask the fact that it's silently blocked once deployed —
    don't skip this step.
 
-Until `js/sync/config.js` has real values, the public page marks online play as
-setup-required. Hotseat play is completely unaffected either way.
+The Web App config is now committed in `js/sync/config.js`. Hotseat play is
+completely unaffected by any remaining Firebase console setup.
 
 ## Resume and verification
 
