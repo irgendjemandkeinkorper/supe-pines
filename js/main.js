@@ -33,6 +33,7 @@ import {
   onlineConfirmContrib, onlineEndScene, onlineApplyResolve,
   onlineToggleSecretOmen, onlineConfirmSecret,
   onlineAnswerForAbsent, onlineCopyRoomLink, onlineDismissScenePrimer, openOnlineHand,
+  showOnlineError, hideOnlineError, onlineRetryConnection, onlineFallbackToHotseat,
   initFirebaseConnection, onlineVerifyAndProceed
 } from './ui/online.js';
 
@@ -56,6 +57,7 @@ Object.assign(window, {
   onlineConfirmContrib, onlineEndScene, onlineApplyResolve,
   onlineToggleSecretOmen, onlineConfirmSecret,
   onlineAnswerForAbsent, onlineCopyRoomLink, onlineDismissScenePrimer, openOnlineHand,
+  showOnlineError, hideOnlineError, onlineRetryConnection, onlineFallbackToHotseat,
   onlineVerifyAndProceed
 });
 
