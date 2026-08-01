@@ -15,6 +15,8 @@ import {
   liveContribute, liveEndSceneAndResolve, liveConfirmSecret, liveClaimSecret,
   liveAdvanceAfterClose, liveTradeSignal, liveForfeitScene
 } from '../sync/liveActions.js';
+import { renderHub, afterSceneFlow } from './hub.js';
+import { renderScenePlay } from './scene.js';
 
 /* Small per-device scratch state for in-progress, uncommitted composition
    (which card/Hero picked, contribution draft, flip checkboxes,
@@ -98,7 +100,167 @@ function mySeatIndex(room){
   const idx = room.seats[uid];
   return idx===undefined ? -1 : idx;
 }
-function fail(err){ alert(err && err.message ? err.message : String(err)); }
+export function hideOnlineError() {
+  const container = $('online-error-container');
+  if (container) {
+    container.style.display = 'none';
+    container.innerHTML = '';
+  }
+}
+
+export function showOnlineError(err, type, options = {}) {
+  const container = $('online-error-container');
+  if (!container) return;
+
+  const msg = err && err.message ? err.message : String(err || 'An unknown error occurred.');
+
+  let title = 'Error';
+  let cause = msg;
+  let nextAction = 'Verify your inputs and try again.';
+  let buttonsHTML = '';
+
+  if (type === 'create') {
+    title = 'Failed to Create Room';
+    cause = `Could not open a new case on the server. ${msg}`;
+    nextAction = 'Try opening the table again, or check your internet connection.';
+    buttonsHTML = `
+      <button class="primary" onclick="onlineCreateRoom()">Try Again</button>
+      <button class="ghost" onclick="hideOnlineError()">Dismiss</button>
+    `;
+  } else if (type === 'join') {
+    title = 'Failed to Join Case';
+    cause = `Could not join the case. ${msg}`;
+    nextAction = 'Double-check the room code, or ask the host to confirm if the lobby is still open.';
+    buttonsHTML = `
+      <button class="primary" onclick="onlineJoinRoom()">Try Again</button>
+      <button class="ghost" onclick="hideOnlineError()">Dismiss</button>
+    `;
+  } else if (type === 'auth') {
+    title = 'Authentication Failure';
+    cause = `We couldn't securely sign you into the switchboard: ${msg}`;
+    nextAction = 'Please reload the page to re-authenticate and try again.';
+    buttonsHTML = `
+      <button class="primary" onclick="location.reload()">Reload Page</button>
+      <button class="ghost" onclick="hideOnlineError()">Dismiss</button>
+    `;
+  } else if (type === 'subscription' || type === 'connection') {
+    title = 'Connection Lost';
+    cause = `The connection to the remote table was lost. (${msg})`;
+    nextAction = 'You can retry connecting to the table, leave the table, or continue playing right now in Hotseat mode on this screen.';
+    buttonsHTML = `
+      <button class="primary" onclick="onlineRetryConnection()">Retry Connection</button>
+      <button class="blood" onclick="onlineFallbackToHotseat()">Continue in Hotseat</button>
+      <button class="ghost" onclick="leaveOnlineRoom(); hideOnlineError();">Leave Room</button>
+    `;
+  } else {
+    title = 'Action Failed';
+    cause = `The action could not be completed. ${msg}`;
+    nextAction = 'Check your selection and try playing the action again.';
+    buttonsHTML = `
+      <button class="ghost" onclick="hideOnlineError()">Dismiss</button>
+    `;
+  }
+
+  container.innerHTML = `
+    <div class="panel spotlight" style="border-color: var(--blood-bright); border-width: 2px; margin: 0;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <div>
+          <span class="sc" style="color: var(--blood-bright); letter-spacing: .15em; font-size: 0.95rem;">${esc(title)}</span>
+          <p style="margin-top: 6px; color: var(--paper); font-size: 1rem;">${esc(cause)}</p>
+          <p style="margin-top: 8px; color: var(--gold); font-size: 0.85rem;"><strong>Next Action:</strong> ${esc(nextAction)}</p>
+        </div>
+        <button class="ghost" onclick="hideOnlineError()" style="border: none; background: none; box-shadow: none; padding: 0; color: var(--gold-soft); cursor: pointer; font-size: 1.4rem; line-height: 1;" aria-label="Dismiss error">✕</button>
+      </div>
+      <div class="btnrow" style="margin-top: 14px;">
+        ${buttonsHTML}
+      </div>
+    </div>
+  `;
+
+  container.style.display = 'block';
+  container.focus();
+}
+
+export function onlineRetryConnection() {
+  hideOnlineError();
+  const code = State.onlineRoomCode;
+  if (!code) {
+    showOnlineError(new Error('No active room code to reconnect to.'), 'connection');
+    return;
+  }
+  subscribeMyPrivate(code, getUid(), priv => { myPrivate = priv; });
+  subscribeRoom(code, routeAndRender, error => {
+    console.warn('[online] room subscription lost', error);
+    showOnlineError(error, 'connection');
+  });
+}
+
+export function onlineFallbackToHotseat() {
+  hideOnlineError();
+  const room = State.G;
+  if (!room) {
+    showOnlineError(new Error('No game state available to fall back to.'), 'action');
+    return;
+  }
+
+  State.onlineRoomCode = null;
+  unsubscribeRoom();
+  unsubscribeMyPrivate();
+
+  try { history.replaceState(null, '', location.pathname); } catch(e) {}
+
+  const myUid = getUid();
+  const myIdx = mySeatIndex(room);
+
+  room.players.forEach((p, i) => {
+    if (i === myIdx && myUid) {
+      p.hand = myPrivate.hand || [];
+      p.secrets = myPrivate.secrets || [];
+    } else {
+      p.hand = [];
+      const hCount = p.handCount || 0;
+      for (let k = 0; k < hCount; k++) {
+        if (room.sceneDeck && room.sceneDeck.length) {
+          p.hand.push(room.sceneDeck.pop());
+        }
+      }
+      p.secrets = [];
+      const sCount = p.secretsCount || 0;
+      const unrevealed = p.unrevealedSecretsCount || 0;
+      for (let k = 0; k < sCount; k++) {
+        p.secrets.push({ q: 'A secret is kept...', combo: ['Guilt'], used: k >= unrevealed });
+      }
+    }
+  });
+
+  if (room.current) {
+    renderScenePlay();
+    show('scr-scene');
+  } else {
+    afterSceneFlow();
+  }
+}
+
+export function fail(err, forcedType) {
+  if (err && (err.message?.includes('subscription') || err.message?.includes('connection') || err.message?.includes('lost'))) {
+    showOnlineError(err, 'connection');
+  } else if (forcedType) {
+    showOnlineError(err, forcedType);
+  } else {
+    const container = $('scr-online-entry');
+    const containerActive = container && container.classList.contains('active');
+    if (containerActive) {
+      const codeVal = ($('oe-join-code')?.value || '').trim();
+      if (codeVal) {
+        showOnlineError(err, 'join');
+      } else {
+        showOnlineError(err, 'create');
+      }
+    } else {
+      showOnlineError(err, 'action');
+    }
+  }
+}
 
 /* ---------------- entry: create or join ---------------- */
 export function showOnlineEntry(){
@@ -167,7 +329,7 @@ export async function onlineCreateRoom(){
     const artStyle = document.querySelector('input[name="oe-art-style"]:checked')?.value;
     const code = await createRoom(chosenCase, name, normalizeArtStyle(artStyle));
     enterRoom(code);
-  } catch(err){ fail(err); }
+  } catch(err){ fail(err, 'create'); }
 }
 export async function onlineJoinRoom(){
   try{
@@ -175,7 +337,7 @@ export async function onlineJoinRoom(){
     const name = ($('oe-join-name').value||'').trim();
     await joinRoom(code, name);
     enterRoom(code);
-  } catch(err){ fail(err); }
+  } catch(err){ fail(err, 'join'); }
 }
 function enterRoom(code){
   State.onlineRoomCode = code;
