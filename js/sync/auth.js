@@ -1,5 +1,7 @@
 import { signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js';
-import { auth } from './firebase-init.js';
+import { doc, getDoc } from 'https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js';
+import { auth, db } from './firebase-init.js';
+import { firebaseConfigured } from './config.js';
 
 let currentUid = null;
 let signingIn = null;
@@ -56,4 +58,33 @@ export function ensureSignedIn(){
       });
   }
   return signingIn;
+}
+
+let verificationPromise = null;
+
+export function verifyFirebaseReadiness() {
+  if (!firebaseConfigured) {
+    return Promise.reject(new Error('Firebase is not configured. Config contains placeholder or empty values.'));
+  }
+  if (verificationPromise) return verificationPromise;
+
+  verificationPromise = (async () => {
+    try {
+      // 1. Ensure anonymous sign-in is successful.
+      // This verifies that Firebase Auth is reachable and Anonymous Auth is enabled.
+      await ensureSignedIn();
+
+      // 2. Ensure Firestore is reachable and rules are published by attempting a read
+      // on a specific path in the allowed 'rooms' collection.
+      const testRef = doc(db, 'rooms', '_test_readiness');
+      await getDoc(testRef);
+
+      return true;
+    } catch (err) {
+      verificationPromise = null; // allow retries
+      throw err;
+    }
+  })();
+
+  return verificationPromise;
 }

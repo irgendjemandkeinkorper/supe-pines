@@ -28,6 +28,9 @@
 
 <div class="wrap">
 
+  <!-- ============ ONLINE STATUS / ALERT REGION ============ -->
+  <div id="online-error-container" role="alert" tabindex="-1" style="display: none; margin-bottom: 20px;"></div>
+
   <!-- ============ TITLE ============ -->
   <div class="screen active" id="scr-title">
     <div class="masthead">
@@ -85,7 +88,7 @@
   <div class="screen" id="scr-players">
     <h2 class="center">The Storytellers</h2>
     <div class="panel" style="max-width:560px;margin:20px auto">
-      <label class="fld">How many gather at the table?</label>
+      <label class="fld" for="pl-count">How many gather at the table?</label>
       <select id="pl-count" onchange="renderPlayerInputs()">
         <option value="1">One — a solitary storyteller (solo mode)</option>
         <option value="2">Two</option>

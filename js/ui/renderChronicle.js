@@ -5,6 +5,7 @@ import { show, openOverlay, closeOverlay, dismissFirstrunHint } from './screens.
 import { faceUp } from '../engine/rules.js';
 import { liveToggleStrike } from '../sync/liveActions.js';
 import { sceneAnatomyDiagramHTML } from './cards.js';
+import { fail } from './online.js';
 import { markIntroSeen } from '../engine/firstrun.js';
 
 /* ---------------- the dossier ---------------- */
@@ -87,7 +88,7 @@ export function renderChronicle(interim){
 }
 export function toggleStrike(gi, interim){
   if(State.onlineRoomCode){
-    liveToggleStrike(State.onlineRoomCode, gi).catch(err=>alert(err.message));
+    liveToggleStrike(State.onlineRoomCode, gi).catch(err=>fail(err));
     return; // the onSnapshot listener re-renders once the write lands
   }
   State.G.journal[gi].struck = !State.G.journal[gi].struck;

@@ -38,7 +38,7 @@ export function renderPlayerInputs(){
   const n = +$('pl-count').value;
   let html='';
   for(let i=0;i<n;i++){
-    html += `<label class="fld">Storyteller ${ROMAN[i+1]}</label>
+    html += `<label class="fld" for="pl-name-${i}">Storyteller ${ROMAN[i+1]}</label>
              <input type="text" id="pl-name-${i}" placeholder="Name (optional)">`;
   }
   $('pl-names').innerHTML = html;
@@ -97,9 +97,9 @@ export function renderArchSetup(){
       </div>
       <div class="panel">
         <p class="small muted">${esc(answerer.name)} answers — in character, or plainly. The answer becomes a fact about the Threat and about this Hero.</p>
-        <label class="fld">Name this Hero</label>
+        <label class="fld" for="arch-name">Name this Hero</label>
         <input type="text" id="arch-name" placeholder="e.g. The Nightwatch">
-        <label class="fld">The answer</label>
+        <label class="fld" for="arch-answer">The answer</label>
         <textarea id="arch-answer" placeholder="What is established…"></textarea>
         <div class="btnrow">
           <button class="primary" onclick="saveArchSetup()">${i<5?'Next Question':'To the Threat'}</button>
@@ -132,7 +132,7 @@ export function renderVictim(){
         ${G.threat.facts.map(f=>`<p class="small" style="margin:6px 0"><span style="color:var(--gold)">${esc(f.role)}:</span> <span>${esc(f.a)}</span></p>`).join('')}
       </div>
       <div class="panel">
-        <label class="fld">Together, name the Threat</label>
+        <label class="fld" for="victim-name">Together, name the Threat</label>
         <input type="text" id="victim-name" placeholder="This is usually the hardest part.">
         <div class="btnrow">
           <button class="primary" onclick="finishVictim()">Deal the Cards</button>
