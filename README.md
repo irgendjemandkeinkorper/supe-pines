@@ -153,7 +153,7 @@ resume, two-sided Gallery controls, in-progress Dossier, first scene and
 resolution, online fallback, and narrow-screen layout:
 
 ```
-python3 -m pip install playwright
+python3 -m pip install -r requirements-dev.txt
 playwright install chromium
 python3 scripts/smoke.py
 ```
@@ -161,6 +161,46 @@ python3 scripts/smoke.py
 GitHub Actions runs the same data and browser checks on pull requests and
 `main`; the production site remains a dependency-free static GitHub Pages
 build.
+
+### Production Isolation and Dependency Management
+
+All Python scripts, image-generation dependencies (`requirements.txt`), and browser testing/development tools (`requirements-dev.txt`) are isolated to local developer workflows and GitHub Actions integration pipelines. The production site runs entirely in the browser as a static, client-side, zero-dependency HTML/JS app. It does not carry, bundle, or run any backend Python or Node.js development environments.
+
+### Updating and Refreshing Pinned Dependencies
+
+To refresh or update pinned versions and verify the resulting setup:
+
+1. **To update image-generation libraries** (such as `google-genai` or `Pillow`):
+   - Edit the exact versions inside `requirements.txt`.
+   - Clean/create a virtual environment and re-install:
+     ```bash
+     python3 -m venv .venv
+     source .venv/bin/activate
+     pip install -r requirements.txt
+     ```
+   - Verify image-generation logic with a dry run:
+     ```bash
+     python generate.py --dry-run
+     ```
+
+2. **To update development/browser test packages** (such as `playwright`):
+   - Edit the version inside `requirements-dev.txt`.
+   - Re-install the updated package and update its companion browser binaries:
+     ```bash
+     pip install -r requirements-dev.txt
+     playwright install chromium
+     ```
+
+3. **Verify the entire check suite**:
+   Ensure all automated validations and the browser smoke suite pass completely before committing changes:
+   ```bash
+   node scripts/validate-data.mjs && \
+   node scripts/gen-prompts.mjs --check && \
+   node scripts/gen-manifest.mjs --check && \
+   node --test test/*.test.mjs && \
+   node scripts/check-art.mjs && \
+   python3 scripts/smoke.py
+   ```
 
 The visual and copy rules live in [`docs/design-bible.md`](docs/design-bible.md).
 
