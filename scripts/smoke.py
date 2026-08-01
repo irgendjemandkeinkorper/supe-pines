@@ -262,9 +262,17 @@ with sync_playwright() as playwright:
 
     # Exercise resume coverage in a second page while this page remains on
     # the original resolution screen for the full three-act smoke path.
+    resume_snapshot = page.evaluate("localStorage.getItem('sp:save:v1')")
+    assert resume_snapshot
     resume_page = browser.new_page(viewport={"width": 1440, "height": 1000})
     watch(resume_page, "resume ")
     resume_page.goto(BASE, wait_until="networkidle")
+    if resume_page.get_by_role("button", name="Resume saved Case").count() == 0:
+        resume_page.evaluate(
+            "(snapshot) => localStorage.setItem('sp:save:v1', snapshot)",
+            resume_snapshot,
+        )
+        resume_page.reload(wait_until="networkidle")
     resume_page.get_by_role("button", name="Resume saved Case").click()
     resume_page.wait_for_selector("#scr-resolve.active")
     resume_page.locator("#flip-0").check()
