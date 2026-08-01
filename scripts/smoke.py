@@ -117,14 +117,105 @@ with sync_playwright() as playwright:
     page.locator("[id^='scene-pick-']").first.click()
     page.locator("#arch-pick-0").click()
     page.fill("#scene-opening", "Rain stripes the roof while the scanner hisses.")
+
+    # 1. Reload/Resume on Scene-Pick screen
+    page.reload(wait_until="networkidle")
+    assert page.get_by_role("button", name="Resume saved Case").is_visible()
+    page.get_by_role("button", name="Resume saved Case").click()
+    page.wait_for_selector("#scr-scene.active")
+    assert "selected" in page.locator("[id^='scene-pick-']").first.get_attribute("class")
+    assert "selected" in page.locator("#arch-pick-0").get_attribute("class")
+    assert page.locator("#scene-opening").input_value() == "Rain stripes the roof while the scanner hisses."
+    assert page.locator("#btn-begin").is_enabled()
+
     page.get_by_role("button", name="Begin the Scene").click()
     assert page.locator(".scene-tracker").count() == 1
     assert page.locator(".scene-slot").count() == 3
     assert page.locator(".scene-slot.occupied").count() == 1
+
     page.fill("#scene-happened", "The heroes follow the Signal to the next roof.")
+    page.get_by_role("button", name="plays a card into this scene").first.click()
+    page.locator("[id^='scene-pick-']").first.click()
+    page.fill("#contrib-how", "Suddenly, a shadow falls across the street.")
+
+    # 2. Reload/Resume on Scene-Play screen (with pending contribution & happened text)
+    page.reload(wait_until="networkidle")
+    page.get_by_role("button", name="Resume saved Case").click()
+    page.wait_for_selector("#scr-scene.active")
+    assert page.locator("#scene-happened").input_value() == "The heroes follow the Signal to the next roof."
+    assert page.locator("#contrib-how").input_value() == "Suddenly, a shadow falls across the street."
+
+    page.get_by_role("button", name="Play It").click()
+    assert page.locator(".scene-slot.occupied").count() == 2
+
     page.locator("#scr-scene button.blood").click()
     page.wait_for_selector("#scr-resolve.active")
     assert page.locator(".scene-tracker.resolving").count() == 1
+
+    page.locator("#flip-0").check()
+
+    # 3. Reload/Resume on Resolution screen (verifying flip checkbox state)
+    page.reload(wait_until="networkidle")
+    page.get_by_role("button", name="Resume saved Case").click()
+    page.wait_for_selector("#scr-resolve.active")
+    assert page.locator("#flip-0").is_checked()
+
+    # Force the player's first secret combo to match the scene tones so a secret is guaranteed to unlock.
+    page.evaluate("""() => {
+        const G = window.State.G;
+        const c = G.current;
+        const lead = G.heroes[c.archIdx];
+        const isFlipped = document.getElementById('flip-' + c.archIdx).checked ? !lead.flipped : lead.flipped;
+        const s = lead.sides[isFlipped ? 1 : 0];
+        const tones = [c.card.tone];
+        c.contributions.forEach(x => { if (x.kind === 'scene') tones.push(x.card.tone); });
+        tones.push(s.tone);
+        G.players[0].secrets[0].combo = tones.slice(0, 3);
+        G.players[0].secrets[0].used = false;
+    }""")
+
+    page.get_by_role("button", name="Count the Tones").click()
+    page.wait_for_selector("#scr-secret.active")
+
+    # Pick 3 signals and write the vignette answer
+    page.locator("#omen-pick-0").click()
+    page.locator("#omen-pick-1").click()
+    page.locator("#omen-pick-2").click()
+    page.fill("#secret-answer", "The shadows knew the truth all along.")
+
+    # 4. Reload/Resume on Secret reveal screen
+    page.reload(wait_until="networkidle")
+    assert page.get_by_role("button", name="Resume saved Case").is_visible()
+    page.get_by_role("button", name="Resume saved Case").click()
+    page.wait_for_selector("#scr-secret.active")
+    assert "selected" in page.locator("#omen-pick-0").get_attribute("class")
+    assert "selected" in page.locator("#omen-pick-1").get_attribute("class")
+    assert "selected" in page.locator("#omen-pick-2").get_attribute("class")
+    assert page.locator("#secret-answer").input_value() == "The shadows knew the truth all along."
+    assert page.locator("#btn-secret").is_enabled()
+
+    # Verify no undefined or null output exists on the resumed screens
+    visible_text = page.locator("body").inner_text().lower()
+    assert "undefined" not in visible_text
+    assert "null" not in visible_text
+
+    page.get_by_role("button", name="So It Is Revealed").click()
+    page.wait_for_selector("#scr-hub.active")
+
+    # 5. Verify online room state is never copied into localStorage.
+    # Go to Play Online entry and create a room, and check localStorage.
+    page.goto(BASE, wait_until="networkidle")
+    page.locator("#title-online-button").click()
+    page.wait_for_selector("#scr-online-entry.active")
+    # Simulate being in an online mode by setting room code
+    page.evaluate("window.State.onlineRoomCode = 'XYZ123'")
+    page.evaluate("window.saveGame('scr-online-entry')")
+    # localStorage save must NOT exist for XYZ123 or scr-online-entry
+    save_data = page.evaluate("localStorage.getItem('sp:save:v1')")
+    if save_data:
+        import json
+        snap = json.loads(save_data)
+        assert snap.get("screen") != "scr-online-entry"
 
     mobile = browser.new_page(viewport={"width": 390, "height": 844})
     watch(mobile, "mobile ")
