@@ -33,7 +33,8 @@ import {
   onlineConfirmContrib, onlineEndScene, onlineApplyResolve,
   onlineToggleSecretOmen, onlineConfirmSecret,
   onlineAnswerForAbsent, onlineCopyRoomLink, onlineDismissScenePrimer, openOnlineHand,
-  showOnlineError, hideOnlineError, onlineRetryConnection, onlineFallbackToHotseat
+  showOnlineError, hideOnlineError, onlineRetryConnection, onlineFallbackToHotseat,
+  initFirebaseConnection, onlineVerifyAndProceed
 } from './ui/online.js';
 
 Object.assign(window, {
@@ -56,7 +57,8 @@ Object.assign(window, {
   onlineConfirmContrib, onlineEndScene, onlineApplyResolve,
   onlineToggleSecretOmen, onlineConfirmSecret,
   onlineAnswerForAbsent, onlineCopyRoomLink, onlineDismissScenePrimer, openOnlineHand,
-  showOnlineError, hideOnlineError, onlineRetryConnection, onlineFallbackToHotseat
+  showOnlineError, hideOnlineError, onlineRetryConnection, onlineFallbackToHotseat,
+  onlineVerifyAndProceed
 });
 
 export function refreshResumeControl(){
@@ -99,7 +101,7 @@ export function startNewCase(){
   show('scr-hook');
 }
 
-Object.assign(window, { resumeLocalGame, refreshResumeControl, startNewCase });
+Object.assign(window, { State, resumeLocalGame, refreshResumeControl, startNewCase });
 
 /* ---------------- init ---------------- */
 renderHooks();
@@ -109,12 +111,7 @@ applyFirstrunVisibility();
 initOverlayDismiss();
 initHistoryNav();
 if(firebaseConfigured){
-  ensureSignedIn()
-    .then(() => tryAutoRejoin())
-    .catch(err => {
-      console.warn('[sync] anonymous sign-in failed', err);
-      showOnlineError(err, 'auth');
-    });
+  initFirebaseConnection();
 } else {
   const onlineButton = document.getElementById('title-online-button');
   if(onlineButton){

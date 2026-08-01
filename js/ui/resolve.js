@@ -96,7 +96,7 @@ export function renderSecretUnlock(unlock, tones){
       <h3 style="color:#c9b3de;margin-top:16px">Choose three signals to answer with <span class="small" id="secret-count">(0 of 3)</span></h3>
       <div class="cardgrid compact">${G.signalRow.map((o,i)=>signalCard(o,'toggleSecretOmen',i)).join('')}</div>
       <div class="panel spotlight">
-        <label class="fld" style="color:#c9b3de">The vignette</label>
+        <label class="fld" style="color:#c9b3de" for="secret-answer">The vignette</label>
         <p class="small muted" style="margin-bottom:6px">Use the three signals — literally, metaphorically, obliquely — to show us the answer.</p>
         <textarea id="secret-answer" style="min-height:120px" placeholder="Show us…"></textarea>
         <div class="btnrow">
