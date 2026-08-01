@@ -32,7 +32,8 @@ import {
   onlineSetContribHow, onlineSetSceneHappened, onlineSetSecretAnswer,
   onlineConfirmContrib, onlineEndScene, onlineApplyResolve,
   onlineToggleSecretOmen, onlineConfirmSecret,
-  onlineAnswerForAbsent, onlineCopyRoomLink, onlineDismissScenePrimer, openOnlineHand
+  onlineAnswerForAbsent, onlineCopyRoomLink, onlineDismissScenePrimer, openOnlineHand,
+  initFirebaseConnection, onlineVerifyAndProceed
 } from './ui/online.js';
 
 Object.assign(window, {
@@ -54,7 +55,8 @@ Object.assign(window, {
   onlineSetContribHow, onlineSetSceneHappened, onlineSetSecretAnswer,
   onlineConfirmContrib, onlineEndScene, onlineApplyResolve,
   onlineToggleSecretOmen, onlineConfirmSecret,
-  onlineAnswerForAbsent, onlineCopyRoomLink, onlineDismissScenePrimer, openOnlineHand
+  onlineAnswerForAbsent, onlineCopyRoomLink, onlineDismissScenePrimer, openOnlineHand,
+  onlineVerifyAndProceed
 });
 
 export function refreshResumeControl(){
@@ -107,9 +109,7 @@ applyFirstrunVisibility();
 initOverlayDismiss();
 initHistoryNav();
 if(firebaseConfigured){
-  ensureSignedIn()
-    .then(() => tryAutoRejoin())
-    .catch(err => console.warn('[sync] anonymous sign-in failed', err));
+  initFirebaseConnection();
 } else {
   const onlineButton = document.getElementById('title-online-button');
   if(onlineButton){
