@@ -244,3 +244,5 @@ Signals, and Act Close shape, and exits nonzero with collection-specific errors.
 This repository is served directly from `main` at the public-build link above
 (Settings → Pages → Deploy from a branch → `main` → `/ (root)`). No build step
 is required; `.nojekyll` keeps the static tree untouched.
+
+Before pushing to `main` or completing a release, follow the [Release Verification & Rollback Checklist](docs/release-checklist.md) to ensure all automated and manual verification steps are completed and to understand how to recover from a bad release.
