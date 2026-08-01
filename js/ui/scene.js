@@ -34,7 +34,7 @@ export function renderScenePick(){
       ${G.heroes.map((a,i)=>heroCard(a,'pickArch',i)).join('')}
     </div>
     <div class="panel">
-      <label class="fld">What the camera sees as the scene opens</label>
+      <label class="fld" for="scene-opening">What the camera sees as the scene opens</label>
       <p class="small muted" style="margin-bottom:6px">Every scene begins as if filmed. The block, the light, the hour, who stands where. Then narrate freely, aloud.</p>
       <textarea id="scene-opening" oninput="setSceneOpening(this.value)" placeholder="The camera drifts through…">${esc(c.opening||'')}</textarea>
       <div class="btnrow">
@@ -98,7 +98,7 @@ export function renderScenePlay(animateSlot=null){
         const card = pk.kind==='scene' ? ap.hand[pk.idx] : G.signalRow[pk.idx];
         addingHTML = `
           <div style="max-width:280px">${pk.kind==='scene'?sceneCardHTML(card):signalCard(card)}</div>
-          <label class="fld">How does it manifest in the scene?</label>
+          <label class="fld" for="contrib-how">How does it manifest in the scene?</label>
           <textarea id="contrib-how" oninput="setContribHow(this.value)" placeholder="Describe how it alters the scene in progress…">${esc(c.adding.how||'')}</textarea>
           <div class="btnrow">
             <button class="primary" onclick="confirmContrib()">Play It</button>
@@ -121,7 +121,7 @@ export function renderScenePlay(animateSlot=null){
     </div>`:''}
 
     <div class="panel spotlight">
-      <label class="fld">The record of what happens</label>
+      <label class="fld" for="scene-happened">The record of what happens</label>
       <p class="small muted" style="margin-bottom:6px">Play the scene aloud — narrate, act, cast one another in roles. Note here what the Dossier should remember: who appeared, what was said, what was discovered.</p>
       <textarea id="scene-happened" style="min-height:130px" oninput="setSceneHappened(this.value)" placeholder="What the Dossier will remember of this scene…">${esc(c.happened||'')}</textarea>
       <div class="btnrow">

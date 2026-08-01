@@ -153,7 +153,7 @@ resume, two-sided Gallery controls, in-progress Dossier, first scene and
 resolution, online fallback, and narrow-screen layout:
 
 ```
-python3 -m pip install playwright
+python3 -m pip install -r requirements-dev.txt
 playwright install chromium
 python3 scripts/smoke.py
 ```
@@ -162,12 +162,73 @@ GitHub Actions runs the same data and browser checks on pull requests and
 `main`; the production site remains a dependency-free static GitHub Pages
 build.
 
+### Production Isolation and Dependency Management
+
+All Python scripts, image-generation dependencies (`requirements.txt`), and browser testing/development tools (`requirements-dev.txt`) are isolated to local developer workflows and GitHub Actions integration pipelines. The production site runs entirely in the browser as a static, client-side, zero-dependency HTML/JS app. It does not carry, bundle, or run any backend Python or Node.js development environments.
+
+### Updating and Refreshing Pinned Dependencies
+
+To refresh or update pinned versions and verify the resulting setup:
+
+1. **To update image-generation libraries** (such as `google-genai` or `Pillow`):
+   - Edit the exact versions inside `requirements.txt`.
+   - Clean/create a virtual environment and re-install:
+     ```bash
+     python3 -m venv .venv
+     source .venv/bin/activate
+     pip install -r requirements.txt
+     ```
+   - Verify image-generation logic with a dry run:
+     ```bash
+     python generate.py --dry-run
+     ```
+
+2. **To update development/browser test packages** (such as `playwright`):
+   - Edit the version inside `requirements-dev.txt`.
+   - Re-install the updated package and update its companion browser binaries:
+     ```bash
+     pip install -r requirements-dev.txt
+     playwright install chromium
+     ```
+
+3. **Verify the entire check suite**:
+   Ensure all automated validations and the browser smoke suite pass completely before committing changes:
+   ```bash
+   node scripts/validate-data.mjs && \
+   node scripts/gen-prompts.mjs --check && \
+   node scripts/gen-manifest.mjs --check && \
+   node --test test/*.test.mjs && \
+   node scripts/check-art.mjs && \
+   python3 scripts/smoke.py
+   ```
+
 The visual and copy rules live in [`docs/design-bible.md`](docs/design-bible.md).
 
 ## Card art
 
-The launch build includes matching Comic Ink Case covers for the first five
-Cases, visible in the Case picker and Gallery. The Gallery supports the full image set at
+The application's manifest defines 144 image slots, but the game is designed to gracefully degrade to beautifully styled text-only cards whenever an image is absent. **This text fallback is an accepted, intentional, and fully supported launch state.** This ensures the game remains completely readable, accessible, and playable even with partial art coverage.
+
+### Numeric Launch Target
+For the launch build, the agreed target of completed, shipped art is exactly **6/144** files, categorized as follows:
+
+| Category | Visual Style | Launch Target | Shipped Files | Status |
+|---|---|---|---|---|
+| **Cases** | Comic Ink | 5 / 8 | `afterhours`, `casting`, `lastcall`, `renovation`, `toll` | Shipped |
+| **Cases** | Interpretive Expressionist | 1 / 8 | `afterhours` | Shipped |
+| **Heroes** | All Styles | 0 / 24 | None | Deferred |
+| **Signals** | All Styles | 0 / 64 | None | Deferred |
+| **Threats** | All Styles | 0 / 16 | None | Deferred |
+
+The `scripts/check-art.mjs` script acts as our CI/CD gate. It strictly enforces that these 6 required assets are present and correct before any commit can be merged.
+
+### Deferred Post-Launch Art Packs
+The rest of the manifest's image slots represent a deferred pipeline of future art expansion packs. These will be generated and shipped in waves post-launch:
+1. **Case Expansion Pack (Ink & Expressionist):** Completing the remaining 3 Cases in Comic Ink (`deadair`, `lastroute`, `openhouse`) and 7 Cases in Interpretive Expressionist.
+2. **The Heroes Pack:** Authoring and shipping 24 card faces (front and turned sides for 12 heroes) in both Comic Ink and Interpretive Expressionist styles.
+3. **The Signals Pack:** 64 total illustrations (32 unique signals in both styles).
+4. **The Threats Pack:** 16 total illustrations (8 unique threats in both styles).
+
+The Gallery supports the full image set at
 `art/images/<style>/<category>/<slug>.<ext>` (`style` is `ink` or `expressionist`;
 `category` is `heroes`, `cases`, `signals`, or `threats`) and falls back to
 intentional text cards whenever an image is absent. Each Hero appears as one
@@ -223,3 +284,5 @@ Signals, and Act Close shape, and exits nonzero with collection-specific errors.
 This repository is served directly from `main` at the public-build link above
 (Settings → Pages → Deploy from a branch → `main` → `/ (root)`). No build step
 is required; `.nojekyll` keeps the static tree untouched.
+
+Before pushing to `main` or completing a release, follow the [Release Verification & Rollback Checklist](docs/release-checklist.md) to ensure all automated and manual verification steps are completed and to understand how to recover from a bad release.

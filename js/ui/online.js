@@ -7,14 +7,202 @@ import { faceUp, maxContrib, actToneCounts, HEROES_PER_GAME } from '../engine/ru
 import { renderChronicle } from './renderChronicle.js';
 import { hasSeenIntro, markIntroSeen } from '../engine/firstrun.js';
 import { createRoom, joinRoom, subscribeRoom, unsubscribeRoom, subscribeMyPrivate, unsubscribeMyPrivate } from '../sync/liveRoom.js';
-import { getUid, ensureSignedIn } from '../sync/auth.js';
+import { getUid, ensureSignedIn, verifyFirebaseReadiness } from '../sync/auth.js';
 import { firebaseConfigured } from '../sync/config.js';
+
+export let firebaseVerificationStatus = 'idle'; // 'idle', 'verifying', 'ready', 'failed'
+export let firebaseVerificationError = null;
+
+export async function onlineVerifyAndProceed() {
+  firebaseVerificationStatus = 'verifying';
+  firebaseVerificationError = null;
+  renderOnlineVerificationLoading();
+  show('scr-online-entry');
+
+  try {
+    await verifyFirebaseReadiness();
+    firebaseVerificationStatus = 'ready';
+    showOnlineEntry(); // Re-render with the ready state (the entry form)
+  } catch (err) {
+    firebaseVerificationStatus = 'failed';
+    firebaseVerificationError = err;
+    renderOnlineVerificationFailed(err);
+    show('scr-online-entry');
+  }
+}
+
+export async function initFirebaseConnection() {
+  if (!firebaseConfigured) return;
+  firebaseVerificationStatus = 'verifying';
+  try {
+    await verifyFirebaseReadiness();
+    firebaseVerificationStatus = 'ready';
+    await tryAutoRejoin();
+  } catch (err) {
+    console.warn('[sync] Firebase background verification failed', err);
+    firebaseVerificationStatus = 'failed';
+    firebaseVerificationError = err;
+    const onlineButton = document.getElementById('title-online-button');
+    if(onlineButton){
+      onlineButton.classList.remove('primary');
+      onlineButton.classList.add('ghost');
+      onlineButton.textContent = 'Online (connection issue)';
+      onlineButton.title = 'Firebase connection failed. Click to view details and troubleshoot.';
+    }
+    const params = new URLSearchParams(location.search);
+    if(params.get('room')){
+      showOnlineEntry();
+    }
+  }
+}
+
+function renderOnlineMissingConfig() {
+  $('scr-online-entry').innerHTML = `
+    <div class="panel" style="max-width:680px;margin:36px auto;text-align:center">
+      <div class="sc" style="color:var(--blood-bright);letter-spacing:.22em">REMOTE TABLES</div>
+      <h2 style="margin-top:10px">The Switchboard Isn’t Live Yet</h2>
+      <p class="muted" style="max-width:540px;margin:12px auto 0">This public build is ready for hotseat play on one shared screen. Separate-screen rooms need a dedicated Firebase project before they can safely open.</p>
+
+      <div class="panel tight" style="text-align:left;background:rgba(255,255,255,0.02);border-color:rgba(255,255,255,0.1);margin:20px auto;max-width:540px;">
+        <h4 style="color:var(--gold);margin-top:0">Required Firebase Setup Steps:</h4>
+        <ol class="small" style="padding-left:18px;line-height:1.5;color:#cfc2a2">
+          <li><strong>Firebase Config:</strong> Register a Web app in the Firebase console, and copy the config object into <code style="color:var(--blood-bright)">js/sync/config.js</code>.</li>
+          <li><strong>Anonymous Auth:</strong> Enable Anonymous sign-in under Build → Authentication → Sign-in method.</li>
+          <li><strong>Firestore Database:</strong> Create a Firestore database in <strong>Production Mode</strong>.</li>
+          <li><strong>Firestore Rules:</strong> Publish the rules from <code style="color:var(--blood-bright)">firestore.rules</code> in the Firestore Rules tab.</li>
+          <li><strong>Authorized Domains:</strong> Add your deployment domain (e.g. your-username.github.io) under Authentication → Settings → Authorized domains.</li>
+        </ol>
+      </div>
+
+      <p class="small" style="max-width:540px;margin:14px auto 0;color:#d9cca9">If you’re hosting tonight, choose <strong>Open the Case</strong>. Nothing in the local game depends on Firebase.</p>
+      <div class="btnrow" style="justify-content:center;margin-top:22px">
+        <button class="primary" onclick="show('scr-hook')">Open the Case</button>
+        <button class="ghost" onclick="show('scr-title')">Back</button>
+      </div>
+    </div>`;
+}
+
+function renderOnlineVerificationLoading() {
+  $('scr-online-entry').innerHTML = `
+    <style>
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    </style>
+    <div class="panel" style="max-width:680px;margin:36px auto;text-align:center">
+      <div class="sc" style="color:var(--gold);letter-spacing:.22em">VERIFYING SWITCHBOARD</div>
+      <h2 style="margin-top:10px">Testing Connection to Millhaven...</h2>
+      <p class="muted" style="max-width:540px;margin:12px auto 0">Verifying Anonymous Authentication and Firestore database availability.</p>
+      <div style="margin:24px 0;">
+        <div class="spinner" style="border: 4px solid rgba(255, 255, 255, 0.1); border-left-color: var(--gold); border-radius: 50%; width: 36px; height: 36px; animation: spin 1s linear infinite; margin: 0 auto;"></div>
+      </div>
+      <div class="btnrow" style="justify-content:center;margin-top:22px">
+        <button class="ghost" onclick="leaveOnlineRoom()">Cancel</button>
+      </div>
+    </div>`;
+}
+
+function renderOnlineVerificationFailed(error) {
+  const msg = error && error.message ? error.message : String(error);
+
+  // Categorize the error for the user
+  let categoryTitle = "Connection Failed";
+  let diagnostic = "An unknown error occurred while establishing a secure session with Firebase.";
+  let actionRequired = "Verify that your internet connection is active and that your Firebase project configuration in <code>js/sync/config.js</code> is valid and contains no placeholder values.";
+
+  if (!firebaseConfigured) {
+    categoryTitle = "Missing Configuration";
+    diagnostic = "The Firebase SDK config contains empty or default values.";
+    actionRequired = "Add your web app credentials to <code>js/sync/config.js</code> before launching remote multiplayer.";
+  } else if (msg.includes("auth") || msg.includes("operation-not-allowed") || msg.includes("sign-in") || msg.includes("uid") || msg.includes("unauthorized") || msg.includes("domains")) {
+    categoryTitle = "Authentication Blocked";
+    diagnostic = "The application could not establish an anonymous session (Auth error).";
+    actionRequired = "Ensure that <strong>Anonymous Sign-in</strong> is enabled under Build → Authentication → Sign-in method in your Firebase Console, and that your current domain is listed in <strong>Authorized domains</strong>.";
+  } else if (msg.includes("permission-denied") || msg.includes("rules") || msg.includes("Firestore") || msg.includes("denied")) {
+    categoryTitle = "Database Read Blocked";
+    diagnostic = "Authenticated successfully, but the test read was blocked by Firestore security rules.";
+    actionRequired = "Ensure that your Firestore Database has been created (in <strong>Production Mode</strong>) and that the security rules from <code>firestore.rules</code> are pasted and published under the Firestore Rules tab in your Firebase Console.";
+  } else if (msg.includes("network") || msg.includes("timeout") || msg.includes("fetch") || msg.includes("offline")) {
+    categoryTitle = "Network Offline";
+    diagnostic = "The request to the Firebase servers timed out or failed to route.";
+    actionRequired = "Check your internet connection or firewall. If you are deploying to GitHub Pages, ensure you have added your custom domain or GitHub Pages URL to your Firebase Authorized Domains list.";
+  }
+
+  $('scr-online-entry').innerHTML = `
+    <div class="panel" style="max-width:680px;margin:36px auto;text-align:center">
+      <div class="sc" style="color:var(--blood-bright);letter-spacing:.22em">SWITCHBOARD OFFLINE</div>
+      <h2 style="margin-top:10px">${esc(categoryTitle)}</h2>
+
+      <div class="panel tight" style="text-align:left;background:rgba(217, 83, 79, 0.05);border-color:var(--blood);margin:20px auto;max-width:540px;">
+        <p class="small" style="margin-top:0"><strong>Details:</strong> <span style="color:#f2dede">${esc(msg)}</span></p>
+        <p class="small" style="margin-bottom:0;color:#cfc2a2"><strong>Diagnostic:</strong> ${diagnostic}</p>
+      </div>
+
+      <div class="panel tight" style="text-align:left;background:rgba(255,255,255,0.02);border-color:rgba(255,255,255,0.1);margin:20px auto;max-width:540px;">
+        <h4 style="color:var(--gold);margin-top:0">How to Fix This:</h4>
+        <p class="small" style="line-height:1.5;color:#cfc2a2;margin-bottom:0">${actionRequired}</p>
+        <hr class="rule" style="border-color:rgba(255,255,255,0.1);margin:12px 0">
+        <h4 style="color:var(--gold);margin-top:0">The Firebase Release Checklist:</h4>
+        <ol class="small" style="padding-left:18px;line-height:1.5;color:#cfc2a2;margin-bottom:0">
+          <li><strong>Firebase Config:</strong> Web app config populated in <code>js/sync/config.js</code>.</li>
+          <li><strong>Anonymous Auth:</strong> Enabled in Build → Authentication → Sign-in method.</li>
+          <li><strong>Firestore Database:</strong> Created in <strong>Production Mode</strong> (not test mode).</li>
+          <li><strong>Firestore Rules:</strong> Rules from <code>firestore.rules</code> copied & published.</li>
+          <li><strong>Authorized Domains:</strong> Deployment URL authorized under Authentication → Settings.</li>
+        </ol>
+      </div>
+
+      <p class="small" style="max-width:540px;margin:14px auto 0;color:#d9cca9">You can still play tonight using Hotseat mode (all storytellers sharing one screen).</p>
+
+      <div class="btnrow" style="justify-content:center;margin-top:22px">
+        <button class="primary" onclick="onlineVerifyAndProceed()">Retry Connection</button>
+        <button class="primary" onclick="show('scr-hook')">Play Hotseat (Open the Case)</button>
+        <button class="ghost" onclick="leaveOnlineRoom()">Back</button>
+      </div>
+    </div>`;
+}
+
+function renderOnlineEntryForm() {
+  $('scr-online-entry').innerHTML = `
+    <h2 class="center">Play Online</h2>
+    <p class="center muted">Gather your team across separate screens. One person opens the case; everyone else joins with the code.</p>
+    <div class="ornament">❦</div>
+    <div class="pgrid" style="grid-template-columns:repeat(auto-fit,minmax(320px,1fr));max-width:900px;margin:0 auto">
+      <div class="panel">
+        <h3 style="color:var(--gold)">Open a New Case</h3>
+        <label class="fld" for="oe-case">Choose the Case</label>
+        <select id="oe-case" onchange="onlineRefreshArtPicker()">${CASES.map((h,i)=>`<option value="${i}">${esc(h.title)}</option>`).join('')}</select>
+        <div id="oe-art-style-picker">${artStylePickerHTML('oe-art-style', null, CASES[0].id)}</div>
+        <label class="fld" for="oe-host-name">Your name</label>
+        <input type="text" id="oe-host-name" placeholder="Storyteller I">
+        <div class="btnrow">
+          <button class="primary" onclick="onlineCreateRoom()">Open the Table</button>
+        </div>
+      </div>
+      <div class="panel">
+        <h3 style="color:var(--gold)">Join a Case in Progress</h3>
+        <label class="fld" for="oe-join-code">Room code</label>
+        <input type="text" id="oe-join-code" placeholder="e.g. K7QRM" style="text-transform:uppercase">
+        <label class="fld" for="oe-join-name">Your name</label>
+        <input type="text" id="oe-join-name" placeholder="Your name">
+        <div class="btnrow">
+          <button class="primary" onclick="onlineJoinRoom()">Join the Table</button>
+        </div>
+      </div>
+    </div>
+    <div class="btnrow" style="justify-content:center;margin-top:20px">
+      <button class="ghost" onclick="leaveOnlineRoom()">Back</button>
+    </div>`;
+}
 import { ART_STYLES, artStylePickerHTML, normalizeArtStyle } from './art.js';
 import {
   liveBeginTale, liveSaveHeroSetup, liveFinishThreat, liveBeginScene, liveBeginClose,
   liveContribute, liveEndSceneAndResolve, liveConfirmSecret, liveClaimSecret,
   liveAdvanceAfterClose, liveTradeSignal, liveForfeitScene
 } from '../sync/liveActions.js';
+import { renderHub, afterSceneFlow } from './hub.js';
+import { renderScenePlay } from './scene.js';
 
 /* Small per-device scratch state for in-progress, uncommitted composition
    (which card/Hero picked, contribution draft, flip checkboxes,
@@ -98,7 +286,184 @@ function mySeatIndex(room){
   const idx = room.seats[uid];
   return idx===undefined ? -1 : idx;
 }
-function fail(err){ alert(err && err.message ? err.message : String(err)); }
+export function hideOnlineError() {
+  const container = $('online-error-container');
+  if (container) {
+    container.style.display = 'none';
+    container.innerHTML = '';
+  }
+}
+
+export function showOnlineError(err, type, options = {}) {
+  const container = $('online-error-container');
+  if (!container) return;
+
+  const msg = err && err.message ? err.message : String(err || 'An unknown error occurred.');
+
+  let title = 'Error';
+  let cause = msg;
+  let nextAction = 'Verify your inputs and try again.';
+  let buttonsHTML = '';
+
+  if (type === 'create') {
+    title = 'Failed to Create Room';
+    cause = `Could not open a new case on the server. ${msg}`;
+    nextAction = 'Try opening the table again, or check your internet connection.';
+    buttonsHTML = `
+      <button class="primary" onclick="onlineCreateRoom()">Try Again</button>
+      <button class="ghost" onclick="hideOnlineError()">Dismiss</button>
+    `;
+  } else if (type === 'join') {
+    title = 'Failed to Join Case';
+    cause = `Could not join the case. ${msg}`;
+    nextAction = 'Double-check the room code, or ask the host to confirm if the lobby is still open.';
+    buttonsHTML = `
+      <button class="primary" onclick="onlineJoinRoom()">Try Again</button>
+      <button class="ghost" onclick="hideOnlineError()">Dismiss</button>
+    `;
+  } else if (type === 'auth') {
+    title = 'Authentication Failure';
+    cause = `We couldn't securely sign you into the switchboard: ${msg}`;
+    nextAction = 'Please reload the page to re-authenticate and try again.';
+    buttonsHTML = `
+      <button class="primary" onclick="location.reload()">Reload Page</button>
+      <button class="ghost" onclick="hideOnlineError()">Dismiss</button>
+    `;
+  } else if (type === 'subscription' || type === 'connection') {
+    title = 'Connection Lost';
+    cause = `The connection to the remote table was lost. (${msg})`;
+    nextAction = 'You can retry connecting to the table, leave the table, or continue playing right now in Hotseat mode on this screen.';
+    buttonsHTML = `
+      <button class="primary" onclick="onlineRetryConnection()">Retry Connection</button>
+      <button class="blood" onclick="onlineFallbackToHotseat()">Continue in Hotseat</button>
+      <button class="ghost" onclick="leaveOnlineRoom(); hideOnlineError();">Leave Room</button>
+    `;
+  } else {
+    title = 'Action Failed';
+    cause = `The action could not be completed. ${msg}`;
+    nextAction = 'Check your selection and try playing the action again.';
+    buttonsHTML = `
+      <button class="ghost" onclick="hideOnlineError()">Dismiss</button>
+    `;
+  }
+
+  container.innerHTML = `
+    <div class="panel spotlight" style="border-color: var(--blood-bright); border-width: 2px; margin: 0;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <div>
+          <span class="sc" style="color: var(--blood-bright); letter-spacing: .15em; font-size: 0.95rem;">${esc(title)}</span>
+          <p style="margin-top: 6px; color: var(--paper); font-size: 1rem;">${esc(cause)}</p>
+          <p style="margin-top: 8px; color: var(--gold); font-size: 0.85rem;"><strong>Next Action:</strong> ${esc(nextAction)}</p>
+        </div>
+        <button class="ghost" onclick="hideOnlineError()" style="border: none; background: none; box-shadow: none; padding: 0; color: var(--gold-soft); cursor: pointer; font-size: 1.4rem; line-height: 1;" aria-label="Dismiss error">✕</button>
+      </div>
+      <div class="btnrow" style="margin-top: 14px;">
+        ${buttonsHTML}
+      </div>
+    </div>
+  `;
+
+  container.style.display = 'block';
+  container.focus();
+}
+
+export function onlineRetryConnection() {
+  hideOnlineError();
+  const code = State.onlineRoomCode;
+  if (!code) {
+    showOnlineError(new Error('No active room code to reconnect to.'), 'connection');
+    return;
+  }
+  subscribeMyPrivate(code, getUid(), priv => { myPrivate = priv; });
+  subscribeRoom(code, routeAndRender, error => {
+    console.warn('[online] room subscription lost', error);
+    showOnlineError(error, 'connection');
+  });
+}
+
+export function onlineFallbackToHotseat() {
+  hideOnlineError();
+  const room = State.G;
+  if (!room) {
+    showOnlineError(new Error('No game state available to fall back to.'), 'action');
+    return;
+  }
+
+  State.onlineRoomCode = null;
+  unsubscribeRoom();
+  unsubscribeMyPrivate();
+
+  try { history.replaceState(null, '', location.pathname); } catch(e) {}
+
+  const myUid = getUid();
+  const myIdx = mySeatIndex(room);
+
+  room.players.forEach((p, i) => {
+    if (i === myIdx && myUid) {
+      p.hand = myPrivate.hand || [];
+      p.secrets = myPrivate.secrets || [];
+    } else {
+      p.hand = [];
+      const hCount = p.handCount || 0;
+      for (let k = 0; k < hCount; k++) {
+        if (room.sceneDeck && room.sceneDeck.length) {
+          p.hand.push(room.sceneDeck.pop());
+        }
+      }
+      p.secrets = [];
+      const sCount = p.secretsCount || 0;
+      const unrevealed = p.unrevealedSecretsCount || 0;
+      for (let k = 0; k < sCount; k++) {
+        p.secrets.push({ q: 'A secret is kept...', combo: ['Guilt'], used: k >= unrevealed });
+      }
+    }
+  });
+
+  if (room.current) {
+    renderScenePlay();
+    show('scr-scene');
+  } else {
+    afterSceneFlow();
+  }
+}
+
+export function fail(err, forcedType) {
+  if (err && (err.message?.includes('subscription') || err.message?.includes('connection') || err.message?.includes('lost'))) {
+    showOnlineError(err, 'connection');
+  } else if (forcedType) {
+    showOnlineError(err, forcedType);
+  } else {
+    const container = $('scr-online-entry');
+    const containerActive = container && container.classList.contains('active');
+    if (containerActive) {
+      const codeVal = ($('oe-join-code')?.value || '').trim();
+      if (codeVal) {
+        showOnlineError(err, 'join');
+      } else {
+        showOnlineError(err, 'create');
+      }
+    } else {
+      showOnlineError(err, 'action');
+    }
+  }
+}
+
+export async function withPendingState(btn, pendingText, actionFn) {
+  if (!btn) {
+    await actionFn();
+    return;
+  }
+  if (btn.disabled) return;
+  const originalText = btn.textContent || btn.value;
+  btn.disabled = true;
+  btn.textContent = pendingText;
+  try {
+    await actionFn();
+  } finally {
+    btn.disabled = false;
+    btn.textContent = originalText;
+  }
+}
 
 /* ---------------- entry: create or join ---------------- */
 export function showOnlineEntry(){
@@ -108,74 +473,51 @@ export function showOnlineEntry(){
   resetDraft();
   State.onlineRoomCode = null;
   State.G = null;
+
   if(!firebaseConfigured){
-    $('scr-online-entry').innerHTML = `
-      <div class="panel" style="max-width:680px;margin:36px auto;text-align:center">
-        <div class="sc" style="color:var(--blood-bright);letter-spacing:.22em">REMOTE TABLES</div>
-        <h2 style="margin-top:10px">The Switchboard Isn’t Live Yet</h2>
-        <p class="muted" style="max-width:540px;margin:12px auto 0">This public build is ready for hotseat play on one shared screen. Separate-screen rooms need a dedicated Firebase project before they can safely open.</p>
-        <p class="small" style="max-width:540px;margin:14px auto 0;color:#d9cca9">If you’re hosting tonight, choose <strong>Open the Case</strong>. Nothing in the local game depends on Firebase.</p>
-        <div class="btnrow" style="justify-content:center;margin-top:22px">
-          <button class="primary" onclick="show('scr-hook')">Open the Case</button>
-          <button class="ghost" onclick="show('scr-title')">Back</button>
-        </div>
-      </div>`;
+    renderOnlineMissingConfig();
     show('scr-online-entry');
     return;
   }
-  $('scr-online-entry').innerHTML = `
-    <h2 class="center">Play Online</h2>
-    <p class="center muted">Gather your team across separate screens. One person opens the case; everyone else joins with the code.</p>
-    <div class="ornament">❦</div>
-    <div class="pgrid" style="grid-template-columns:repeat(auto-fit,minmax(320px,1fr));max-width:900px;margin:0 auto">
-      <div class="panel">
-        <h3 style="color:var(--gold)">Open a New Case</h3>
-        <label class="fld">Choose the Case</label>
-        <select id="oe-case" onchange="onlineRefreshArtPicker()">${CASES.map((h,i)=>`<option value="${i}">${esc(h.title)}</option>`).join('')}</select>
-        <div id="oe-art-style-picker">${artStylePickerHTML('oe-art-style', null, CASES[0].id)}</div>
-        <label class="fld">Your name</label>
-        <input type="text" id="oe-host-name" placeholder="Storyteller I">
-        <div class="btnrow">
-          <button class="primary" onclick="onlineCreateRoom()">Open the Table</button>
-        </div>
-      </div>
-      <div class="panel">
-        <h3 style="color:var(--gold)">Join a Case in Progress</h3>
-        <label class="fld">Room code</label>
-        <input type="text" id="oe-join-code" placeholder="e.g. K7QRM" style="text-transform:uppercase">
-        <label class="fld">Your name</label>
-        <input type="text" id="oe-join-name" placeholder="Your name">
-        <div class="btnrow">
-          <button class="primary" onclick="onlineJoinRoom()">Join the Table</button>
-        </div>
-      </div>
-    </div>
-    <div class="btnrow" style="justify-content:center;margin-top:20px">
-      <button class="ghost" onclick="show('scr-title')">Back</button>
-    </div>`;
-  show('scr-online-entry');
+  if (firebaseVerificationStatus === 'ready') {
+    renderOnlineEntryForm();
+    show('scr-online-entry');
+  } else if (firebaseVerificationStatus === 'verifying') {
+    renderOnlineVerificationLoading();
+    show('scr-online-entry');
+  } else if (firebaseVerificationStatus === 'failed') {
+    renderOnlineVerificationFailed(firebaseVerificationError);
+    show('scr-online-entry');
+  } else {
+    // Start verification
+    onlineVerifyAndProceed();
+  }
 }
 export function onlineRefreshArtPicker(){
   const picker = $('oe-art-style-picker');
   const item = CASES[+$('oe-case').value] || CASES[0];
   if(picker) picker.innerHTML = artStylePickerHTML('oe-art-style', document.querySelector('input[name="oe-art-style"]:checked')?.value || null, item.id);
 }
-export async function onlineCreateRoom(){
+export async function onlineCreateRoom(btn){
   try{
     const chosenCase = CASES[+$('oe-case').value];
     const name = ($('oe-host-name').value||'').trim();
     const artStyle = document.querySelector('input[name="oe-art-style"]:checked')?.value;
-    const code = await createRoom(chosenCase, name, normalizeArtStyle(artStyle));
-    enterRoom(code);
-  } catch(err){ fail(err); }
+    await withPendingState(btn, "Creating Room...", async () => {
+      const code = await createRoom(chosenCase, name, normalizeArtStyle(artStyle));
+      enterRoom(code);
+    });
+  } catch(err){ fail(err, 'create'); }
 }
-export async function onlineJoinRoom(){
+export async function onlineJoinRoom(btn){
   try{
     const code = ($('oe-join-code').value||'').trim().toUpperCase();
     const name = ($('oe-join-name').value||'').trim();
-    await joinRoom(code, name);
-    enterRoom(code);
-  } catch(err){ fail(err); }
+    await withPendingState(btn, "Joining...", async () => {
+      await joinRoom(code, name);
+      enterRoom(code);
+    });
+  } catch(err){ fail(err, 'join'); }
 }
 function enterRoom(code){
   State.onlineRoomCode = code;
@@ -190,15 +532,19 @@ function enterRoom(code){
   });
 }
 
-export function leaveOnlineRoom(){
-  unsubscribeRoom();
-  unsubscribeMyPrivate();
-  clearAdvanceTimer();
-  resetDraft();
-  State.onlineRoomCode = null;
-  State.G = null;
-  try { history.replaceState(null, '', location.pathname); } catch(e){}
-  show('scr-title');
+export async function leaveOnlineRoom(btn){
+  try {
+    await withPendingState(btn, "Leaving...", async () => {
+      unsubscribeRoom();
+      unsubscribeMyPrivate();
+      clearAdvanceTimer();
+      resetDraft();
+      State.onlineRoomCode = null;
+      State.G = null;
+      try { history.replaceState(null, '', location.pathname); } catch(e){}
+      show('scr-title');
+    });
+  } catch(err){ fail(err); }
 }
 
 /* Auto-rejoin if the URL already carries ?room=CODE (e.g. a reopened tab). */
@@ -266,9 +612,9 @@ function renderOnlineLobby(room){
       </div>
       <div class="btnrow" style="margin-top:18px;justify-content:center">
         ${isHost
-          ? `<button class="primary" onclick="onlineBeginTale()">Open the Case</button>`
+          ? `<button class="primary" onclick="onlineBeginTale(this)">Open the Case</button>`
           : `<span class="pill">Waiting for the host to begin…</span>`}
-        <button class="ghost" onclick="leaveOnlineRoom()">Leave</button>
+        <button class="ghost" onclick="leaveOnlineRoom(this)">Leave</button>
       </div>
     </div>`;
 }
@@ -282,8 +628,8 @@ export async function onlineCopyRoomLink(){
     fail(new Error('Could not copy automatically — the link is: ' + url));
   }
 }
-export async function onlineBeginTale(){
-  try{ await liveBeginTale(State.onlineRoomCode); } catch(err){ fail(err); }
+export async function onlineBeginTale(btn){
+  try{ await withPendingState(btn, "Opening Case...", () => liveBeginTale(State.onlineRoomCode)); } catch(err){ fail(err); }
 }
 
 /* ---------------- hero setup ---------------- */
@@ -308,11 +654,11 @@ function renderOnlineArchSetup(room){
       <div class="panel">
         ${showForm ? `
           <p class="small muted">${isMe ? 'Answer in character, or plainly. The answer becomes a fact about the Threat and about this Hero.' : `Answering on behalf of ${esc(answerer.name)}, since they’re away.`}</p>
-          <label class="fld">Name this Hero</label>
+          <label class="fld" for="arch-name">Name this Hero</label>
           <input type="text" id="arch-name" placeholder="e.g. The Nightwatch">
-          <label class="fld">The answer</label>
+          <label class="fld" for="arch-answer">The answer</label>
           <textarea id="arch-answer" placeholder="What is established…"></textarea>
-          <div class="btnrow"><button class="primary" onclick="onlineSaveArchSetup()">${i<5?'Next Question':'To the Threat'}</button></div>
+          <div class="btnrow"><button class="primary" onclick="onlineSaveArchSetup(this)">${i<5?'Next Question':'To the Threat'}</button></div>
         ` : `
           <p class="small muted center">Waiting on ${esc(answerer.name)} to answer…</p>
           <p class="center"><button class="ghost" onclick="onlineAnswerForAbsent()">Answer for them, if they’re away</button></p>
@@ -321,10 +667,10 @@ function renderOnlineArchSetup(room){
     </div>`;
 }
 export function onlineAnswerForAbsent(){ draft.answeringForAbsent = true; renderOnlineArchSetup(State.G); }
-export async function onlineSaveArchSetup(){
+export async function onlineSaveArchSetup(btn){
   try{
     const name = $('arch-name').value, answer = $('arch-answer').value;
-    await liveSaveHeroSetup(State.onlineRoomCode, name, answer);
+    await withPendingState(btn, "Saving...", () => liveSaveHeroSetup(State.onlineRoomCode, name, answer));
   } catch(err){ fail(err); }
 }
 
@@ -339,14 +685,14 @@ function renderOnlineVictim(room){
         ${room.threat.facts.map(f=>`<p class="small" style="margin:6px 0"><span style="color:var(--gold)">${esc(f.role)}:</span> <span>${esc(f.a)}</span></p>`).join('')}
       </div>
       <div class="panel">
-        <label class="fld">Together, name the Threat</label>
+        <label class="fld" for="victim-name">Together, name the Threat</label>
         <input type="text" id="victim-name" placeholder="This is usually the hardest part.">
-        <div class="btnrow"><button class="primary" onclick="onlineFinishVictim()">Deal the Cards</button></div>
+        <div class="btnrow"><button class="primary" onclick="onlineFinishVictim(this)">Deal the Cards</button></div>
       </div>
     </div>`;
 }
-export async function onlineFinishVictim(){
-  try{ await liveFinishThreat(State.onlineRoomCode, $('victim-name').value); } catch(err){ fail(err); }
+export async function onlineFinishVictim(btn){
+  try{ await withPendingState(btn, "Dealing Cards...", () => liveFinishThreat(State.onlineRoomCode, $('victim-name').value)); } catch(err){ fail(err); }
 }
 
 /* ---------------- hub ---------------- */
@@ -361,7 +707,7 @@ function onlineTurnSeatHTML(room,p,i,mySeat){
     <p>${p.scenesLeft} scene${p.scenesLeft===1?'':'s'} left to lead · ${p.handCount} scene card${p.handCount===1?'':'s'} · ${p.signals.length} held Signal${p.signals.length===1?'':'s'}</p>
     <div class="turn-seat-actions">
       ${state==='ready' && isMe?'<button class="primary" onclick="onlineStartScene()">Begin a scene</button>':''}
-      ${state==='blocked' && p.scenesLeft>0?`<button class="blood" onclick="onlineForfeitScene(${i})">${isMe?'Forfeit my scene':`Forfeit for ${esc(p.name)}`}</button>`:''}
+      ${state==='blocked' && p.scenesLeft>0?`<button class="blood" onclick="onlineForfeitScene(${i}, this)">${isMe?'Forfeit my scene':`Forfeit for ${esc(p.name)}`}</button>`:''}
       ${isMe?`<button class="ghost" onclick="openOnlineHand()">View my cards (${myPrivate.hand.length+p.signals.length})</button>`:''}
     </div>
   </div>`;
@@ -376,7 +722,7 @@ function onlineMyHandHTML(room,mySeat){
       <p class="hand-section-label">Scene cards · ${myPrivate.hand.length}</p>
       <div class="cardgrid hand-cardgrid">${myPrivate.hand.map(c=>sceneCardHTML(c)).join('') || '<span class="small muted">No scene cards in hand.</span>'}</div>
       ${me.signals.length?`<p class="hand-section-label">Held Signals · ${me.signals.length}</p><div class="cardgrid hand-cardgrid">${me.signals.map((o,oi)=>`
-        <div class="held-card">${signalCard(o)}${room.sceneDeck.length?`<button class="ghost" onclick="onlineTradeOmen(${oi})">Trade for a scene card</button>`:''}</div>`).join('')}</div>`:''}
+        <div class="held-card">${signalCard(o)}${room.sceneDeck.length?`<button class="ghost" onclick="onlineTradeOmen(${oi}, this)">Trade for a scene card</button>`:''}</div>`).join('')}</div>`:''}
       ${myPrivate.secrets.map(s=>`<details class="secretbox"><summary>Buried Secret ${s.used?'— revealed':'(yours alone to read)'}</summary>
         <div class="small" style="margin-top:6px">${s.combo.map(toneBadge).join(' ')}<br><span style="color:#c9b3de">${esc(s.q)}</span>
         ${s.used?'':'<br><span class="muted">Unlocks when a scene’s tones contain this combination.</span>'}</div></details>`).join('')}
@@ -465,11 +811,11 @@ export function onlineStartScene(){
   renderOnlineScenePick();
   show('scr-scene');
 }
-export async function onlineTradeOmen(signalIdx){
-  try{ await liveTradeSignal(State.onlineRoomCode, signalIdx); } catch(err){ fail(err); }
+export async function onlineTradeOmen(signalIdx, btn){
+  try{ await withPendingState(btn, "Trading...", () => liveTradeSignal(State.onlineRoomCode, signalIdx)); } catch(err){ fail(err); }
 }
-export async function onlineForfeitScene(seat){
-  try{ await liveForfeitScene(State.onlineRoomCode, seat); } catch(err){ fail(err); }
+export async function onlineForfeitScene(seat, btn){
+  try{ await withPendingState(btn, "Forfeiting...", () => liveForfeitScene(State.onlineRoomCode, seat)); } catch(err){ fail(err); }
 }
 
 /* ---------------- act close intro ---------------- */
@@ -494,27 +840,27 @@ function renderOnlineCloseIntro(room){
         <p class="small muted">Tones this act: ${TONES.map(t=>`<span class="tone count ${t}">${counts[t]}</span>`).join(' ')}</p>
         ${tied.length===1
           ? `<p><strong style="color:var(--blood-bright)">Dominant tone: ${toneBadge(tied[0])}</strong> — must <span>${esc(close.elements[tied[0]])}</span></p>`
-          : `<label class="fld">The tones are tied — choose the element</label>
+          : `<label class="fld" for="close-el">The tones are tied — choose the element</label>
              <select id="close-el">${tied.map(t=>`<option value="${t}">${t} — ${esc(close.elements[t])}</option>`).join('')}</select>`}
-        <label class="fld">Who begins the close?</label>
+        <label class="fld" for="close-starter">Who begins the close?</label>
         <select id="close-starter">${room.players.map((p,i)=>`<option value="${i}">${esc(p.name)}</option>`).join('')}</select>
-        <label class="fld">Which Hero leads it?</label>
+        <label class="fld" for="close-arch">Which Hero leads it?</label>
         <select id="close-arch">${room.heroes.map((a,i)=>`<option value="${i}">${esc(a.name||a.role)} — ${esc(a.role)}</option>`).join('')}</select>
-        <label class="fld">What the camera sees as the close opens</label>
+        <label class="fld" for="close-opening">What the camera sees as the close opens</label>
         <textarea id="close-opening" placeholder="The camera rises above Millhaven…"></textarea>
-        <div class="btnrow"><button class="primary" onclick="onlineBeginClose()">Play the Act Close</button></div>
+        <div class="btnrow"><button class="primary" onclick="onlineBeginClose(this)">Play the Act Close</button></div>
       </div>
     </div>`;
   draft.closeTone = chosenTone;
 }
-export async function onlineBeginClose(){
+export async function onlineBeginClose(btn){
   try{
     const room = State.G;
     const close = room.actClose[room.act];
     const elHidden = $('close-el');
     const tone = elHidden ? elHidden.value : draft.closeTone;
-    await liveBeginClose(State.onlineRoomCode, +$('close-arch').value, +$('close-starter').value,
-      close.elements[tone], $('close-opening').value, close.title, close.prompt);
+    await withPendingState(btn, "Starting Act Close...", () => liveBeginClose(State.onlineRoomCode, +$('close-arch').value, +$('close-starter').value,
+      close.elements[tone], $('close-opening').value, close.title, close.prompt));
   } catch(err){ fail(err); }
 }
 
@@ -538,10 +884,10 @@ function renderOnlineScenePick(){
       ${room.heroes.map((a,i)=>heroCard(a,'onlinePickArch',i)).join('')}
     </div>
     <div class="panel">
-      <label class="fld">What the camera sees as the scene opens</label>
+      <label class="fld" for="scene-opening">What the camera sees as the scene opens</label>
       <textarea id="scene-opening" placeholder="The camera drifts through…"></textarea>
       <div class="btnrow">
-        <button class="primary" id="btn-begin" disabled onclick="onlineBeginScene()">Begin the Scene</button>
+        <button class="primary" id="btn-begin" disabled onclick="onlineBeginScene(this)">Begin the Scene</button>
         <button class="ghost" onclick="routeAndRenderCurrent()">Back to the Table</button>
       </div>
     </div>`;
@@ -562,8 +908,8 @@ export function onlinePickArch(i){
 function onlineCheckBegin(){
   $('btn-begin').disabled = !(draft.cardIdx!=null && draft.archIdx!=null);
 }
-export async function onlineBeginScene(){
-  try{ await liveBeginScene(State.onlineRoomCode, draft.cardIdx, draft.archIdx, $('scene-opening').value); }
+export async function onlineBeginScene(btn){
+  try{ await withPendingState(btn, "Beginning Scene...", () => liveBeginScene(State.onlineRoomCode, draft.cardIdx, draft.archIdx, $('scene-opening').value)); }
   catch(err){ fail(err); }
 }
 export function routeAndRenderCurrent(){
@@ -596,10 +942,10 @@ function renderOnlineScene(room){
       const card = pk.kind==='scene' ? myPrivate.hand[pk.idx] : room.signalRow[pk.idx];
       addingHTML = `
         <div style="max-width:280px">${pk.kind==='scene'?sceneCardHTML(card):signalCard(card)}</div>
-        <label class="fld">How does it manifest in the scene?</label>
+        <label class="fld" for="contrib-how">How does it manifest in the scene?</label>
         <textarea id="contrib-how" oninput="onlineSetContribHow(this.value)">${esc(draft.adding.how||'')}</textarea>
         <div class="btnrow">
-          <button class="primary" onclick="onlineConfirmContrib()">Play It</button>
+          <button class="primary" onclick="onlineConfirmContrib(this)">Play It</button>
           <button class="ghost" onclick="onlineCancelContrib()">Never mind</button>
         </div>`;
     }
@@ -607,7 +953,7 @@ function renderOnlineScene(room){
 
   const endSceneHTML = iAmStarter ? (!draft.resolving ? `
     <div class="panel spotlight">
-      <label class="fld">The record of what happens</label>
+      <label class="fld" for="scene-happened">The record of what happens</label>
       <p class="small muted" style="margin-bottom:6px">Play the scene aloud. Note what the Dossier should remember: who appeared, what was said, and what was discovered.</p>
       <textarea id="scene-happened" style="min-height:130px" oninput="onlineSetSceneHappened(this.value)" placeholder="What the Dossier will remember of this scene…">${esc(draft.happened||'')}</textarea>
       <div class="btnrow"><button class="blood" onclick="onlineEndScene()">The scene ends</button></div>
@@ -632,13 +978,15 @@ export function onlineCancelContrib(){ draft.adding = null; renderOnlineSceneRef
 export function onlineSetContribHow(v){ if(draft.adding) draft.adding.how = v; }
 export function onlineSetSceneHappened(v){ draft.happened = v; }
 export function onlineSetSecretAnswer(v){ draft.secretAnswer = v; }
-export async function onlineConfirmContrib(){
+export async function onlineConfirmContrib(btn){
   try{
     const {kind, idx, how} = draft.adding.pick.kind==='scene'
       ? {kind:'scene', idx:draft.adding.pick.idx, how:draft.adding.how}
       : {kind:'omen', idx:draft.adding.pick.idx, how:draft.adding.how};
-    await liveContribute(State.onlineRoomCode, kind, idx, how);
-    draft.adding = null;
+    await withPendingState(btn, "Playing...", async () => {
+      await liveContribute(State.onlineRoomCode, kind, idx, how);
+      draft.adding = null;
+    });
   } catch(err){ fail(err); }
 }
 export function onlineEndScene(){
@@ -662,16 +1010,18 @@ function renderOnlineResolveInline(room){
           </label>
         </div>`;
       }).join('')}
-      <div class="btnrow"><button class="primary" onclick="onlineApplyResolve()">Count the Tones</button></div>
+      <div class="btnrow"><button class="primary" onclick="onlineApplyResolve(this)">Count the Tones</button></div>
     </div>`;
 }
-export async function onlineApplyResolve(){
+export async function onlineApplyResolve(btn){
   try{
     const room = State.G;
     const flips = [];
     room.heroes.forEach((a,i)=>{ if($('online-flip-'+i).checked) flips.push(i); });
-    await liveEndSceneAndResolve(State.onlineRoomCode, draft.happened, flips);
-    draft.resolving = false; draft.happened = '';
+    await withPendingState(btn, "Counting Tones...", async () => {
+      await liveEndSceneAndResolve(State.onlineRoomCode, draft.happened, flips);
+      draft.resolving = false; draft.happened = '';
+    });
   } catch(err){ fail(err); }
 }
 
@@ -695,9 +1045,9 @@ function renderOnlineSecret(room){
       <h3 style="color:#c9b3de;margin-top:16px">Choose three signals <span class="small">(${sel.length} of ${Math.min(3,room.signalRow.length)})</span></h3>
       <div class="cardgrid compact">${room.signalRow.map((o,i)=>signalCard(o,'onlineToggleSecretOmen',i)).join('')}</div>
       <div class="panel spotlight">
-        <label class="fld" style="color:#c9b3de">The vignette</label>
+        <label class="fld" style="color:#c9b3de" for="secret-answer">The vignette</label>
         <textarea id="secret-answer" style="min-height:120px" oninput="onlineSetSecretAnswer(this.value)">${esc(draft.secretAnswer||'')}</textarea>
-        <div class="btnrow"><button class="primary" ${sel.length!==Math.min(3,room.signalRow.length)?'disabled':''} onclick="onlineConfirmSecret()">So It Is Revealed</button></div>
+        <div class="btnrow"><button class="primary" ${sel.length!==Math.min(3,room.signalRow.length)?'disabled':''} onclick="onlineConfirmSecret(this)">So It Is Revealed</button></div>
       </div>
     </div>`;
   document.querySelectorAll('[id^="omen-pick-"]').forEach((el,idx)=>el.classList.toggle('selected', sel.includes(idx)));
@@ -709,7 +1059,7 @@ export function onlineToggleSecretOmen(i){
   if(at>=0) sel.splice(at,1); else if(sel.length<need) sel.push(i);
   renderOnlineSecret(room);
 }
-export async function onlineConfirmSecret(){
-  try{ await liveConfirmSecret(State.onlineRoomCode, draft.secretSel||[], draft.secretAnswer||''); draft={}; }
+export async function onlineConfirmSecret(btn){
+  try{ await withPendingState(btn, "Revealing...", () => liveConfirmSecret(State.onlineRoomCode, draft.secretSel||[], draft.secretAnswer||'')); draft={}; }
   catch(err){ fail(err); }
 }
