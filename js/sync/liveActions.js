@@ -14,7 +14,7 @@
 import { runTransaction } from 'https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js';
 import { roomRef, privateRef, dealAct, dealHeroesAndCloses, getUid } from './liveRoom.js';
 import { db } from './firebase-init.js';
-import { SCENES, SIGNALS, SECRETS, TONES } from '../data/index.js';
+import { SCENES, SIGNALS, SECRETS, TONES, villainForCase } from '../data/index.js';
 import { shuffle } from '../engine/utils.js';
 import { maxContrib, HEROES_PER_GAME } from '../engine/rules.js';
 
@@ -36,7 +36,7 @@ export async function liveBeginTale(code){
     if(room.phase !== 'lobby') throw new Error('The case has already begun.');
     if(getUid() !== room.hostUid) throw new Error('Only the one who opened this table may begin the case.');
     dealHeroesAndCloses(room);
-    room.threat = {name:'', facts:[]};
+    room.threat = {name:'', facts:[], profile:villainForCase(room.case?.id)};
     room.journal = [];
     room.archIdx = 0;
     room.firstScenePlayer = null;
@@ -78,7 +78,7 @@ export async function liveFinishThreat(code, threatName){
     const room = await readRoom(t, code);
     if(room.phase !== 'threat') throw new Error('Not naming the Threat right now.');
 
-    room.threat.name = (threatName||'').trim() || 'The Unnamed Threat';
+    room.threat.name = (threatName||'').trim() || room.threat.profile?.name || villainForCase(room.case?.id)?.name || 'The Unnamed Threat';
     room.signalDeck = shuffle(SIGNALS);
     room.signalRow = room.signalDeck.splice(0,6);
 

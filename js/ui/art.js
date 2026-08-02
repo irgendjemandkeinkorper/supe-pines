@@ -13,8 +13,8 @@ export const ART_STYLES = [
   },
   {
     id:'expressionist',
-    label:'Interpretive Expressionist',
-    note:'Symbolic, painterly card art that turns each Hero’s flaw into a visual omen.'
+    label:'Anime Noir',
+    note:'Late-90s cyberpunk anime atmosphere, cel-shaded faces, rain, and hard industrial light.'
   }
 ];
 

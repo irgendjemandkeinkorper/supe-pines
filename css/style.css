@@ -282,6 +282,10 @@ label.fld{display:block;margin:12px 0 4px;color:var(--gold);font-family:'Work Sa
 }
 .hero .a-name{font-family:'Bangers',sans-serif;color:#ffe8b0;font-size:1.1rem}
 .hero .a-role{color:var(--gold);font-size:.85rem}
+.hero .a-state{color:var(--blood-bright);font-size:.78rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;margin-top:4px}
+.hero .a-detail{font-size:.78rem;color:#d4d9e0;line-height:1.32;margin-top:3px}
+.hero .a-power,.hero .a-flaw{font-size:.7rem;color:#a7b0bd;line-height:1.28;margin-top:5px}
+.hero .a-power strong,.hero .a-flaw strong{color:var(--moon);text-transform:uppercase;letter-spacing:.06em;font-size:.62rem}
 .hero .a-cond{font-size:.85rem;color:#c3c9d3;margin-top:4px}
 .hero .a-side{font-size:.7rem;color:#8892a0;letter-spacing:.1em}
 .hero.flipped{border-color:var(--blood-bright)}
@@ -316,7 +320,7 @@ label.fld{display:block;margin:12px 0 4px;color:var(--gold);font-family:'Work Sa
 .hero-flip.selectable:hover .hero{border-color:var(--gold);box-shadow:0 0 10px rgba(242,169,31,.2)}
 .hero-flip.selected .hero{border-color:var(--blood-bright);box-shadow:0 0 0 1px var(--blood-bright)}
 .hero-flip-inner{
-  position:relative;min-height:138px;
+  position:relative;min-height:400px;
   transform-style:preserve-3d;
   transition:transform .6s cubic-bezier(.4,.1,.2,1);
 }
@@ -333,6 +337,9 @@ label.fld{display:block;margin:12px 0 4px;color:var(--gold);font-family:'Work Sa
 .flip-btn-label{font-family:'Work Sans',Arial,sans-serif;font-size:.65rem;font-weight:700;text-transform:uppercase}
 
 /* ---------- case cards ---------- */
+.threat-profile{border-left:3px solid var(--blood-bright);padding:8px 12px;margin-bottom:14px;background:rgba(8,12,20,.35)}
+.threat-profile h3{color:#ffe8b0;font-family:'Bangers',sans-serif;font-size:1.3rem;margin:2px 0 5px}
+.threat-profile p{margin:5px 0;color:#c3c9d3;line-height:1.4}
 .case-grid{grid-template-columns:repeat(2,minmax(0,1fr));max-width:900px;margin:0 auto}
 .casecard{
   border:2px solid #14110c;padding:26px 24px;cursor:pointer;border-radius:3px;
@@ -570,7 +577,7 @@ label.fld{display:block;margin:12px 0 4px;color:var(--gold);font-family:'Work Sa
 .scene-lead-label{min-height:25px;display:flex;justify-content:space-between;align-items:flex-start;gap:8px;color:#7f8793;font-family:'Work Sans',Arial,sans-serif;font-weight:700;font-size:.6rem;letter-spacing:.08em;text-transform:uppercase}
 .scene-lead-label .tone{font-size:.58rem;padding:1px 7px;letter-spacing:.08em}
 .scene-lead-card .hero-flip{animation:none}
-.scene-lead-card .hero-flip-inner{min-height:226px;transform:none;transform-style:flat;transition:none}
+.scene-lead-card .hero-flip-inner{min-height:420px;transform:none;transform-style:flat;transition:none}
 .scene-lead-card .hero-flip.peeking .hero-flip-inner{transform:none}
 .scene-lead-card .hero-back{visibility:hidden;transform:none}
 .scene-lead-card .hero-flip.peeking .hero-front{visibility:hidden}

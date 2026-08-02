@@ -1,5 +1,5 @@
 import { $, esc, shuffle, ROMAN, toneBadge, progressDotsHTML, casePhaseRail } from '../engine/utils.js';
-import { CASES, HEROES, SECRETS, SIGNALS, ACT_CLOSES } from '../data/index.js';
+import { CASES, HEROES, SECRETS, SIGNALS, ACT_CLOSES, villainForCase } from '../data/index.js';
 import { State } from '../engine/state.js';
 import { show } from './screens.js';
 import { startAct } from './hub.js';
@@ -64,7 +64,7 @@ export function confirmPlayers(){
   State.G = {
     case: State.pendingCase, players, act:0, artStyle: State.artStyle,
     heroes: shuffle(HEROES).slice(0,HEROES_PER_GAME).map(a=>({...a, name:'', setupA:'', answeredBy:'', flipped:false})),
-    threat:{name:'', facts:[]},
+    threat:{name:'', facts:[], profile:villainForCase(State.pendingCase.id)},
     sceneDeck:[], discardTones:[], signalDeck:[], signalRow:[],
     actClose:{1:shuffle(ACT_CLOSES[1])[0], 2:shuffle(ACT_CLOSES[2])[0], 3:shuffle(ACT_CLOSES[3])[0]},
     journal:[], current:null, archIdx:0, firstScenePlayer:null, closeDone:false
@@ -91,9 +91,11 @@ export function renderArchSetup(){
         <div class="c-kicker">Hero</div>
         <div class="c-title" style="font-size:1.5rem">${a.role}</div>
         <div class="c-prompt">${a.flavor}</div>
+        <div class="small" style="margin-top:8px"><strong>Power:</strong> ${esc(a.power)}</div>
+        <div class="small" style="margin-top:4px"><strong>Flaw:</strong> ${esc(a.flaw)}</div>
         <hr class="rule" style="border-color:rgba(60,45,25,.3)">
         <div style="font-size:1.05rem">“${a.setup[G.case.id]}”</div>
-        <div class="small" style="margin-top:8px;color:var(--blood)">${toneBadge(a.sides[0].tone)} <span style="color:var(--ink-soft)">— ${esc(a.sides[0].cond)} flip this card.</span></div>
+        <div class="small" style="margin-top:8px;color:var(--blood)">${toneBadge(a.sides[0].tone)} <span style="color:var(--ink-soft)">— ${esc(a.sides[0].state)}: ${esc(a.sides[0].title)}. ${esc(a.sides[0].cond)} This is the roleplay trigger for Side II.</span></div>
       </div>
       <div class="panel">
         <p class="small muted">${esc(answerer.name)} answers — in character, or plainly. The answer becomes a fact about the Threat and about this Hero.</p>
@@ -122,6 +124,7 @@ export function saveArchSetup(){
 /* ---------------- setup: the threat ---------------- */
 export function renderVictim(){
   const G = State.G;
+  const profile = G.threat.profile;
   $('scr-victim').innerHTML = `
     ${casePhaseRail('threat', 'Bring the six answers together and name what they point toward.')}
     <h2 class="center">The Threat</h2>
@@ -132,8 +135,15 @@ export function renderVictim(){
         ${G.threat.facts.map(f=>`<p class="small" style="margin:6px 0"><span style="color:var(--gold)">${esc(f.role)}:</span> <span>${esc(f.a)}</span></p>`).join('')}
       </div>
       <div class="panel">
-        <label class="fld" for="victim-name">Together, name the Threat</label>
-        <input type="text" id="victim-name" placeholder="This is usually the hardest part.">
+        <div class="threat-profile">
+          <div class="c-kicker">Threat profile · ${esc(profile?.faction || 'Millhaven')}</div>
+          <h3>${esc(profile?.name || 'The Unnamed Threat')}</h3>
+          <p class="small">${esc(profile?.threat || G.case.threatLine)}</p>
+          <p class="small"><strong>Power:</strong> ${esc(profile?.power || 'Unknown')}</p>
+          <p class="small"><strong>Flaw:</strong> ${esc(profile?.flaw || 'Unknown')}</p>
+        </div>
+        <label class="fld" for="victim-name">Name the Threat at your table</label>
+        <input type="text" id="victim-name" placeholder="${esc(profile?.name || 'The Unnamed Threat')}">
         <div class="btnrow">
           <button class="primary" onclick="finishVictim()">Deal the Cards</button>
         </div>
@@ -143,7 +153,7 @@ export function renderVictim(){
 }
 export function finishVictim(){
   const G = State.G;
-  G.threat.name = ($('victim-name').value||'').trim() || 'The Unnamed Threat';
+  G.threat.name = ($('victim-name').value||'').trim() || G.threat.profile?.name || 'The Unnamed Threat';
   // signals & secrets are dealt once, at the start
   G.signalDeck = shuffle(SIGNALS);
   G.signalRow = G.signalDeck.splice(0,6);

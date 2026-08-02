@@ -29,12 +29,12 @@ unlockable skins; they are two ways of looking at the same neighborhood.
   off-register halftone, rain-slick light, and a few dirty spot colours make
   systems and consequences visible. Keep the camera close enough to recognize
   a storefront, a face, or the thing left in a doorway.
-- **Interpretive Expressionist:** the interior language. Start with the same
-  ordinary block, bus, clinic, or kitchen, then let bold painterly shapes,
-  charged color, and one impossible allegorical object embody the Hero's
-  shortcoming, compromise, or downfall. It can feel like premium fantasy
-  trading-card illustration — mythic and emotionally exact — while the people,
-  place, and consequence remain recognizable. Never use a literal card frame or
+- **Anime Noir:** the interior language. Use late-1990s Japanese cyberpunk-noir
+  anime fundamentals: expressive ink line, cel-shaded planes, cinematic
+  perspective, rain-slick industrial neighborhoods, hard rim light, and
+  serious human-scale melancholy. Blend jazz-noir atmosphere with tactile
+  infrastructure and lived-in faces; keep each impossible power legible
+  without glossy franchise spectacle. Never use a literal card frame or
   generic fantasy spectacle.
 
 - **Palette:** near-black blue/green, dirty cream paper, oxblood danger,

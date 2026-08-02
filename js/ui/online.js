@@ -1,5 +1,5 @@
 import { $, esc, toneBadge, ACT_NAMES, ROMAN, progressDotsHTML, actTrackHTML } from '../engine/utils.js';
-import { CASES, TONES } from '../data/index.js';
+import { CASES, TONES, villainForCase } from '../data/index.js';
 import { State } from '../engine/state.js';
 import { show } from './screens.js';
 import { heroCard, signalCard, sceneCardHTML, journalEntrySummaryHTML, sceneAnatomyDiagramHTML, sceneTrackerHTML } from './cards.js';
@@ -676,6 +676,7 @@ export async function onlineSaveArchSetup(btn){
 
 /* ---------------- the threat ---------------- */
 function renderOnlineVictim(room){
+  const profile = room.threat?.profile || villainForCase(room.case?.id);
   $('scr-victim').innerHTML = `
     <h2 class="center">The Threat</h2>
     <p class="center muted" style="max-width:640px;margin:6px auto">${room.case.threatLine}</p>
@@ -685,8 +686,15 @@ function renderOnlineVictim(room){
         ${room.threat.facts.map(f=>`<p class="small" style="margin:6px 0"><span style="color:var(--gold)">${esc(f.role)}:</span> <span>${esc(f.a)}</span></p>`).join('')}
       </div>
       <div class="panel">
-        <label class="fld" for="victim-name">Together, name the Threat</label>
-        <input type="text" id="victim-name" placeholder="This is usually the hardest part.">
+        <div class="threat-profile">
+          <div class="c-kicker">Threat profile · ${esc(profile?.faction || 'Millhaven')}</div>
+          <h3>${esc(profile?.name || 'The Unnamed Threat')}</h3>
+          <p class="small">${esc(profile?.threat || room.case.threatLine)}</p>
+          <p class="small"><strong>Power:</strong> ${esc(profile?.power || 'Unknown')}</p>
+          <p class="small"><strong>Flaw:</strong> ${esc(profile?.flaw || 'Unknown')}</p>
+        </div>
+        <label class="fld" for="victim-name">Name the Threat at your table</label>
+        <input type="text" id="victim-name" placeholder="${esc(profile?.name || 'The Unnamed Threat')}">
         <div class="btnrow"><button class="primary" onclick="onlineFinishVictim(this)">Deal the Cards</button></div>
       </div>
     </div>`;

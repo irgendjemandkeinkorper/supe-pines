@@ -3,7 +3,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { CASES, HEROES, SIGNALS } from '../js/data/index.js';
+import { CASES, HEROES, SIGNALS, VILLAINS } from '../js/data/index.js';
 import {
   STYLE_PROMPTS, caseArt, heroArt, signalArt, slugify, threatArt, validatePromptCoverage
 } from './gen-prompts.mjs';
@@ -52,8 +52,8 @@ export function buildManifest(){
   SIGNALS.forEach(item => STYLES.forEach(style => {
     addRecord(manifest, { id:slugify(item.title), category:'signals', style, name:item.title, subject:signalArt[item.title] });
   }));
-  CASES.forEach(item => STYLES.forEach(style => {
-    addRecord(manifest, { id:item.id, category:'threats', style, name:`The Threat — ${item.title}`, subject:threatArt[item.id] });
+  VILLAINS.forEach(item => STYLES.forEach(style => {
+    addRecord(manifest, { id:item.id, category:'threats', style, name:item.name, subject:threatArt[item.id] });
   }));
   return manifest;
 }
@@ -78,7 +78,7 @@ export function validateManifest(manifest){
     if(seenPaths.has(record?.savePath)) errors.push(`${label}: duplicate savePath "${record.savePath}".`);
     seenPaths.add(record?.savePath);
   });
-  const expected = HEROES.length * 4 + CASES.length * 4 + SIGNALS.length * 2;
+  const expected = HEROES.length * 4 + CASES.length * 2 + SIGNALS.length * 2 + VILLAINS.length * 2;
   if(manifest.length !== expected) errors.push(`Manifest: expected ${expected} records, found ${manifest.length}.`);
   return errors;
 }
@@ -91,7 +91,7 @@ function vaultEntities(){
     name:hero.role,
     tags:['hero', ...new Set(hero.sides.map(side => side.tone.toLowerCase()))],
     summary:hero.flavor,
-    body:`# ${hero.role}\n\n*${hero.flavor}*\n\n## Sides\n\n- **Side I (${hero.sides[0].tone}):** ${hero.sides[0].cond}\n- **Side II (${hero.sides[1].tone}):** ${hero.sides[1].cond}\n\n## Setup questions by Case\n\n${CASES.map(item => `- **${item.title}:** ${hero.setup[item.id]}`).join('\n')}\n`,
+    body:`# ${hero.role}\n\n*${hero.flavor}*\n\n**Power:** ${hero.power}\n\n**Flaw:** ${hero.flaw}\n\n## Sides\n\n- **Side I — ${hero.sides[0].title} (${hero.sides[0].tone}):** ${hero.sides[0].detail} ${hero.sides[0].cond}\n- **Side II — ${hero.sides[1].title} (${hero.sides[1].tone}):** ${hero.sides[1].detail} ${hero.sides[1].cond}\n\n## Setup questions by Case\n\n${CASES.map(item => `- **${item.title}:** ${hero.setup[item.id]}`).join('\n')}\n`,
     imageFields:STYLES.flatMap(style => [artField(style, 'front'), artField(style, 'turned')]),
     related:[]
   }));
@@ -117,16 +117,16 @@ function vaultEntities(){
     imageFields:STYLES.map(style => artField(style, null)),
     related:[]
   }));
-  const threats = CASES.map(item => ({
+  const threats = VILLAINS.map(item => ({
     id:item.id,
     type:'threat',
     category:'threats',
-    name:`The Threat — ${item.title}`,
-    tags:['threat', item.id],
-    summary:item.threatLine,
-    body:`# The Threat — ${item.title}\n\n${item.threatLine}\n\nThe Threat’s exact identity is established by the players during setup; this art direction keeps the figure obscured so it remains compatible with each table’s answer.\n`,
+    name:item.name,
+    tags:['threat', item.faction.toLowerCase().replace(/[^a-z0-9]+/g, '-')],
+    summary:item.threat,
+    body:`# ${item.name}\n\n*${item.role}*\n\n${item.threat}\n\n**Power:** ${item.power}\n\n**Flaw:** ${item.flaw}\n`,
     imageFields:STYLES.map(style => artField(style, null)),
-    related:[item.id]
+    related:[item.caseId]
   }));
   return [...heroes, ...cases, ...signals, ...threats];
 }
@@ -209,7 +209,7 @@ function main(){
     return;
   }
   if(options.check){
-    console.log(`Manifest valid and deterministic: ${manifest.length} images (${HEROES.length * 4} Hero, ${CASES.length * 2} Case, ${SIGNALS.length * 2} Signal, ${CASES.length * 2} Threat).`);
+    console.log(`Manifest valid and deterministic: ${manifest.length} images (${HEROES.length * 4} Hero, ${CASES.length * 2} Case, ${SIGNALS.length * 2} Signal, ${VILLAINS.length * 2} Threat).`);
     return;
   }
   fs.mkdirSync(path.dirname(options.manifest), { recursive:true });

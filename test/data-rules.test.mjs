@@ -1,17 +1,18 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { ACT_CLOSES, CASES, EPILOGUE_QUESTIONS, HEROES, SCENES, SECRETS, SIGNALS, TONES } from '../js/data/index.js';
+import { ACT_CLOSES, CASES, EPILOGUE_QUESTIONS, HEROES, SCENES, SECRETS, SIGNALS, TONES, VILLAINS } from '../js/data/index.js';
 import { validateData } from '../scripts/validate-data.mjs';
 import { State } from '../js/engine/state.js';
 import { eligibleContributors, faceUp, matchSecret, maxContrib } from '../js/engine/rules.js';
 import { esc } from '../js/engine/utils.js';
 
 test('current data satisfies the authored roster contract', () => {
-  const result = validateData({ ACT_CLOSES, CASES, EPILOGUE_QUESTIONS, HEROES, SCENES, SECRETS, SIGNALS, TONES });
+  const result = validateData({ ACT_CLOSES, CASES, EPILOGUE_QUESTIONS, HEROES, SCENES, SECRETS, SIGNALS, TONES, VILLAINS });
   assert.deepEqual(result.errors, []);
   assert.equal(result.summary.cases, 8);
-  assert.equal(result.summary.heroes, 12);
+  assert.equal(result.summary.heroes, 15);
+  assert.equal(result.summary.villains, 8);
   assert.equal(result.summary.scenes, 144);
   assert.deepEqual(result.summary.hookedScenesByCase, {
     toll:6, casting:6, renovation:6, lastcall:6,

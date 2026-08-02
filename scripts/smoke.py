@@ -157,7 +157,7 @@ with sync_playwright() as playwright:
     assert page.locator("input[name='local-art-style'][value='expressionist']").count() == 1
     # The radio inputs are intentionally visually hidden behind their full-card
     # labels, so click the visible style choice rather than the hidden input.
-    page.locator("label.art-style-option").filter(has_text="Interpretive Expressionist").click()
+    page.locator("label.art-style-option").filter(has_text="Anime Noir").click()
     assert page.locator("input[name='local-art-style'][value='expressionist']").is_checked()
     page.select_option("#pl-count", "1")
     run_dom_audit(page, "players screen with solo count")
@@ -188,7 +188,7 @@ with sync_playwright() as playwright:
     page.get_by_role("button", name="The Gallery").click()
     page.wait_for_selector("#overlay", state="visible")
     run_dom_audit(page, "gallery overlay")
-    assert page.locator(".gcat-heroes .gtile").count() == 12
+    assert page.locator(".gcat-heroes .gtile").count() == 15
     assert page.locator(".gcat-cases .gtile").count() == 0
     tile = page.locator(".gcat-heroes .gtile").first
     control = tile.locator(".gallery-flip-control")
@@ -197,9 +197,9 @@ with sync_playwright() as playwright:
     assert control.get_attribute("aria-pressed") == "true"
     assert tile.locator("[data-gallery-side-label]").inner_text() == "Side II — turned"
     assert page.get_by_role("button", name="Noir Comic").count() == 1
-    assert page.get_by_role("button", name="Interpretive Expressionist").count() == 1
-    page.get_by_role("button", name="Interpretive Expressionist").click()
-    assert page.locator(".gcat-heroes .gtile").count() == 12
+    assert page.get_by_role("button", name="Anime Noir").count() == 1
+    page.get_by_role("button", name="Anime Noir").click()
+    assert page.locator(".gcat-heroes .gtile").count() == 15
     page.get_by_role("button", name="Noir Comic").click()
     page.get_by_role("button", name="Back to Millhaven").click()
 

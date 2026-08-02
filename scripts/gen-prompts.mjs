@@ -3,7 +3,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { CASES, HEROES, SIGNALS } from '../js/data/index.js';
+import { CASES, HEROES, SIGNALS, VILLAINS } from '../js/data/index.js';
 
 export const slugify = value => String(value).toLowerCase()
   .replace(/[’'′`]/g, '')
@@ -12,57 +12,69 @@ export const slugify = value => String(value).toLowerCase()
 
 export const STYLE_PROMPTS = {
   ink: 'Street-level superhero noir rendered as a hand-inked comic panel: aggressive black brushwork, sharp silhouettes, off-register halftone dots, newsprint texture, selective dirty-cream, oxblood-red, and electric-blue spot color, hard rain-slicked light, human scale and lived-in city detail. Dynamic but readable single composition. No text, letters, logos, captions, speech balloons, borders, panels, watermarks, or gore. One unified full-bleed image, never a grid, montage, triptych, card frame, or repeated subject.',
-  expressionist: 'Interpretive expressionist trading-card illustration: bold painterly shapes, charged color, dramatic directional light, and symbolic objects arranged like an allegory. Keep the neighborhood and people recognizable, but let perspective, weather, anatomy, and architecture bend to reveal the Hero’s Burden, shortcoming, compromise, or downfall. The image should feel like premium fantasy card art — emotionally legible, mythic, and tactile — without glossy franchise spectacle. Make the impossible metaphor specific to the subject, not generic fantasy. No text, letters, logos, captions, speech balloons, borders, panels, watermarks, or literal card frames. One unified full-bleed image, never a grid, montage, triptych, or repeated subject.'
+  expressionist: 'Late-1990s Japanese cyberpunk noir anime illustration: confident expressive ink line, cel-shaded planes, cinematic perspective, rain-slick industrial neighborhoods, hard rim light, restrained electric cyan and sodium amber, and serious human-scale melancholy. Blend jazz-noir atmosphere with tactile cyberpunk infrastructure and lived-in faces; keep the impossible power legible without glossy franchise spectacle. No text, letters, logos, captions, speech balloons, borders, panels, watermarks, or literal card frames. One unified full-bleed image, never a grid, montage, triptych, or repeated subject.'
 };
 
 export const heroArt = {
-  'The Nightwatch': {
-    front:'A tired Black beat cop in a plain half-mask and reinforced patrol jacket on a tenement rooftop at 2 a.m., police radio in one hand, looking down toward a crime scene while his badge remains hidden inside the coat.',
-    turned:'The same masked cop in the same patrol jacket under a failing rooftop light, knuckles bloodied against a brick wall, his exposed badge reflected in a rain puddle at his feet.'
+  Ballast: {
+    front:'A Black woman in practical urban rescue gear and a heavy asymmetrical coat, standing at medium density between frightened tenants and a collapsing tenement entrance, masonry stopping against her calm stance while a few feathers drift around her.',
+    turned:'The same woman in the same coat made impossibly massive in a rain-slick street, one boot crushing asphalt as a load-bearing column falls toward a getaway car and civilians flee the dust.'
   },
-  Powerline: {
-    front:'A broad-shouldered Latina utility lineman in a homemade insulated hero suit, climbing belt and ceramic cable cutters visible, crouched on a power pole above a dark neighborhood as blue current crawls safely across her gloves.',
-    turned:'The same lineman amid a blown transformer and hanging cables, visor cracked, throwing her insulated body between a shower of sparks and an occupied apartment window.'
+  Apex: {
+    front:'A lean Black man in a battered training jacket and taped hands, moving through a rain-dark alley with perfect evasive aikido footwork as several attackers stumble past him without being struck.',
+    turned:'The same fighter under a brutal warehouse light, body locked into a bone-breaking finishing strike while ghostlike motion trails of earlier fights coil around his shoulders.'
   },
-  'Kid Chorus': {
-    front:'A seventeen-year-old Korean American girl in a patched hooded jacket and compact ear protectors, standing in an alley as one controlled sonic ring ripples from her open mouth and rattles nearby windows.',
-    turned:'The same teenage hero crouched after an uncontrolled blast, windows shattered outward around her, both hands clamped over her mouth while frightened silhouettes watch from a doorway.'
+  'The Pulse': {
+    front:'A gender-nonconforming figure in a weatherproof coat and insulated gloves, siphoning a thin blue current from a broken street cabinet while every occupied apartment behind them stays warmly lit.',
+    turned:'The same figure at the center of a winter blackout, residential windows dark, electrical arcs crawling through their body as they overcharge for a fight in the street.'
   },
-  'The Concierge': {
-    front:'An older West African doorman in a burgundy coat with brass buttons, impossibly strong hands holding a buckled apartment security gate open while tenants hurry through behind him.',
-    turned:'The same doorman alone in the condemned lobby he has guarded for thirty years, holding up a cracked ceiling beam as eviction notices and plaster drift around him.'
+  Dialectic: {
+    front:'A sharp-featured nonbinary performer in a long coat and half-mask, projecting a harmless hard-light carnival across a tense street so armed people stare at a bright impossible parade instead of each other.',
+    turned:'The same performer in a fractured apartment corridor surrounded by terrifying duplicate doorways and false teammates, reaching toward a hallucinated friend while every surface insists it is real.'
   },
-  'Widow’s Peak': {
-    front:'A severe white woman in a black widow-shaped half-mask and practical mourning clothes, perched beside a cemetery angel above the city, clutching a worn wedding ring on a chain.',
-    turned:'The same masked widow pinning an unseen suspect against a rain-blackened gravestone, her husband’s ring chain snapped and bright in the mud below.'
+  Amp: {
+    front:'A stoic brown-skinned sound specialist in a compact armored coat, holding one hand over a silent gunfight as a clean circular silence field settles around the muzzle flashes and frightened neighbors escape.',
+    turned:'The same specialist in a shattered storefront, releasing a violent kinetic wave through speakers and windows while the whole street vibrates like a distorted concert.'
   },
-  'The Understudy': {
-    front:'A slim South Asian stage actor in a handmade midnight-blue costume, using mirrors, wire, smoke pellets, and perfect posture to appear superhuman under an alley fire escape spotlight.',
-    turned:'The same actor backstage in a derelict theater, mask half removed, surrounded by visibly broken trick gear as an ominous silhouette waits beyond the stage curtain.'
+  Knot: {
+    front:'A wiry figure in a hooded coat on a fire escape, telekinetically tying falling debris into a suspended safety net of ropes and wires while restrained thieves wait quietly for police.',
+    turned:'The same figure in a webbed alley, chains and cables covering every exit, allies and enemies pinned to the walls as the hero stands possessively at the center.'
   },
-  Backline: {
-    front:'A stocky nonbinary paramedic in dark off-duty clothes and a homemade medic harness, kneeling beside an injured stranger under an El track with one forbidden piece of glowing equipment open in a second trauma bag.',
-    turned:'The same paramedic alone in the back of an empty ambulance after a brutal night, bloodied gloves on the floor and the unlicensed second bag open beside a silent radio.'
+  Catharsis: {
+    front:'A tired street medic in a rain-dark clinic doorway, one hand on an injured stranger as the wound leaves the patient and appears as a matching bruise and fracture across the medic’s own body.',
+    turned:'The same medic standing over a stunned attacker as a fatal wound tears across the attacker’s body while the innocent bystander beside them heals, the hero’s face cold and resolved.'
   },
-  'The Ref': {
-    front:'An older Puerto Rican boxing referee in a black half-mask and rolled white sleeves, stepping between two much larger brawlers in a basement gym with one hand raised to stop the fight.',
-    turned:'The same referee in an abandoned ring after hours, ropes snapped and one fist clenched, watching a fallen figure just outside the light while the count reaches an unspoken final beat.'
+  Gravel: {
+    front:'A broad urban sentinel in work clothes raising a wall of asphalt and concrete between a neighborhood and incoming bullets, a rough ramp leading families toward an open street.',
+    turned:'The same sentinel half-petrified in a street of rising asphalt, joints locked into stone as screaming criminals disappear beneath a fresh concrete tomb.'
   },
-  Palisade: {
-    front:'A young Black legal-aid attorney in shirtsleeves, tie, and a narrow domino mask, bracing both palms against a translucent gold force barrier stretched exactly across a tenement doorway while a family shelters behind it.',
-    turned:'The same attorney trapped between two simultaneous attacks in a courthouse corridor, one doorway protected by the glowing barrier while an unprotected doorway behind them fills with smoke.'
+  'The Moth': {
+    front:'A compact rooftop guardian in a gliding rig and grappling harness, perched above Millhaven with a precise map of fire escapes and smoke bombs ready, a rescue route glowing below.',
+    turned:'The same guardian clinging to a gargoyle far above a mugging, wings folded tight and eyes fixed downward while the terrified victim remains out of reach on the street.'
   },
-  Secondhand: {
-    front:'An East Asian woman watch repairer in a dark mechanic apron and small round mask, frozen between clockwork fragments as she catches a bullet during five stolen seconds, every clock face around her stopped.',
-    turned:'The same watchmaker waking on a deserted elevated-train platform with several minutes missing, loose watch gears in one palm and all station clocks pointing to different times.'
+  Cipher: {
+    front:'A Black man in a forensic coat and respirator mask crouched at a murder scene, touching one drop of blood to his tongue as a license plate appears in the rain-slick reflection of his eyes.',
+    turned:'The same detective swallowing evidence from a drug stash, hallucinated crime-scene colors and chemical symbols spiraling around him while investigators back away.'
   },
-  Rook: {
-    front:'A wiry Arab American bicycle courier in a checker-pattern scarf and compact helmet mask, one hand redirecting the momentum of a speeding motorcycle into a curling ribbon of blue force on a narrow city street.',
-    turned:'The same courier airborne above a rain-slicked intersection after sending too much force back, bicycle tumbling away as a familiar apartment window glows in the distance.'
+  Lumen: {
+    front:'A dark-skinned light tracker in a hooded coat, projecting a narrow ultraviolet beam through a warehouse to reveal a blood trail and chemical marks without waking the guards.',
+    turned:'The same tracker stumbling blind in a white-hot interrogation room as burning ultraviolet light reflects from a terrified suspect and the hero lashes at shadows.'
   },
-  Switchboard: {
-    front:'A middle-aged Indigenous emergency dispatcher in a simple black mask and headset, seated at a night-shift console as one phone glows ninety seconds before its neighboring lines begin to ring.',
-    turned:'The same dispatcher standing in a darkened call center surrounded by ringing phones, headset cord pulled taut toward an empty chair while a red countdown light reflects in the windows.'
+  Proxy: {
+    front:'A compassionate figure in a dark coat kneeling beside a recently deceased witness, astral light leaving their body as the corpse briefly opens its eyes to whisper a name to grieving family and police.',
+    turned:'The same figure’s living body lies cold in an alley while their spirit pilots a decaying corpse as a meat-shield through a brutal street fight.'
+  },
+  Ricochet: {
+    front:'A broad Black man in a reinforced street suit standing in front of his team, bullets and baseball bats flattening into blue kinetic ripples before harmless force drains into the asphalt beneath his boots.',
+    turned:'The same man walking into a crossfire with hemorrhage-red energy packed beneath his skin, releasing a block-shattering shockwave through cars, windows, and bystanders.'
+  },
+  Splicer: {
+    front:'A disciplined fighter in a sleeveless armored coat, extruding two precise bone-blades from their forearms to disarm a gang member in a narrow alley without drawing blood.',
+    turned:'The same fighter inside a massive terrifying bone-mech silhouette, calcium spikes everywhere, spine arched dangerously as gangs kneel in fear around them.'
+  },
+  Strobe: {
+    front:'A compact infiltrator in a matte tactical suit stepping through a security laser grid, consciousness trailing a translucent five-second ghost while their frozen body remains safely hidden behind a pillar.',
+    turned:'The same infiltrator waking bloody and concussed after repeated temporal skips, frozen afterimages being beaten apart behind them as they turn toward the attackers with homicidal rage.'
   }
 };
 
@@ -78,14 +90,14 @@ export const caseArt = {
 };
 
 export const threatArt = {
-  toll:'An unidentified racketeer seen only as a long shadow behind hanging fox, rabbit, and bear mascot heads in the dark maintenance tunnel of a shuttered amusement pier, payment envelopes stacked like trophies.',
-  casting:'An unknown copycat vigilante with a too-perfect costume standing before a wall of camera flashes, face erased by white light while damaged homemade versions of local Heroes’ gear hang behind them.',
-  renovation:'A composed female developer-councilwoman seen through layered blueprints and demolition dust, her face partly obscured by a pristine hardhat visor as occupied buildings disappear into blank paper behind her.',
-  lastcall:'An unseen new owner seated in the Anchor’s darkest booth, only gloved hands and a ledger of crossed-out favors visible, while the bartender’s silhouette is reflected captive in a cracked mirror.',
-  afterhours:'An unidentified contractor in a clean coat standing beyond a clinic’s locked triage doors, face hidden behind reflected ambulance lights while medicine crates and patient charts form a careful barrier.',
-  deadair:'A faceless broadcaster seated behind a community radio microphone, one hand on a mixing board and the other holding a cassette marked only by a blank label, city lights distorted in the studio glass.',
-  lastroute:'A shadowed transit fixer at the rear of an empty night bus, gloved hand holding a ring of route keys while the windows reflect stations that do not exist.',
-  openhouse:'An obscured security supervisor in a youth-centre hallway, clipboard and copied sign-in sheets in hand while a row of cameras watches an empty gym.'
+  sophist:'The Sophist in a dark maintenance tunnel behind hanging fox, rabbit, and bear mascot heads, payment envelopes arranged beside physical ledgers covered in paranoid diagrams, face caught between certainty and doubt.',
+  hemlock:'Hemlock in a clinic corridor filled with smiling, fearless thugs, a translucent chemical haze around her while invisible broken bones and phantom pain coil through her own silhouette.',
+  forge:'The Forge inside an abandoned foundry, body glowing from internal fire as military-grade weapons and molten bullet casings surround him, feverish and starving beneath the orange furnace light.',
+  alderman:'The Alderman in a pristine civic atrium whose architecture bends into calming geometric corridors, smiling crowds moving exactly as designed while an unrenovated brick room waits like a dark void behind him.',
+  broadcaster:'The Broadcaster behind a local news microphone and studio glass, a city map rewriting itself in the reflection while gravity fails around loose papers and impossible shadows repeat on the wall.',
+  ferryman:'The Ferryman standing between two impossible dark alleys connected by a shadow tunnel, a passenger’s fading memory visualized as a missing photograph while route signs point to places that do not exist.',
+  alchemist:'The Alchemist in a cramped street pharmacy laboratory, colorful chemical vapor beading on their skin while gang members reach through a shuttered storefront toward the living source of their next high.',
+  omen:'Omen in an empty bar at closing time, one hour of future violence reflected in their eyes, a silent script of approaching blows laid across the floor like a path they cannot leave.'
 };
 
 export const signalArt = {
@@ -120,13 +132,19 @@ export const signalArt = {
   'Blue Thread on a Fire Escape':'A single bright blue thread snagged three stories high on a rusty fire escape, pulled taut against the direction of the wind.',
   'An Apartment Light Blinking in Code':'One apartment window blinking in a deliberate pattern across a mostly dark brick courtyard, then revealing a different silhouette.',
   'Two Identical License Plates':'Two nearly identical dark sedans parked across from one another, matching license plates visible as the same unreadable pattern and matching dents on both bumpers.',
-  'A Child’s Drawing of the Block':'A crayon drawing of a familiar city block held in small hands, every window black except one impossible extra window glowing yellow, no readable writing.'
+  'A Child’s Drawing of the Block':'A crayon drawing of a familiar city block held in small hands, every window black except one impossible extra window glowing yellow, no readable writing.',
+  'Neon Bleed':'Rain-slick cobblestones reflecting a garish pink neon sign that stutters overhead, artificial warmth failing to hide cold corruption.',
+  'Static Fog':'Thick unnatural mist rolling off the Millhaven river, distant sirens and radio chatter reduced to distorted shapes in the haze.',
+  'Shattered Glass':'Quiet dust settling after violence as streetlamps filter through the jagged teeth of a broken diner window and damaged skyline.',
+  'Cigarette Embers':'One glowing cigarette ember in an otherwise black alley, a tiny signal that someone is watching but not yet acting.',
+  'Clockwork Sirens':'An empty Millhaven street at exactly 3:00 AM, rhythmic siren light and sound repeating with mechanical precision around unseen bleeding lives.'
 };
 
 export function validatePromptCoverage(){
   const errors = [];
   const heroRoles = new Set(HEROES.map(hero => hero.role));
   const caseIds = new Set(CASES.map(item => item.id));
+  const villainIds = new Set(VILLAINS.map(item => item.id));
   const signalTitles = new Set(SIGNALS.map(item => item.title));
 
   HEROES.forEach(hero => {
@@ -138,10 +156,13 @@ export function validatePromptCoverage(){
 
   CASES.forEach(item => {
     if(!caseArt[item.id]?.trim()) errors.push(`Cases [${item.id}]: missing art direction.`);
-    if(!threatArt[item.id]?.trim()) errors.push(`Threats [${item.id}]: missing art direction.`);
+    if(!villainIds.has(item.villainId)) errors.push(`Cases [${item.id}]: unknown villain ${item.villainId}.`);
   });
   Object.keys(caseArt).filter(id => !caseIds.has(id)).forEach(id => errors.push(`Cases [${id}]: art direction has no matching Case.`));
-  Object.keys(threatArt).filter(id => !caseIds.has(id)).forEach(id => errors.push(`Threats [${id}]: art direction has no matching Case.`));
+  VILLAINS.forEach(villain => {
+    if(!threatArt[villain.id]?.trim()) errors.push(`Threats [${villain.id}]: missing art direction.`);
+  });
+  Object.keys(threatArt).filter(id => !villainIds.has(id)).forEach(id => errors.push(`Threats [${id}]: art direction has no matching Villain.`));
 
   SIGNALS.forEach(item => { if(!signalArt[item.title]?.trim()) errors.push(`Signals [${item.title}]: missing art direction.`); });
   Object.keys(signalArt).filter(title => !signalTitles.has(title)).forEach(title => errors.push(`Signals [${title}]: art direction has no matching Signal.`));
@@ -162,7 +183,7 @@ export function buildPromptSheet(){
   write('');
   write(`> ${STYLE_PROMPTS.ink}`);
   write('');
-  write('### Interpretive Expressionist');
+  write('### Anime Noir');
   write('');
   write(`> ${STYLE_PROMPTS.expressionist}`);
   write('');
@@ -178,7 +199,7 @@ export function buildPromptSheet(){
     write(`- Front: ${art.front}`);
     write(`- Turned: ${art.turned}`);
     write(`- Comic Ink: \`${saveLine('ink', 'heroes', `${id}--front`)}\`, \`${saveLine('ink', 'heroes', `${id}--turned`)}\``);
-    write(`- Interpretive Expressionist: \`${saveLine('expressionist', 'heroes', `${id}--front`)}\`, \`${saveLine('expressionist', 'heroes', `${id}--turned`)}\``);
+    write(`- Anime Noir: \`${saveLine('expressionist', 'heroes', `${id}--front`)}\`, \`${saveLine('expressionist', 'heroes', `${id}--turned`)}\``);
     write('');
   });
   write(`## Cases (${CASES.length * 2} images)`);
@@ -202,17 +223,17 @@ export function buildPromptSheet(){
     write(`Save as \`${saveLine('ink', 'signals', id)}\` and \`${saveLine('expressionist', 'signals', id)}\`.`);
     write('');
   });
-  write(`## Threats (${CASES.length * 2} images)`);
+  write(`## Threats (${VILLAINS.length * 2} images)`);
   write('');
-  CASES.forEach(item => {
-    write(`### ${item.title} — The Threat`);
+  VILLAINS.forEach(item => {
+    write(`### ${item.name} — The Threat`);
     write('');
     write(threatArt[item.id]);
     write('');
     write(`Save as \`${saveLine('ink', 'threats', item.id)}\` and \`${saveLine('expressionist', 'threats', item.id)}\`.`);
     write('');
   });
-  write(`Total: ${HEROES.length * 4 + CASES.length * 4 + SIGNALS.length * 2} images across both styles.`);
+  write(`Total: ${HEROES.length * 4 + CASES.length * 2 + SIGNALS.length * 2 + VILLAINS.length * 2} images across both styles.`);
   return `${lines.join('\n')}\n`;
 }
 
@@ -231,7 +252,7 @@ function main(){
     return;
   }
   if(args.includes('--check')){
-    console.log(`Prompt coverage valid: ${HEROES.length} Heroes, ${CASES.length} Cases, ${SIGNALS.length} Signals, ${CASES.length} Threats; 2 styles.`);
+    console.log(`Prompt coverage valid: ${HEROES.length} Heroes, ${CASES.length} Cases, ${SIGNALS.length} Signals, ${VILLAINS.length} Threats; 2 styles.`);
     return;
   }
   const sheet = buildPromptSheet();

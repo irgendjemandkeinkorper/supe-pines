@@ -30,10 +30,10 @@ short enough for a single sitting:
 |---|---|---|
 | Tones | 3 (Fury, Guilt, Dread) | 3 |
 | Cases | 8 | 12 |
-| Heroes | 12 (6 dealt per game) | 16 (6 dealt per game) |
-| Setup questions | 96 (every Hero × every Case) | 192 |
+| Heroes | 15 (6 dealt per game) | 16 (6 dealt per game) |
+| Setup questions | 120 (every Hero × every Case) | 192 |
 | Scene cards | 48/act (144 total) | 61/act (183 total) |
-| Signals | 32 | 44 |
+| Signals | 37 | 44 |
 | Secrets | 10 (mathematically exhaustive over 3 tones — can't be fewer) | 10 |
 | Act Closes | 6 (2/act) | 9 |
 
@@ -58,8 +58,8 @@ index.html         screen markup, loads js/main.js as an ES module
 css/style.css       all styling — a noir comic-book identity (halftone
                     texture, rooftop skyline, Bangers/Work Sans type,
                     hard-edged "comic panel" cards)
-js/data/            card content: tones, cases, heroes, scenes, signals,
-                    secrets, act closes, epilogue
+js/data/            card content: tones, cases, heroes, villains, scenes,
+                    signals, secrets, act closes, epilogue
 js/engine/          state shape, pure rules helpers (tone counting, secret
                     matching, etc.)
 js/ui/              screen rendering + the mutation functions triggered by
@@ -206,41 +206,41 @@ The visual and copy rules live in [`docs/design-bible.md`](docs/design-bible.md)
 
 ## Card art
 
-The application's manifest defines 144 image slots, but the game is designed to gracefully degrade to beautifully styled text-only cards whenever an image is absent. **This text fallback is an accepted, intentional, and fully supported launch state.** This ensures the game remains completely readable, accessible, and playable even with partial art coverage.
+The application's manifest defines 166 image slots, but the game is designed to gracefully degrade to beautifully styled text-only cards whenever an image is absent. **This text fallback is an accepted, intentional, and fully supported launch state.** This ensures the game remains completely readable, accessible, and playable even with partial art coverage.
 
 ### Numeric Launch Target
-For the launch build, the agreed target of completed, shipped art is exactly **6/144** files, categorized as follows:
+For the launch build, the agreed target of completed, shipped art is exactly **6/166** files, categorized as follows:
 
 | Category | Visual Style | Launch Target | Shipped Files | Status |
 |---|---|---|---|---|
 | **Cases** | Comic Ink | 5 / 8 | `afterhours`, `casting`, `lastcall`, `renovation`, `toll` | Shipped |
-| **Cases** | Interpretive Expressionist | 1 / 8 | `afterhours` | Shipped |
-| **Heroes** | All Styles | 0 / 24 | None | Deferred |
-| **Signals** | All Styles | 0 / 64 | None | Deferred |
+| **Cases** | Anime Noir | 1 / 8 | `afterhours` | Shipped |
+| **Heroes** | All Styles | 0 / 60 | None | Deferred |
+| **Signals** | All Styles | 0 / 74 | None | Deferred |
 | **Threats** | All Styles | 0 / 16 | None | Deferred |
 
 The `scripts/check-art.mjs` script acts as our CI/CD gate. It strictly enforces that these 6 required assets are present and correct before any commit can be merged.
 
 ### Deferred Post-Launch Art Packs
 The rest of the manifest's image slots represent a deferred pipeline of future art expansion packs. These will be generated and shipped in waves post-launch:
-1. **Case Expansion Pack (Ink & Expressionist):** Completing the remaining 3 Cases in Comic Ink (`deadair`, `lastroute`, `openhouse`) and 7 Cases in Interpretive Expressionist.
-2. **The Heroes Pack:** Authoring and shipping 24 card faces (front and turned sides for 12 heroes) in both Comic Ink and Interpretive Expressionist styles.
-3. **The Signals Pack:** 64 total illustrations (32 unique signals in both styles).
+1. **Case Expansion Pack (Ink & Anime Noir):** Completing the remaining 3 Cases in Comic Ink (`deadair`, `lastroute`, `openhouse`) and 7 Cases in Anime Noir.
+2. **The Heroes Pack:** Authoring and shipping 60 card faces (front and turned sides for 15 heroes) in both Comic Ink and Anime Noir styles.
+3. **The Signals Pack:** 74 total illustrations (37 unique signals in both styles).
 4. **The Threats Pack:** 16 total illustrations (8 unique threats in both styles).
 
 The Gallery supports the full image set at
-`art/images/<style>/<category>/<slug>.<ext>` (`style` is `ink` or `expressionist`;
+`art/images/<style>/<category>/<slug>.<ext>` (`style` is `ink` or the legacy path id `expressionist`, displayed in the app as Anime Noir;
 `category` is `heroes`, `cases`, `signals`, or `threats`) and falls back to
 intentional text cards whenever an image is absent. Each Hero appears as one
 two-sided card with an explicit Side I/Side II control; the caption and flip
 condition follow the face being shown.
 
 The Bleakwood Vale manifest pipeline is now fully adapted for Supe Pines. It
-contains hand-authored art direction for all 12 Heroes (both sides), 8 Cases,
-32 Signals, and 8 obscured Threats in two visual styles — 144 image slots
-total. Comic Ink is the hard-edged street-level language; Interpretive
-Expressionist is symbolic, painterly trading-card art that makes a Hero's
-shortcoming, compromise, or downfall visible in the neighborhood. Prompt coverage and manifest generation can be
+contains hand-authored art direction for all 15 Heroes (both sides), 8 Cases,
+37 Signals, and 8 Threats in two visual styles — 166 image slots total. Comic
+Ink is the hard-edged street-level language; Anime Noir is a late-90s
+cyberpunk anime language with cel-shaded faces, rain, and industrial light.
+Prompt coverage and manifest generation can be
 checked without Python,
 credentials, or an API call:
 

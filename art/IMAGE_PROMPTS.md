@@ -8,97 +8,118 @@ Two visual languages for every Hero side, Case, Signal, and Threat. Each subject
 
 > Street-level superhero noir rendered as a hand-inked comic panel: aggressive black brushwork, sharp silhouettes, off-register halftone dots, newsprint texture, selective dirty-cream, oxblood-red, and electric-blue spot color, hard rain-slicked light, human scale and lived-in city detail. Dynamic but readable single composition. No text, letters, logos, captions, speech balloons, borders, panels, watermarks, or gore. One unified full-bleed image, never a grid, montage, triptych, card frame, or repeated subject.
 
-### Interpretive Expressionist
+### Anime Noir
 
-> Interpretive expressionist trading-card illustration: bold painterly shapes, charged color, dramatic directional light, and symbolic objects arranged like an allegory. Keep the neighborhood and people recognizable, but let perspective, weather, anatomy, and architecture bend to reveal the Hero’s Burden, shortcoming, compromise, or downfall. The image should feel like premium fantasy card art — emotionally legible, mythic, and tactile — without glossy franchise spectacle. Make the impossible metaphor specific to the subject, not generic fantasy. No text, letters, logos, captions, speech balloons, borders, panels, watermarks, or literal card frames. One unified full-bleed image, never a grid, montage, triptych, or repeated subject.
+> Late-1990s Japanese cyberpunk noir anime illustration: confident expressive ink line, cel-shaded planes, cinematic perspective, rain-slick industrial neighborhoods, hard rim light, restrained electric cyan and sodium amber, and serious human-scale melancholy. Blend jazz-noir atmosphere with tactile cyberpunk infrastructure and lived-in faces; keep the impossible power legible without glossy franchise spectacle. No text, letters, logos, captions, speech balloons, borders, panels, watermarks, or literal card frames. One unified full-bleed image, never a grid, montage, triptych, or repeated subject.
 
 Portrait art uses 3:4; Signals use 1:1. The Gallery also accepts JPG, JPEG, and WebP at the same extensionless paths.
 
-## Heroes (48 images)
+## Heroes (60 images)
 
-### The Nightwatch
+### Ballast
 
-- Front: A tired Black beat cop in a plain half-mask and reinforced patrol jacket on a tenement rooftop at 2 a.m., police radio in one hand, looking down toward a crime scene while his badge remains hidden inside the coat.
-- Turned: The same masked cop in the same patrol jacket under a failing rooftop light, knuckles bloodied against a brick wall, his exposed badge reflected in a rain puddle at his feet.
-- Comic Ink: `art/images/ink/heroes/the-nightwatch--front.png`, `art/images/ink/heroes/the-nightwatch--turned.png`
-- Interpretive Expressionist: `art/images/expressionist/heroes/the-nightwatch--front.png`, `art/images/expressionist/heroes/the-nightwatch--turned.png`
+- Front: A Black woman in practical urban rescue gear and a heavy asymmetrical coat, standing at medium density between frightened tenants and a collapsing tenement entrance, masonry stopping against her calm stance while a few feathers drift around her.
+- Turned: The same woman in the same coat made impossibly massive in a rain-slick street, one boot crushing asphalt as a load-bearing column falls toward a getaway car and civilians flee the dust.
+- Comic Ink: `art/images/ink/heroes/ballast--front.png`, `art/images/ink/heroes/ballast--turned.png`
+- Anime Noir: `art/images/expressionist/heroes/ballast--front.png`, `art/images/expressionist/heroes/ballast--turned.png`
 
-### Powerline
+### Apex
 
-- Front: A broad-shouldered Latina utility lineman in a homemade insulated hero suit, climbing belt and ceramic cable cutters visible, crouched on a power pole above a dark neighborhood as blue current crawls safely across her gloves.
-- Turned: The same lineman amid a blown transformer and hanging cables, visor cracked, throwing her insulated body between a shower of sparks and an occupied apartment window.
-- Comic Ink: `art/images/ink/heroes/powerline--front.png`, `art/images/ink/heroes/powerline--turned.png`
-- Interpretive Expressionist: `art/images/expressionist/heroes/powerline--front.png`, `art/images/expressionist/heroes/powerline--turned.png`
+- Front: A lean Black man in a battered training jacket and taped hands, moving through a rain-dark alley with perfect evasive aikido footwork as several attackers stumble past him without being struck.
+- Turned: The same fighter under a brutal warehouse light, body locked into a bone-breaking finishing strike while ghostlike motion trails of earlier fights coil around his shoulders.
+- Comic Ink: `art/images/ink/heroes/apex--front.png`, `art/images/ink/heroes/apex--turned.png`
+- Anime Noir: `art/images/expressionist/heroes/apex--front.png`, `art/images/expressionist/heroes/apex--turned.png`
 
-### Kid Chorus
+### The Pulse
 
-- Front: A seventeen-year-old Korean American girl in a patched hooded jacket and compact ear protectors, standing in an alley as one controlled sonic ring ripples from her open mouth and rattles nearby windows.
-- Turned: The same teenage hero crouched after an uncontrolled blast, windows shattered outward around her, both hands clamped over her mouth while frightened silhouettes watch from a doorway.
-- Comic Ink: `art/images/ink/heroes/kid-chorus--front.png`, `art/images/ink/heroes/kid-chorus--turned.png`
-- Interpretive Expressionist: `art/images/expressionist/heroes/kid-chorus--front.png`, `art/images/expressionist/heroes/kid-chorus--turned.png`
+- Front: A gender-nonconforming figure in a weatherproof coat and insulated gloves, siphoning a thin blue current from a broken street cabinet while every occupied apartment behind them stays warmly lit.
+- Turned: The same figure at the center of a winter blackout, residential windows dark, electrical arcs crawling through their body as they overcharge for a fight in the street.
+- Comic Ink: `art/images/ink/heroes/the-pulse--front.png`, `art/images/ink/heroes/the-pulse--turned.png`
+- Anime Noir: `art/images/expressionist/heroes/the-pulse--front.png`, `art/images/expressionist/heroes/the-pulse--turned.png`
 
-### The Concierge
+### Dialectic
 
-- Front: An older West African doorman in a burgundy coat with brass buttons, impossibly strong hands holding a buckled apartment security gate open while tenants hurry through behind him.
-- Turned: The same doorman alone in the condemned lobby he has guarded for thirty years, holding up a cracked ceiling beam as eviction notices and plaster drift around him.
-- Comic Ink: `art/images/ink/heroes/the-concierge--front.png`, `art/images/ink/heroes/the-concierge--turned.png`
-- Interpretive Expressionist: `art/images/expressionist/heroes/the-concierge--front.png`, `art/images/expressionist/heroes/the-concierge--turned.png`
+- Front: A sharp-featured nonbinary performer in a long coat and half-mask, projecting a harmless hard-light carnival across a tense street so armed people stare at a bright impossible parade instead of each other.
+- Turned: The same performer in a fractured apartment corridor surrounded by terrifying duplicate doorways and false teammates, reaching toward a hallucinated friend while every surface insists it is real.
+- Comic Ink: `art/images/ink/heroes/dialectic--front.png`, `art/images/ink/heroes/dialectic--turned.png`
+- Anime Noir: `art/images/expressionist/heroes/dialectic--front.png`, `art/images/expressionist/heroes/dialectic--turned.png`
 
-### Widow’s Peak
+### Amp
 
-- Front: A severe white woman in a black widow-shaped half-mask and practical mourning clothes, perched beside a cemetery angel above the city, clutching a worn wedding ring on a chain.
-- Turned: The same masked widow pinning an unseen suspect against a rain-blackened gravestone, her husband’s ring chain snapped and bright in the mud below.
-- Comic Ink: `art/images/ink/heroes/widows-peak--front.png`, `art/images/ink/heroes/widows-peak--turned.png`
-- Interpretive Expressionist: `art/images/expressionist/heroes/widows-peak--front.png`, `art/images/expressionist/heroes/widows-peak--turned.png`
+- Front: A stoic brown-skinned sound specialist in a compact armored coat, holding one hand over a silent gunfight as a clean circular silence field settles around the muzzle flashes and frightened neighbors escape.
+- Turned: The same specialist in a shattered storefront, releasing a violent kinetic wave through speakers and windows while the whole street vibrates like a distorted concert.
+- Comic Ink: `art/images/ink/heroes/amp--front.png`, `art/images/ink/heroes/amp--turned.png`
+- Anime Noir: `art/images/expressionist/heroes/amp--front.png`, `art/images/expressionist/heroes/amp--turned.png`
 
-### The Understudy
+### Knot
 
-- Front: A slim South Asian stage actor in a handmade midnight-blue costume, using mirrors, wire, smoke pellets, and perfect posture to appear superhuman under an alley fire escape spotlight.
-- Turned: The same actor backstage in a derelict theater, mask half removed, surrounded by visibly broken trick gear as an ominous silhouette waits beyond the stage curtain.
-- Comic Ink: `art/images/ink/heroes/the-understudy--front.png`, `art/images/ink/heroes/the-understudy--turned.png`
-- Interpretive Expressionist: `art/images/expressionist/heroes/the-understudy--front.png`, `art/images/expressionist/heroes/the-understudy--turned.png`
+- Front: A wiry figure in a hooded coat on a fire escape, telekinetically tying falling debris into a suspended safety net of ropes and wires while restrained thieves wait quietly for police.
+- Turned: The same figure in a webbed alley, chains and cables covering every exit, allies and enemies pinned to the walls as the hero stands possessively at the center.
+- Comic Ink: `art/images/ink/heroes/knot--front.png`, `art/images/ink/heroes/knot--turned.png`
+- Anime Noir: `art/images/expressionist/heroes/knot--front.png`, `art/images/expressionist/heroes/knot--turned.png`
 
-### Backline
+### Catharsis
 
-- Front: A stocky nonbinary paramedic in dark off-duty clothes and a homemade medic harness, kneeling beside an injured stranger under an El track with one forbidden piece of glowing equipment open in a second trauma bag.
-- Turned: The same paramedic alone in the back of an empty ambulance after a brutal night, bloodied gloves on the floor and the unlicensed second bag open beside a silent radio.
-- Comic Ink: `art/images/ink/heroes/backline--front.png`, `art/images/ink/heroes/backline--turned.png`
-- Interpretive Expressionist: `art/images/expressionist/heroes/backline--front.png`, `art/images/expressionist/heroes/backline--turned.png`
+- Front: A tired street medic in a rain-dark clinic doorway, one hand on an injured stranger as the wound leaves the patient and appears as a matching bruise and fracture across the medic’s own body.
+- Turned: The same medic standing over a stunned attacker as a fatal wound tears across the attacker’s body while the innocent bystander beside them heals, the hero’s face cold and resolved.
+- Comic Ink: `art/images/ink/heroes/catharsis--front.png`, `art/images/ink/heroes/catharsis--turned.png`
+- Anime Noir: `art/images/expressionist/heroes/catharsis--front.png`, `art/images/expressionist/heroes/catharsis--turned.png`
 
-### The Ref
+### Gravel
 
-- Front: An older Puerto Rican boxing referee in a black half-mask and rolled white sleeves, stepping between two much larger brawlers in a basement gym with one hand raised to stop the fight.
-- Turned: The same referee in an abandoned ring after hours, ropes snapped and one fist clenched, watching a fallen figure just outside the light while the count reaches an unspoken final beat.
-- Comic Ink: `art/images/ink/heroes/the-ref--front.png`, `art/images/ink/heroes/the-ref--turned.png`
-- Interpretive Expressionist: `art/images/expressionist/heroes/the-ref--front.png`, `art/images/expressionist/heroes/the-ref--turned.png`
+- Front: A broad urban sentinel in work clothes raising a wall of asphalt and concrete between a neighborhood and incoming bullets, a rough ramp leading families toward an open street.
+- Turned: The same sentinel half-petrified in a street of rising asphalt, joints locked into stone as screaming criminals disappear beneath a fresh concrete tomb.
+- Comic Ink: `art/images/ink/heroes/gravel--front.png`, `art/images/ink/heroes/gravel--turned.png`
+- Anime Noir: `art/images/expressionist/heroes/gravel--front.png`, `art/images/expressionist/heroes/gravel--turned.png`
 
-### Palisade
+### The Moth
 
-- Front: A young Black legal-aid attorney in shirtsleeves, tie, and a narrow domino mask, bracing both palms against a translucent gold force barrier stretched exactly across a tenement doorway while a family shelters behind it.
-- Turned: The same attorney trapped between two simultaneous attacks in a courthouse corridor, one doorway protected by the glowing barrier while an unprotected doorway behind them fills with smoke.
-- Comic Ink: `art/images/ink/heroes/palisade--front.png`, `art/images/ink/heroes/palisade--turned.png`
-- Interpretive Expressionist: `art/images/expressionist/heroes/palisade--front.png`, `art/images/expressionist/heroes/palisade--turned.png`
+- Front: A compact rooftop guardian in a gliding rig and grappling harness, perched above Millhaven with a precise map of fire escapes and smoke bombs ready, a rescue route glowing below.
+- Turned: The same guardian clinging to a gargoyle far above a mugging, wings folded tight and eyes fixed downward while the terrified victim remains out of reach on the street.
+- Comic Ink: `art/images/ink/heroes/the-moth--front.png`, `art/images/ink/heroes/the-moth--turned.png`
+- Anime Noir: `art/images/expressionist/heroes/the-moth--front.png`, `art/images/expressionist/heroes/the-moth--turned.png`
 
-### Secondhand
+### Cipher
 
-- Front: An East Asian woman watch repairer in a dark mechanic apron and small round mask, frozen between clockwork fragments as she catches a bullet during five stolen seconds, every clock face around her stopped.
-- Turned: The same watchmaker waking on a deserted elevated-train platform with several minutes missing, loose watch gears in one palm and all station clocks pointing to different times.
-- Comic Ink: `art/images/ink/heroes/secondhand--front.png`, `art/images/ink/heroes/secondhand--turned.png`
-- Interpretive Expressionist: `art/images/expressionist/heroes/secondhand--front.png`, `art/images/expressionist/heroes/secondhand--turned.png`
+- Front: A Black man in a forensic coat and respirator mask crouched at a murder scene, touching one drop of blood to his tongue as a license plate appears in the rain-slick reflection of his eyes.
+- Turned: The same detective swallowing evidence from a drug stash, hallucinated crime-scene colors and chemical symbols spiraling around him while investigators back away.
+- Comic Ink: `art/images/ink/heroes/cipher--front.png`, `art/images/ink/heroes/cipher--turned.png`
+- Anime Noir: `art/images/expressionist/heroes/cipher--front.png`, `art/images/expressionist/heroes/cipher--turned.png`
 
-### Rook
+### Lumen
 
-- Front: A wiry Arab American bicycle courier in a checker-pattern scarf and compact helmet mask, one hand redirecting the momentum of a speeding motorcycle into a curling ribbon of blue force on a narrow city street.
-- Turned: The same courier airborne above a rain-slicked intersection after sending too much force back, bicycle tumbling away as a familiar apartment window glows in the distance.
-- Comic Ink: `art/images/ink/heroes/rook--front.png`, `art/images/ink/heroes/rook--turned.png`
-- Interpretive Expressionist: `art/images/expressionist/heroes/rook--front.png`, `art/images/expressionist/heroes/rook--turned.png`
+- Front: A dark-skinned light tracker in a hooded coat, projecting a narrow ultraviolet beam through a warehouse to reveal a blood trail and chemical marks without waking the guards.
+- Turned: The same tracker stumbling blind in a white-hot interrogation room as burning ultraviolet light reflects from a terrified suspect and the hero lashes at shadows.
+- Comic Ink: `art/images/ink/heroes/lumen--front.png`, `art/images/ink/heroes/lumen--turned.png`
+- Anime Noir: `art/images/expressionist/heroes/lumen--front.png`, `art/images/expressionist/heroes/lumen--turned.png`
 
-### Switchboard
+### Proxy
 
-- Front: A middle-aged Indigenous emergency dispatcher in a simple black mask and headset, seated at a night-shift console as one phone glows ninety seconds before its neighboring lines begin to ring.
-- Turned: The same dispatcher standing in a darkened call center surrounded by ringing phones, headset cord pulled taut toward an empty chair while a red countdown light reflects in the windows.
-- Comic Ink: `art/images/ink/heroes/switchboard--front.png`, `art/images/ink/heroes/switchboard--turned.png`
-- Interpretive Expressionist: `art/images/expressionist/heroes/switchboard--front.png`, `art/images/expressionist/heroes/switchboard--turned.png`
+- Front: A compassionate figure in a dark coat kneeling beside a recently deceased witness, astral light leaving their body as the corpse briefly opens its eyes to whisper a name to grieving family and police.
+- Turned: The same figure’s living body lies cold in an alley while their spirit pilots a decaying corpse as a meat-shield through a brutal street fight.
+- Comic Ink: `art/images/ink/heroes/proxy--front.png`, `art/images/ink/heroes/proxy--turned.png`
+- Anime Noir: `art/images/expressionist/heroes/proxy--front.png`, `art/images/expressionist/heroes/proxy--turned.png`
+
+### Ricochet
+
+- Front: A broad Black man in a reinforced street suit standing in front of his team, bullets and baseball bats flattening into blue kinetic ripples before harmless force drains into the asphalt beneath his boots.
+- Turned: The same man walking into a crossfire with hemorrhage-red energy packed beneath his skin, releasing a block-shattering shockwave through cars, windows, and bystanders.
+- Comic Ink: `art/images/ink/heroes/ricochet--front.png`, `art/images/ink/heroes/ricochet--turned.png`
+- Anime Noir: `art/images/expressionist/heroes/ricochet--front.png`, `art/images/expressionist/heroes/ricochet--turned.png`
+
+### Splicer
+
+- Front: A disciplined fighter in a sleeveless armored coat, extruding two precise bone-blades from their forearms to disarm a gang member in a narrow alley without drawing blood.
+- Turned: The same fighter inside a massive terrifying bone-mech silhouette, calcium spikes everywhere, spine arched dangerously as gangs kneel in fear around them.
+- Comic Ink: `art/images/ink/heroes/splicer--front.png`, `art/images/ink/heroes/splicer--turned.png`
+- Anime Noir: `art/images/expressionist/heroes/splicer--front.png`, `art/images/expressionist/heroes/splicer--turned.png`
+
+### Strobe
+
+- Front: A compact infiltrator in a matte tactical suit stepping through a security laser grid, consciousness trailing a translucent five-second ghost while their frozen body remains safely hidden behind a pillar.
+- Turned: The same infiltrator waking bloody and concussed after repeated temporal skips, frozen afterimages being beaten apart behind them as they turn toward the attackers with homicidal rage.
+- Comic Ink: `art/images/ink/heroes/strobe--front.png`, `art/images/ink/heroes/strobe--turned.png`
+- Anime Noir: `art/images/expressionist/heroes/strobe--front.png`, `art/images/expressionist/heroes/strobe--turned.png`
 
 ## Cases (16 images)
 
@@ -150,7 +171,7 @@ A neighbourhood youth centre gym prepared for an open house, folding chairs and 
 
 Save as `art/images/ink/cases/openhouse.png` and `art/images/expressionist/cases/openhouse.png`.
 
-## Signals (64 images)
+## Signals (74 images)
 
 ### 📻 A Dead Scanner Channel
 
@@ -344,54 +365,84 @@ A crayon drawing of a familiar city block held in small hands, every window blac
 
 Save as `art/images/ink/signals/a-childs-drawing-of-the-block.png` and `art/images/expressionist/signals/a-childs-drawing-of-the-block.png`.
 
+### ◈ Neon Bleed
+
+Rain-slick cobblestones reflecting a garish pink neon sign that stutters overhead, artificial warmth failing to hide cold corruption.
+
+Save as `art/images/ink/signals/neon-bleed.png` and `art/images/expressionist/signals/neon-bleed.png`.
+
+### ≋ Static Fog
+
+Thick unnatural mist rolling off the Millhaven river, distant sirens and radio chatter reduced to distorted shapes in the haze.
+
+Save as `art/images/ink/signals/static-fog.png` and `art/images/expressionist/signals/static-fog.png`.
+
+### ▨ Shattered Glass
+
+Quiet dust settling after violence as streetlamps filter through the jagged teeth of a broken diner window and damaged skyline.
+
+Save as `art/images/ink/signals/shattered-glass.png` and `art/images/expressionist/signals/shattered-glass.png`.
+
+### · Cigarette Embers
+
+One glowing cigarette ember in an otherwise black alley, a tiny signal that someone is watching but not yet acting.
+
+Save as `art/images/ink/signals/cigarette-embers.png` and `art/images/expressionist/signals/cigarette-embers.png`.
+
+### ⏲ Clockwork Sirens
+
+An empty Millhaven street at exactly 3:00 AM, rhythmic siren light and sound repeating with mechanical precision around unseen bleeding lives.
+
+Save as `art/images/ink/signals/clockwork-sirens.png` and `art/images/expressionist/signals/clockwork-sirens.png`.
+
 ## Threats (16 images)
 
-### The Toll — The Threat
+### The Sophist — The Threat
 
-An unidentified racketeer seen only as a long shadow behind hanging fox, rabbit, and bear mascot heads in the dark maintenance tunnel of a shuttered amusement pier, payment envelopes stacked like trophies.
+The Sophist in a dark maintenance tunnel behind hanging fox, rabbit, and bear mascot heads, payment envelopes arranged beside physical ledgers covered in paranoid diagrams, face caught between certainty and doubt.
 
-Save as `art/images/ink/threats/toll.png` and `art/images/expressionist/threats/toll.png`.
+Save as `art/images/ink/threats/sophist.png` and `art/images/expressionist/threats/sophist.png`.
 
-### Open Casting — The Threat
+### Hemlock — The Threat
 
-An unknown copycat vigilante with a too-perfect costume standing before a wall of camera flashes, face erased by white light while damaged homemade versions of local Heroes’ gear hang behind them.
+Hemlock in a clinic corridor filled with smiling, fearless thugs, a translucent chemical haze around her while invisible broken bones and phantom pain coil through her own silhouette.
 
-Save as `art/images/ink/threats/casting.png` and `art/images/expressionist/threats/casting.png`.
+Save as `art/images/ink/threats/hemlock.png` and `art/images/expressionist/threats/hemlock.png`.
 
-### The Renovation — The Threat
+### The Forge — The Threat
 
-A composed female developer-councilwoman seen through layered blueprints and demolition dust, her face partly obscured by a pristine hardhat visor as occupied buildings disappear into blank paper behind her.
+The Forge inside an abandoned foundry, body glowing from internal fire as military-grade weapons and molten bullet casings surround him, feverish and starving beneath the orange furnace light.
 
-Save as `art/images/ink/threats/renovation.png` and `art/images/expressionist/threats/renovation.png`.
+Save as `art/images/ink/threats/forge.png` and `art/images/expressionist/threats/forge.png`.
 
-### Last Call — The Threat
+### The Alderman — The Threat
 
-An unseen new owner seated in the Anchor’s darkest booth, only gloved hands and a ledger of crossed-out favors visible, while the bartender’s silhouette is reflected captive in a cracked mirror.
+The Alderman in a pristine civic atrium whose architecture bends into calming geometric corridors, smiling crowds moving exactly as designed while an unrenovated brick room waits like a dark void behind him.
 
-Save as `art/images/ink/threats/lastcall.png` and `art/images/expressionist/threats/lastcall.png`.
+Save as `art/images/ink/threats/alderman.png` and `art/images/expressionist/threats/alderman.png`.
 
-### After Hours — The Threat
+### The Broadcaster — The Threat
 
-An unidentified contractor in a clean coat standing beyond a clinic’s locked triage doors, face hidden behind reflected ambulance lights while medicine crates and patient charts form a careful barrier.
+The Broadcaster behind a local news microphone and studio glass, a city map rewriting itself in the reflection while gravity fails around loose papers and impossible shadows repeat on the wall.
 
-Save as `art/images/ink/threats/afterhours.png` and `art/images/expressionist/threats/afterhours.png`.
+Save as `art/images/ink/threats/broadcaster.png` and `art/images/expressionist/threats/broadcaster.png`.
 
-### Dead Air — The Threat
+### The Ferryman — The Threat
 
-A faceless broadcaster seated behind a community radio microphone, one hand on a mixing board and the other holding a cassette marked only by a blank label, city lights distorted in the studio glass.
+The Ferryman standing between two impossible dark alleys connected by a shadow tunnel, a passenger’s fading memory visualized as a missing photograph while route signs point to places that do not exist.
 
-Save as `art/images/ink/threats/deadair.png` and `art/images/expressionist/threats/deadair.png`.
+Save as `art/images/ink/threats/ferryman.png` and `art/images/expressionist/threats/ferryman.png`.
 
-### The Last Route — The Threat
+### The Alchemist — The Threat
 
-A shadowed transit fixer at the rear of an empty night bus, gloved hand holding a ring of route keys while the windows reflect stations that do not exist.
+The Alchemist in a cramped street pharmacy laboratory, colorful chemical vapor beading on their skin while gang members reach through a shuttered storefront toward the living source of their next high.
 
-Save as `art/images/ink/threats/lastroute.png` and `art/images/expressionist/threats/lastroute.png`.
+Save as `art/images/ink/threats/alchemist.png` and `art/images/expressionist/threats/alchemist.png`.
 
-### Open House — The Threat
+### Omen — The Threat
 
-An obscured security supervisor in a youth-centre hallway, clipboard and copied sign-in sheets in hand while a row of cameras watches an empty gym.
+Omen in an empty bar at closing time, one hour of future violence reflected in their eyes, a silent script of approaching blows laid across the floor like a path they cannot leave.
 
-Save as `art/images/ink/threats/openhouse.png` and `art/images/expressionist/threats/openhouse.png`.
+Save as `art/images/ink/threats/omen.png` and `art/images/expressionist/threats/omen.png`.
 
-Total: 144 images across both styles.
+Total: 166 images across both styles.

@@ -25,7 +25,7 @@ Ensure that card-art prompts and manifest match the actual files.
 - **Expected Outcome:** Both commands exit with status `0`, indicating that generated prompts and `manifest.json` are in-sync with current game data.
 
 ### 3. Card Art Launch Gate Verification
-Verify the card art launch criteria (exactly 6 completed files: 5 Comic Ink Cases and 1 Interpretive Expressionist Case, or all 144 files in `--strict` mode).
+Verify the card art launch criteria (exactly 6 completed files: 5 Comic Ink Cases and 1 Anime Noir Case, or all 166 files in `--strict` mode).
 - **Command:** `node scripts/check-art.mjs`
 - **Expected Outcome:** Confirm that either the text fallback mechanism is safely functioning or that the launch/strict criteria are met. Exit code must be `0`.
 

@@ -4,7 +4,7 @@
 import { doc, setDoc, runTransaction, onSnapshot } from 'https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js';
 import { db } from './firebase-init.js';
 import { ensureSignedIn, getUid } from './auth.js';
-import { HEROES, ACT_CLOSES } from '../data/index.js';
+import { HEROES, ACT_CLOSES, villainForCase } from '../data/index.js';
 import { shuffle } from '../engine/utils.js';
 import { HEROES_PER_GAME } from '../engine/rules.js';
 import { normalizeArtStyle } from '../ui/art.js';
@@ -36,7 +36,7 @@ export async function createRoom(theCase, hostName, artStyle='ink'){
     status:'lobby', phase:'lobby', hostUid:uid, case:theCase, artStyle:normalizeArtStyle(artStyle),
     players:[emptyPlayer(hostName||'Storyteller I', uid)],
     seats:{[uid]:0},
-    act:0, heroes:[], threat:{name:'', facts:[]},
+    act:0, heroes:[], threat:{name:'', facts:[], profile:villainForCase(theCase.id)},
     sceneDeck:[], discardTones:[], signalDeck:[], signalRow:[],
     actClose:{}, journal:[], current:null, archIdx:0,
     firstScenePlayer:null, closeDone:false, pendingSecret:null,

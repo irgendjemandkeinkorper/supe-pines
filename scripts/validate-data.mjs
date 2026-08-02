@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { fileURLToPath } from 'node:url';
-import { ACT_CLOSES, CASES, EPILOGUE_QUESTIONS, HEROES, SCENES, SECRETS, SIGNALS, TONES } from '../js/data/index.js';
+import { ACT_CLOSES, CASES, EPILOGUE_QUESTIONS, HEROES, SCENES, SECRETS, SIGNALS, TONES, VILLAINS } from '../js/data/index.js';
 
 const isText = value => typeof value === 'string' && value.trim().length > 0;
 
@@ -12,7 +12,7 @@ function duplicateValues(values){
   return [...duplicates];
 }
 
-export function validateData(data = { ACT_CLOSES, CASES, EPILOGUE_QUESTIONS, HEROES, SCENES, SECRETS, SIGNALS, TONES }){
+export function validateData(data = { ACT_CLOSES, CASES, EPILOGUE_QUESTIONS, HEROES, SCENES, SECRETS, SIGNALS, TONES, VILLAINS }){
   const errors = [];
   const fail = (collection, entry, message) => errors.push(`${collection}${entry ? ` [${entry}]` : ''}: ${message}`);
   const tones = new Set(data.TONES);
@@ -38,6 +38,22 @@ export function validateData(data = { ACT_CLOSES, CASES, EPILOGUE_QUESTIONS, HER
   }
 
   const caseIds = new Set((data.CASES || []).map(item => item.id));
+  const villainIds = new Set((data.VILLAINS || []).map(item => item.id));
+  if(data.VILLAINS){
+    duplicateValues(data.VILLAINS.map(item => item.id)).forEach(id => fail('Villains', id, 'duplicate id.'));
+    duplicateValues(data.VILLAINS.map(item => item.name)).forEach(name => fail('Villains', name, 'duplicate name.'));
+    data.VILLAINS.forEach((item, i) => {
+      const label = item?.id || `index ${i}`;
+      ['id', 'caseId', 'name', 'faction', 'role', 'threat', 'power', 'flaw'].forEach(field => {
+        if(!isText(item?.[field])) fail('Villains', label, `${field} must be a non-empty string.`);
+      });
+      if(item?.caseId && !caseIds.has(item.caseId)) fail('Villains', label, `caseId references unknown Case "${item.caseId}".`);
+    });
+    data.CASES?.forEach(item => {
+      if(!isText(item?.villainId)) fail('Cases', item?.id, 'villainId must be a non-empty string.');
+      else if(!villainIds.has(item.villainId)) fail('Cases', item.id, `villainId references unknown Villain "${item.villainId}".`);
+    });
+  }
   if(!Array.isArray(data.HEROES) || data.HEROES.length === 0){
     fail('Heroes', '', 'expected a non-empty array.');
   } else {
@@ -148,6 +164,7 @@ export function validateData(data = { ACT_CLOSES, CASES, EPILOGUE_QUESTIONS, HER
     errors,
     summary: {
       cases: data.CASES?.length || 0,
+      villains: data.VILLAINS?.length || 0,
       heroes: data.HEROES?.length || 0,
       scenes: allScenes.length,
       signals: data.SIGNALS?.length || 0,

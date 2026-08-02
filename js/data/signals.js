@@ -30,5 +30,10 @@ export const SIGNALS = [
   {glyph:'🧵', title:'Blue Thread on a Fire Escape', line:'Snagged three stories up, still tugging in a wind you cannot feel.'},
   {glyph:'▦', title:'An Apartment Light Blinking in Code', line:'The message repeats until somebody looks up — then changes.'},
   {glyph:'🚙', title:'Two Identical License Plates', line:'Same number, same dent, parked on opposite sides of the block.'},
-  {glyph:'🖍', title:'A Child’s Drawing of the Block', line:'Every window is black except the one nobody remembers being there.'}
+  {glyph:'🖍', title:'A Child’s Drawing of the Block', line:'Every window is black except the one nobody remembers being there.'},
+  {glyph:'◈', title:'Neon Bleed', line:'Rain slicks the cobblestones, reflecting a pink sign that stutters overhead — artificial warmth failing to hide cold corruption.'},
+  {glyph:'≋', title:'Static Fog', line:'Mist rolls off the Millhaven river carrying distorted sirens and radio chatter, as if the city is holding its breath.'},
+  {glyph:'▨', title:'Shattered Glass', line:'Dust settles after violence while streetlight filters through the jagged teeth of a broken skyline or diner window.'},
+  {glyph:'·', title:'Cigarette Embers', line:'A single glowing cherry burns in a black alley, proof that someone is watching but not yet acting.'},
+  {glyph:'⏲', title:'Clockwork Sirens', line:'Sirens echo exactly at 3:00 AM, the city’s inescapable heartbeat reminding you that somewhere someone is always bleeding.'}
 ];

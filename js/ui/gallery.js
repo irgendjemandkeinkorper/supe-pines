@@ -1,5 +1,5 @@
 import { $, esc, slugify } from '../engine/utils.js';
-import { HEROES, CASES, SIGNALS } from '../data/index.js';
+import { HEROES, CASES, SIGNALS, VILLAINS } from '../data/index.js';
 import { openOverlay } from './screens.js';
 import { ART_STYLES, normalizeArtStyle } from './art.js';
 
@@ -33,7 +33,7 @@ function signalTiles(style){
   return SIGNALS.map(o=>({cat:'signals', key:slugify(o.title), title:o.title, sub:o.glyph, flavor:o.line, path:`art/images/${style}/signals/${slugify(o.title)}`}));
 }
 function threatTiles(style){
-  return CASES.map(h=>({cat:'threats', key:h.id, title:h.title, sub:'The Threat', flavor:h.threatLine, path:`art/images/${style}/threats/${h.id}`}));
+  return VILLAINS.map(v=>({cat:'threats', key:v.id, title:v.name, sub:v.faction, flavor:v.threat, path:`art/images/${style}/threats/${v.id}`}));
 }
 const CATS = [
   {id:'heroes', label:'Heroes', build:heroTiles},
@@ -113,7 +113,7 @@ function renderGallery(){
   const tiles = active.build(gState.style);
   $('overlay-content').innerHTML = `
     <h2 style="color:var(--gold)">The Gallery</h2>
-    <p class="small muted">Browse every card face in Supe Pines. Text fallback is a fully supported and intentional launch state. Currently, 6 card faces feature finalized art (5 Comic Ink Case covers and 1 Interpretive Expressionist Case cover) meeting our exact launch targets, while remaining slots show beautifully integrated text previews. Hero cards have two distinct sides: use the turn button to compare their conditions and variants without opening the card.</p>
+    <p class="small muted">Browse every card face in Supe Pines. Text fallback is a fully supported and intentional launch state. Currently, 6 card faces feature finalized art (5 Comic Ink Case covers and 1 Anime Noir Case cover) meeting our exact launch targets, while remaining slots show beautifully integrated text previews. Hero cards have two distinct sides: use the turn button to compare their conditions and variants without opening the card.</p>
     <div class="btnrow" style="margin-top:12px">
       ${ART_STYLES.map(style => `<button class="${gState.style===style.id?'primary':'ghost'}" onclick="setGalleryStyle('${style.id}')">${style.label}</button>`).join('')}
     </div>

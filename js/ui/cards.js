@@ -9,6 +9,10 @@ function heroFaceHTML(h, sideIdx, turned){
     <div class="a-side">SIDE ${sideIdx===0?'I':'II'}${turned?' — TURNED':''}</div>
     <div class="a-name">${esc(h.name||h.role)}</div>
     <div class="a-role">${esc(h.role)}</div>
+    <div class="a-state">${esc(s.state)} · ${esc(s.title)}</div>
+    <div class="a-detail">${esc(s.detail)}</div>
+    <div class="a-power"><strong>Power</strong> ${esc(h.power)}</div>
+    <div class="a-flaw"><strong>Flaw</strong> ${esc(h.flaw)}</div>
     <div class="a-cond">${esc(s.cond)} <span style="white-space:nowrap">→ flip.</span></div>
     <div style="margin-top:5px">${toneBadge(s.tone)}</div>
   </div>`;
