@@ -47,7 +47,7 @@ export function buildManifest(){
     });
   });
   CASES.forEach(item => STYLES.forEach(style => {
-    addRecord(manifest, { id:item.id, category:'cases', style, name:item.title, subject:caseArt[item.id] });
+    addRecord(manifest, { id:slugify(item.title), category:'cases', style, name:item.title, subject:caseArt[item.id] });
   }));
   SIGNALS.forEach(item => STYLES.forEach(style => {
     addRecord(manifest, { id:slugify(item.title), category:'signals', style, name:item.title, subject:signalArt[item.title] });

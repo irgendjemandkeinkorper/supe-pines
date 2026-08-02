@@ -209,24 +209,22 @@ The visual and copy rules live in [`docs/design-bible.md`](docs/design-bible.md)
 The application's manifest defines 132 image slots, but the game is designed to gracefully degrade to beautifully styled text-only cards whenever an image is absent. **This text fallback is an accepted, intentional, and fully supported launch state.** This ensures the game remains completely readable, accessible, and playable even with partial art coverage.
 
 ### Numeric Launch Target
-For the launch build, the agreed target of completed, shipped art is exactly **26/132** files, categorized as follows:
+For the launch build, the completed Case and Signal art pack ships **56/132** files, categorized as follows:
 
 | Category | Visual Style | Launch Target | Shipped Files | Status |
 |---|---|---|---|---|
-| **Cases** | Bold Comic | 5 / 8 | `afterhours`, `casting`, `lastcall`, `renovation`, `toll` | Shipped |
-| **Cases** | Church Glass | 1 / 8 | `afterhours` | Shipped |
+| **Cases** | Bold Comic | 8 / 8 | All current Cases | Shipped |
+| **Cases** | Church Glass | 8 / 8 | All current Cases | Shipped |
 | **Heroes** | All Styles | 0 / 60 | None | Deferred |
-| **Signals** | All Styles | 20 / 40 | `art/images/ink/signals/*` | Partially shipped |
+| **Signals** | Bold Comic + Church Glass | 40 / 40 | All current Signals in both styles | Shipped |
 | **Threats** | All Styles | 0 / 16 | None | Deferred |
 
-The `scripts/check-art.mjs` script acts as our CI/CD gate. It strictly enforces that these 6 required assets are present and correct before any commit can be merged.
+The `scripts/check-art.mjs` script acts as our CI/CD gate. It enforces that all current Case and Signal assets are present and correct before any commit can be merged.
 
 ### Deferred Post-Launch Art Packs
 The rest of the manifest's image slots represent a deferred pipeline of future art expansion packs. These will be generated and shipped in waves post-launch:
-1. **Case Expansion Pack (Bold Comic & Church Glass):** Completing the remaining 3 Cases in Bold Comic (`deadair`, `lastroute`, `openhouse`) and 7 Cases in Church Glass.
-2. **The Heroes Pack:** Authoring and shipping 60 card faces (front and turned sides for 15 heroes) in both Bold Comic and Church Glass styles.
-3. **The Signals Pack:** 40 total illustrations (20 unique signals in both styles); the Church Glass versions remain deferred.
-4. **The Threats Pack:** 16 total illustrations (8 unique threats in both styles).
+1. **The Heroes Pack:** Authoring and shipping 60 card faces (front and turned sides for 15 heroes) in both Bold Comic and Church Glass styles.
+2. **The Threats Pack:** 16 total illustrations (8 unique threats in both styles).
 
 The Gallery supports the full image set at
 `art/images/<style>/<category>/<slug>.<ext>` (`style` is `ink` or the legacy path id `expressionist`, displayed in the app as Bold Comic or Church Glass;

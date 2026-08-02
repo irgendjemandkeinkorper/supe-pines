@@ -1,6 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { threatArtHTML, gameArtImgError } from '../js/ui/art.js';
+import { caseArtHTML, threatArtHTML, gameArtImgError } from '../js/ui/art.js';
+
+test('Case art HTML follows the shipped title-slug asset convention', () => {
+  const item = { id: 'toll', title: 'The Toll' };
+  const html = caseArtHTML(item, { style: 'ink' });
+
+  assert.ok(html.includes('src="art/images/ink/cases/the-toll.png"'), 'HTML must use the Case title slug');
+});
 
 test('Threat art HTML generation and fallback attributes', () => {
   const item = { id: 'toll', title: 'The Toll' };

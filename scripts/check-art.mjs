@@ -4,6 +4,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildManifest } from './gen-manifest.mjs';
+import { CASES, SIGNALS } from '../js/data/index.js';
+import { slugify } from '../js/engine/utils.js';
 
 const repo = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const args = new Set(process.argv.slice(2));
@@ -25,17 +27,15 @@ console.log(`Art coverage: ${byStyle}.`);
 
 // Define launch targets
 const LAUNCH_TARGET_NUMBERS = {
-  ink: { cases: 5, heroes: 0, signals: 20, threats: 0 },
-  expressionist: { cases: 1, heroes: 0, signals: 0, threats: 0 }
+  ink: { cases: 8, heroes: 0, signals: 20, threats: 0 },
+  expressionist: { cases: 8, heroes: 0, signals: 20, threats: 0 }
 };
 
 const REQUIRED_LAUNCH_ASSETS = [
-  { style: 'ink', category: 'cases', id: 'afterhours' },
-  { style: 'ink', category: 'cases', id: 'casting' },
-  { style: 'ink', category: 'cases', id: 'lastcall' },
-  { style: 'ink', category: 'cases', id: 'renovation' },
-  { style: 'ink', category: 'cases', id: 'toll' },
-  { style: 'expressionist', category: 'cases', id: 'afterhours' }
+  ...['ink', 'expressionist'].flatMap(style => [
+    ...CASES.map(item => ({ style, category: 'cases', id: slugify(item.title) })),
+    ...SIGNALS.map(item => ({ style, category: 'signals', id: slugify(item.title) }))
+  ])
 ];
 
 // Calculate actual counts by style and category

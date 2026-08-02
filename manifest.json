@@ -780,7 +780,7 @@
     "vaultPath": "heroes/strobe.md"
   },
   {
-    "id": "toll",
+    "id": "the-toll",
     "category": "cases",
     "style": "ink",
     "side": null,
@@ -788,12 +788,12 @@
     "name": "The Toll",
     "prompt": "Bold cartoon comic-book illustration: thick confident black outlines, chunky simplified anatomy, exaggerated perspective, graphic shadow shapes, flat saturated spot colors, expressive faces, energetic motion accents, playful visual exaggeration with a dark urban story. Printed comic illustration with clean color blocking and strong silhouette-first design. Palette of ink black, electric blue, punchy red, mustard yellow, dirty cream, and small acid-green accents. No stained glass, anime, photorealism, painterly rendering, text, letters, logos, captions, speech balloons, borders, panels, watermarks, gore, grid, montage, triptych, card frame, or repeated subject. One unified full-bleed image. Subject: Ferrous Avenue at night beneath an El overpass, small storefronts shuttered one by one while three battered amusement-pier mascot figures — fox, rabbit, and one-eyed bear — collect envelopes under a flickering bakery sign with no readable lettering.",
     "aspectRatio": "3:4",
-    "savePath": "art/images/ink/cases/toll.png",
-    "imageUrl": "https://irgendjemandkeinkorper.github.io/supe-pines/art/images/ink/cases/toll.png",
-    "vaultPath": "cases/toll.md"
+    "savePath": "art/images/ink/cases/the-toll.png",
+    "imageUrl": "https://irgendjemandkeinkorper.github.io/supe-pines/art/images/ink/cases/the-toll.png",
+    "vaultPath": "cases/the-toll.md"
   },
   {
-    "id": "toll",
+    "id": "the-toll",
     "category": "cases",
     "style": "expressionist",
     "side": null,
@@ -801,12 +801,12 @@
     "name": "The Toll",
     "prompt": "Pure abstract church stained-glass artwork, geometrically fragmented and symbolic. The entire image is constructed from irregular polygonal and triangular translucent glass panes separated by strong dark lead lines. Flatten perspective; use faceted shapes, vertical lancets, radial geometry, asymmetrical fragments, and icon-like silhouettes. It must feel like an actual monumental church window viewed from the inside, with luminous light passing through the glass. Palette of cobalt, ultramarine, wine red, plum, amber gold, pale cream, bottle green, and black lead. No anime, cartoon, comic-book linework, photorealism, painterly fantasy art, glassmorphism, text, letters, logos, captions, speech balloons, borders, panels, watermarks, gore, grid, montage, triptych, card frame, or repeated subject. One unified full-bleed image. Subject: Ferrous Avenue at night beneath an El overpass, small storefronts shuttered one by one while three battered amusement-pier mascot figures — fox, rabbit, and one-eyed bear — collect envelopes under a flickering bakery sign with no readable lettering.",
     "aspectRatio": "3:4",
-    "savePath": "art/images/expressionist/cases/toll.png",
-    "imageUrl": "https://irgendjemandkeinkorper.github.io/supe-pines/art/images/expressionist/cases/toll.png",
-    "vaultPath": "cases/toll.md"
+    "savePath": "art/images/expressionist/cases/the-toll.png",
+    "imageUrl": "https://irgendjemandkeinkorper.github.io/supe-pines/art/images/expressionist/cases/the-toll.png",
+    "vaultPath": "cases/the-toll.md"
   },
   {
-    "id": "casting",
+    "id": "open-casting",
     "category": "cases",
     "style": "ink",
     "side": null,
@@ -814,12 +814,12 @@
     "name": "Open Casting",
     "prompt": "Bold cartoon comic-book illustration: thick confident black outlines, chunky simplified anatomy, exaggerated perspective, graphic shadow shapes, flat saturated spot colors, expressive faces, energetic motion accents, playful visual exaggeration with a dark urban story. Printed comic illustration with clean color blocking and strong silhouette-first design. Palette of ink black, electric blue, punchy red, mustard yellow, dirty cream, and small acid-green accents. No stained glass, anime, photorealism, painterly rendering, text, letters, logos, captions, speech balloons, borders, panels, watermarks, gore, grid, montage, triptych, card frame, or repeated subject. One unified full-bleed image. Subject: A spectacular new masked vigilante posing atop a wrecked car for phone cameras and television lights, adoring onlookers below while an injured petty criminal lies unnoticed at the edge of the frame.",
     "aspectRatio": "3:4",
-    "savePath": "art/images/ink/cases/casting.png",
-    "imageUrl": "https://irgendjemandkeinkorper.github.io/supe-pines/art/images/ink/cases/casting.png",
-    "vaultPath": "cases/casting.md"
+    "savePath": "art/images/ink/cases/open-casting.png",
+    "imageUrl": "https://irgendjemandkeinkorper.github.io/supe-pines/art/images/ink/cases/open-casting.png",
+    "vaultPath": "cases/open-casting.md"
   },
   {
-    "id": "casting",
+    "id": "open-casting",
     "category": "cases",
     "style": "expressionist",
     "side": null,
@@ -827,12 +827,12 @@
     "name": "Open Casting",
     "prompt": "Pure abstract church stained-glass artwork, geometrically fragmented and symbolic. The entire image is constructed from irregular polygonal and triangular translucent glass panes separated by strong dark lead lines. Flatten perspective; use faceted shapes, vertical lancets, radial geometry, asymmetrical fragments, and icon-like silhouettes. It must feel like an actual monumental church window viewed from the inside, with luminous light passing through the glass. Palette of cobalt, ultramarine, wine red, plum, amber gold, pale cream, bottle green, and black lead. No anime, cartoon, comic-book linework, photorealism, painterly fantasy art, glassmorphism, text, letters, logos, captions, speech balloons, borders, panels, watermarks, gore, grid, montage, triptych, card frame, or repeated subject. One unified full-bleed image. Subject: A spectacular new masked vigilante posing atop a wrecked car for phone cameras and television lights, adoring onlookers below while an injured petty criminal lies unnoticed at the edge of the frame.",
     "aspectRatio": "3:4",
-    "savePath": "art/images/expressionist/cases/casting.png",
-    "imageUrl": "https://irgendjemandkeinkorper.github.io/supe-pines/art/images/expressionist/cases/casting.png",
-    "vaultPath": "cases/casting.md"
+    "savePath": "art/images/expressionist/cases/open-casting.png",
+    "imageUrl": "https://irgendjemandkeinkorper.github.io/supe-pines/art/images/expressionist/cases/open-casting.png",
+    "vaultPath": "cases/open-casting.md"
   },
   {
-    "id": "renovation",
+    "id": "the-renovation",
     "category": "cases",
     "style": "ink",
     "side": null,
@@ -840,12 +840,12 @@
     "name": "The Renovation",
     "prompt": "Bold cartoon comic-book illustration: thick confident black outlines, chunky simplified anatomy, exaggerated perspective, graphic shadow shapes, flat saturated spot colors, expressive faces, energetic motion accents, playful visual exaggeration with a dark urban story. Printed comic illustration with clean color blocking and strong silhouette-first design. Palette of ink black, electric blue, punchy red, mustard yellow, dirty cream, and small acid-green accents. No stained glass, anime, photorealism, painterly rendering, text, letters, logos, captions, speech balloons, borders, panels, watermarks, gore, grid, montage, triptych, card frame, or repeated subject. One unified full-bleed image. Subject: A lived-in brick block cut sharply in half by spotless luxury construction completed overnight, family belongings abandoned at the seam, a smiling councilwoman’s billboard present only as a faceless graphic with no readable text.",
     "aspectRatio": "3:4",
-    "savePath": "art/images/ink/cases/renovation.png",
-    "imageUrl": "https://irgendjemandkeinkorper.github.io/supe-pines/art/images/ink/cases/renovation.png",
-    "vaultPath": "cases/renovation.md"
+    "savePath": "art/images/ink/cases/the-renovation.png",
+    "imageUrl": "https://irgendjemandkeinkorper.github.io/supe-pines/art/images/ink/cases/the-renovation.png",
+    "vaultPath": "cases/the-renovation.md"
   },
   {
-    "id": "renovation",
+    "id": "the-renovation",
     "category": "cases",
     "style": "expressionist",
     "side": null,
@@ -853,12 +853,12 @@
     "name": "The Renovation",
     "prompt": "Pure abstract church stained-glass artwork, geometrically fragmented and symbolic. The entire image is constructed from irregular polygonal and triangular translucent glass panes separated by strong dark lead lines. Flatten perspective; use faceted shapes, vertical lancets, radial geometry, asymmetrical fragments, and icon-like silhouettes. It must feel like an actual monumental church window viewed from the inside, with luminous light passing through the glass. Palette of cobalt, ultramarine, wine red, plum, amber gold, pale cream, bottle green, and black lead. No anime, cartoon, comic-book linework, photorealism, painterly fantasy art, glassmorphism, text, letters, logos, captions, speech balloons, borders, panels, watermarks, gore, grid, montage, triptych, card frame, or repeated subject. One unified full-bleed image. Subject: A lived-in brick block cut sharply in half by spotless luxury construction completed overnight, family belongings abandoned at the seam, a smiling councilwoman’s billboard present only as a faceless graphic with no readable text.",
     "aspectRatio": "3:4",
-    "savePath": "art/images/expressionist/cases/renovation.png",
-    "imageUrl": "https://irgendjemandkeinkorper.github.io/supe-pines/art/images/expressionist/cases/renovation.png",
-    "vaultPath": "cases/renovation.md"
+    "savePath": "art/images/expressionist/cases/the-renovation.png",
+    "imageUrl": "https://irgendjemandkeinkorper.github.io/supe-pines/art/images/expressionist/cases/the-renovation.png",
+    "vaultPath": "cases/the-renovation.md"
   },
   {
-    "id": "lastcall",
+    "id": "last-call",
     "category": "cases",
     "style": "ink",
     "side": null,
@@ -866,12 +866,12 @@
     "name": "Last Call",
     "prompt": "Bold cartoon comic-book illustration: thick confident black outlines, chunky simplified anatomy, exaggerated perspective, graphic shadow shapes, flat saturated spot colors, expressive faces, energetic motion accents, playful visual exaggeration with a dark urban story. Printed comic illustration with clean color blocking and strong silhouette-first design. Palette of ink black, electric blue, punchy red, mustard yellow, dirty cream, and small acid-green accents. No stained glass, anime, photorealism, painterly rendering, text, letters, logos, captions, speech balloons, borders, panels, watermarks, gore, grid, montage, triptych, card frame, or repeated subject. One unified full-bleed image. Subject: The interior of a worn neighborhood dive bar at last call, stools and old photographs untouched while the first punch in thirty years hangs suspended above the counter and the silent bartender watches.",
     "aspectRatio": "3:4",
-    "savePath": "art/images/ink/cases/lastcall.png",
-    "imageUrl": "https://irgendjemandkeinkorper.github.io/supe-pines/art/images/ink/cases/lastcall.png",
-    "vaultPath": "cases/lastcall.md"
+    "savePath": "art/images/ink/cases/last-call.png",
+    "imageUrl": "https://irgendjemandkeinkorper.github.io/supe-pines/art/images/ink/cases/last-call.png",
+    "vaultPath": "cases/last-call.md"
   },
   {
-    "id": "lastcall",
+    "id": "last-call",
     "category": "cases",
     "style": "expressionist",
     "side": null,
@@ -879,12 +879,12 @@
     "name": "Last Call",
     "prompt": "Pure abstract church stained-glass artwork, geometrically fragmented and symbolic. The entire image is constructed from irregular polygonal and triangular translucent glass panes separated by strong dark lead lines. Flatten perspective; use faceted shapes, vertical lancets, radial geometry, asymmetrical fragments, and icon-like silhouettes. It must feel like an actual monumental church window viewed from the inside, with luminous light passing through the glass. Palette of cobalt, ultramarine, wine red, plum, amber gold, pale cream, bottle green, and black lead. No anime, cartoon, comic-book linework, photorealism, painterly fantasy art, glassmorphism, text, letters, logos, captions, speech balloons, borders, panels, watermarks, gore, grid, montage, triptych, card frame, or repeated subject. One unified full-bleed image. Subject: The interior of a worn neighborhood dive bar at last call, stools and old photographs untouched while the first punch in thirty years hangs suspended above the counter and the silent bartender watches.",
     "aspectRatio": "3:4",
-    "savePath": "art/images/expressionist/cases/lastcall.png",
-    "imageUrl": "https://irgendjemandkeinkorper.github.io/supe-pines/art/images/expressionist/cases/lastcall.png",
-    "vaultPath": "cases/lastcall.md"
+    "savePath": "art/images/expressionist/cases/last-call.png",
+    "imageUrl": "https://irgendjemandkeinkorper.github.io/supe-pines/art/images/expressionist/cases/last-call.png",
+    "vaultPath": "cases/last-call.md"
   },
   {
-    "id": "afterhours",
+    "id": "after-hours",
     "category": "cases",
     "style": "ink",
     "side": null,
@@ -892,12 +892,12 @@
     "name": "After Hours",
     "prompt": "Bold cartoon comic-book illustration: thick confident black outlines, chunky simplified anatomy, exaggerated perspective, graphic shadow shapes, flat saturated spot colors, expressive faces, energetic motion accents, playful visual exaggeration with a dark urban story. Printed comic illustration with clean color blocking and strong silhouette-first design. Palette of ink black, electric blue, punchy red, mustard yellow, dirty cream, and small acid-green accents. No stained glass, anime, photorealism, painterly rendering, text, letters, logos, captions, speech balloons, borders, panels, watermarks, gore, grid, montage, triptych, card frame, or repeated subject. One unified full-bleed image. Subject: A cramped night clinic under a failing fluorescent sign, nurses moving between tired patients while one locked medicine cabinet stands open and a private security car waits outside.",
     "aspectRatio": "3:4",
-    "savePath": "art/images/ink/cases/afterhours.png",
-    "imageUrl": "https://irgendjemandkeinkorper.github.io/supe-pines/art/images/ink/cases/afterhours.png",
-    "vaultPath": "cases/afterhours.md"
+    "savePath": "art/images/ink/cases/after-hours.png",
+    "imageUrl": "https://irgendjemandkeinkorper.github.io/supe-pines/art/images/ink/cases/after-hours.png",
+    "vaultPath": "cases/after-hours.md"
   },
   {
-    "id": "afterhours",
+    "id": "after-hours",
     "category": "cases",
     "style": "expressionist",
     "side": null,
@@ -905,12 +905,12 @@
     "name": "After Hours",
     "prompt": "Pure abstract church stained-glass artwork, geometrically fragmented and symbolic. The entire image is constructed from irregular polygonal and triangular translucent glass panes separated by strong dark lead lines. Flatten perspective; use faceted shapes, vertical lancets, radial geometry, asymmetrical fragments, and icon-like silhouettes. It must feel like an actual monumental church window viewed from the inside, with luminous light passing through the glass. Palette of cobalt, ultramarine, wine red, plum, amber gold, pale cream, bottle green, and black lead. No anime, cartoon, comic-book linework, photorealism, painterly fantasy art, glassmorphism, text, letters, logos, captions, speech balloons, borders, panels, watermarks, gore, grid, montage, triptych, card frame, or repeated subject. One unified full-bleed image. Subject: A cramped night clinic under a failing fluorescent sign, nurses moving between tired patients while one locked medicine cabinet stands open and a private security car waits outside.",
     "aspectRatio": "3:4",
-    "savePath": "art/images/expressionist/cases/afterhours.png",
-    "imageUrl": "https://irgendjemandkeinkorper.github.io/supe-pines/art/images/expressionist/cases/afterhours.png",
-    "vaultPath": "cases/afterhours.md"
+    "savePath": "art/images/expressionist/cases/after-hours.png",
+    "imageUrl": "https://irgendjemandkeinkorper.github.io/supe-pines/art/images/expressionist/cases/after-hours.png",
+    "vaultPath": "cases/after-hours.md"
   },
   {
-    "id": "deadair",
+    "id": "dead-air",
     "category": "cases",
     "style": "ink",
     "side": null,
@@ -918,12 +918,12 @@
     "name": "Dead Air",
     "prompt": "Bold cartoon comic-book illustration: thick confident black outlines, chunky simplified anatomy, exaggerated perspective, graphic shadow shapes, flat saturated spot colors, expressive faces, energetic motion accents, playful visual exaggeration with a dark urban story. Printed comic illustration with clean color blocking and strong silhouette-first design. Palette of ink black, electric blue, punchy red, mustard yellow, dirty cream, and small acid-green accents. No stained glass, anime, photorealism, painterly rendering, text, letters, logos, captions, speech balloons, borders, panels, watermarks, gore, grid, montage, triptych, card frame, or repeated subject. One unified full-bleed image. Subject: A small community radio studio after midnight, one microphone lit and the other dark while a rain-streaked window reflects an unseen listener in the street.",
     "aspectRatio": "3:4",
-    "savePath": "art/images/ink/cases/deadair.png",
-    "imageUrl": "https://irgendjemandkeinkorper.github.io/supe-pines/art/images/ink/cases/deadair.png",
-    "vaultPath": "cases/deadair.md"
+    "savePath": "art/images/ink/cases/dead-air.png",
+    "imageUrl": "https://irgendjemandkeinkorper.github.io/supe-pines/art/images/ink/cases/dead-air.png",
+    "vaultPath": "cases/dead-air.md"
   },
   {
-    "id": "deadair",
+    "id": "dead-air",
     "category": "cases",
     "style": "expressionist",
     "side": null,
@@ -931,12 +931,12 @@
     "name": "Dead Air",
     "prompt": "Pure abstract church stained-glass artwork, geometrically fragmented and symbolic. The entire image is constructed from irregular polygonal and triangular translucent glass panes separated by strong dark lead lines. Flatten perspective; use faceted shapes, vertical lancets, radial geometry, asymmetrical fragments, and icon-like silhouettes. It must feel like an actual monumental church window viewed from the inside, with luminous light passing through the glass. Palette of cobalt, ultramarine, wine red, plum, amber gold, pale cream, bottle green, and black lead. No anime, cartoon, comic-book linework, photorealism, painterly fantasy art, glassmorphism, text, letters, logos, captions, speech balloons, borders, panels, watermarks, gore, grid, montage, triptych, card frame, or repeated subject. One unified full-bleed image. Subject: A small community radio studio after midnight, one microphone lit and the other dark while a rain-streaked window reflects an unseen listener in the street.",
     "aspectRatio": "3:4",
-    "savePath": "art/images/expressionist/cases/deadair.png",
-    "imageUrl": "https://irgendjemandkeinkorper.github.io/supe-pines/art/images/expressionist/cases/deadair.png",
-    "vaultPath": "cases/deadair.md"
+    "savePath": "art/images/expressionist/cases/dead-air.png",
+    "imageUrl": "https://irgendjemandkeinkorper.github.io/supe-pines/art/images/expressionist/cases/dead-air.png",
+    "vaultPath": "cases/dead-air.md"
   },
   {
-    "id": "lastroute",
+    "id": "the-last-route",
     "category": "cases",
     "style": "ink",
     "side": null,
@@ -944,12 +944,12 @@
     "name": "The Last Route",
     "prompt": "Bold cartoon comic-book illustration: thick confident black outlines, chunky simplified anatomy, exaggerated perspective, graphic shadow shapes, flat saturated spot colors, expressive faces, energetic motion accents, playful visual exaggeration with a dark urban story. Printed comic illustration with clean color blocking and strong silhouette-first design. Palette of ink black, electric blue, punchy red, mustard yellow, dirty cream, and small acid-green accents. No stained glass, anime, photorealism, painterly rendering, text, letters, logos, captions, speech balloons, borders, panels, watermarks, gore, grid, montage, triptych, card frame, or repeated subject. One unified full-bleed image. Subject: A battered city bus stopped beneath an elevated track at 12:14 a.m., three empty seats lit inside while the route sign is deliberately unreadable and rain blurs the depot beyond.",
     "aspectRatio": "3:4",
-    "savePath": "art/images/ink/cases/lastroute.png",
-    "imageUrl": "https://irgendjemandkeinkorper.github.io/supe-pines/art/images/ink/cases/lastroute.png",
-    "vaultPath": "cases/lastroute.md"
+    "savePath": "art/images/ink/cases/the-last-route.png",
+    "imageUrl": "https://irgendjemandkeinkorper.github.io/supe-pines/art/images/ink/cases/the-last-route.png",
+    "vaultPath": "cases/the-last-route.md"
   },
   {
-    "id": "lastroute",
+    "id": "the-last-route",
     "category": "cases",
     "style": "expressionist",
     "side": null,
@@ -957,12 +957,12 @@
     "name": "The Last Route",
     "prompt": "Pure abstract church stained-glass artwork, geometrically fragmented and symbolic. The entire image is constructed from irregular polygonal and triangular translucent glass panes separated by strong dark lead lines. Flatten perspective; use faceted shapes, vertical lancets, radial geometry, asymmetrical fragments, and icon-like silhouettes. It must feel like an actual monumental church window viewed from the inside, with luminous light passing through the glass. Palette of cobalt, ultramarine, wine red, plum, amber gold, pale cream, bottle green, and black lead. No anime, cartoon, comic-book linework, photorealism, painterly fantasy art, glassmorphism, text, letters, logos, captions, speech balloons, borders, panels, watermarks, gore, grid, montage, triptych, card frame, or repeated subject. One unified full-bleed image. Subject: A battered city bus stopped beneath an elevated track at 12:14 a.m., three empty seats lit inside while the route sign is deliberately unreadable and rain blurs the depot beyond.",
     "aspectRatio": "3:4",
-    "savePath": "art/images/expressionist/cases/lastroute.png",
-    "imageUrl": "https://irgendjemandkeinkorper.github.io/supe-pines/art/images/expressionist/cases/lastroute.png",
-    "vaultPath": "cases/lastroute.md"
+    "savePath": "art/images/expressionist/cases/the-last-route.png",
+    "imageUrl": "https://irgendjemandkeinkorper.github.io/supe-pines/art/images/expressionist/cases/the-last-route.png",
+    "vaultPath": "cases/the-last-route.md"
   },
   {
-    "id": "openhouse",
+    "id": "open-house",
     "category": "cases",
     "style": "ink",
     "side": null,
@@ -970,12 +970,12 @@
     "name": "Open House",
     "prompt": "Bold cartoon comic-book illustration: thick confident black outlines, chunky simplified anatomy, exaggerated perspective, graphic shadow shapes, flat saturated spot colors, expressive faces, energetic motion accents, playful visual exaggeration with a dark urban story. Printed comic illustration with clean color blocking and strong silhouette-first design. Palette of ink black, electric blue, punchy red, mustard yellow, dirty cream, and small acid-green accents. No stained glass, anime, photorealism, painterly rendering, text, letters, logos, captions, speech balloons, borders, panels, watermarks, gore, grid, montage, triptych, card frame, or repeated subject. One unified full-bleed image. Subject: A neighbourhood youth centre gym prepared for an open house, folding chairs and donated boxes under harsh lights while a security camera points at the locked exit.",
     "aspectRatio": "3:4",
-    "savePath": "art/images/ink/cases/openhouse.png",
-    "imageUrl": "https://irgendjemandkeinkorper.github.io/supe-pines/art/images/ink/cases/openhouse.png",
-    "vaultPath": "cases/openhouse.md"
+    "savePath": "art/images/ink/cases/open-house.png",
+    "imageUrl": "https://irgendjemandkeinkorper.github.io/supe-pines/art/images/ink/cases/open-house.png",
+    "vaultPath": "cases/open-house.md"
   },
   {
-    "id": "openhouse",
+    "id": "open-house",
     "category": "cases",
     "style": "expressionist",
     "side": null,
@@ -983,9 +983,9 @@
     "name": "Open House",
     "prompt": "Pure abstract church stained-glass artwork, geometrically fragmented and symbolic. The entire image is constructed from irregular polygonal and triangular translucent glass panes separated by strong dark lead lines. Flatten perspective; use faceted shapes, vertical lancets, radial geometry, asymmetrical fragments, and icon-like silhouettes. It must feel like an actual monumental church window viewed from the inside, with luminous light passing through the glass. Palette of cobalt, ultramarine, wine red, plum, amber gold, pale cream, bottle green, and black lead. No anime, cartoon, comic-book linework, photorealism, painterly fantasy art, glassmorphism, text, letters, logos, captions, speech balloons, borders, panels, watermarks, gore, grid, montage, triptych, card frame, or repeated subject. One unified full-bleed image. Subject: A neighbourhood youth centre gym prepared for an open house, folding chairs and donated boxes under harsh lights while a security camera points at the locked exit.",
     "aspectRatio": "3:4",
-    "savePath": "art/images/expressionist/cases/openhouse.png",
-    "imageUrl": "https://irgendjemandkeinkorper.github.io/supe-pines/art/images/expressionist/cases/openhouse.png",
-    "vaultPath": "cases/openhouse.md"
+    "savePath": "art/images/expressionist/cases/open-house.png",
+    "imageUrl": "https://irgendjemandkeinkorper.github.io/supe-pines/art/images/expressionist/cases/open-house.png",
+    "vaultPath": "cases/open-house.md"
   },
   {
     "id": "a-bandage-already-bled-through",

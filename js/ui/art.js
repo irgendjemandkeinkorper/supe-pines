@@ -1,4 +1,5 @@
 import { esc, slugify } from '../engine/utils.js';
+import { CASES } from '../data/cases.js';
 import { State } from '../engine/state.js';
 
 /* The two visual languages are deliberately different, but they share the
@@ -67,8 +68,15 @@ export function signalArtHTML(signal, opts={}){
   return gameArtHTML('signals', slugify(signal.title), signal.title, {...opts, fallback:opts.fallback||signal.glyph});
 }
 
+function caseArtKey(itemOrId){
+  const item = typeof itemOrId === 'string'
+    ? CASES.find(candidate => candidate.id === itemOrId)
+    : itemOrId;
+  return slugify(item?.title || itemOrId);
+}
+
 export function caseArtHTML(item, opts={}){
-  return gameArtHTML('cases', item.id, `${item.title} Case cover`, opts);
+  return gameArtHTML('cases', caseArtKey(item), `${item.title} Case cover`, opts);
 }
 
 export function threatArtHTML(item, opts={}){
@@ -85,7 +93,7 @@ export function artStylePickerHTML(name, selected=null, sampleCase='toll'){
         return `<label class="art-style-option" for="${inputId}">
         <input type="radio" id="${inputId}" name="${esc(name)}" value="${style.id}" ${selected===style.id?'checked':''} aria-label="${esc(style.label)}" required>
         <span class="art-style-choice">
-          ${gameArtHTML('cases', sampleCase, style.label, {style:style.id, className:'art-style-preview', fallback:style.label})}
+          ${gameArtHTML('cases', caseArtKey(sampleCase), style.label, {style:style.id, className:'art-style-preview', fallback:style.label})}
           <span class="art-style-copy"><strong>${style.label}</strong><small>${style.note}</small><em>Use this style</em></span>
         </span>
       </label>`;

@@ -25,9 +25,9 @@ Ensure that card-art prompts and manifest match the actual files.
 - **Expected Outcome:** Both commands exit with status `0`, indicating that generated prompts and `manifest.json` are in-sync with current game data.
 
 ### 3. Card Art Launch Gate Verification
-Verify the card art launch criteria (exactly 6 completed files: 5 Bold Comic Cases and 1 Church Glass Case, or all 166 files in `--strict` mode).
+Verify the card art launch criteria (56 completed Case and Signal files, or all 132 manifest files in `--strict` mode).
 - **Command:** `node scripts/check-art.mjs`
-- **Expected Outcome:** Confirm that either the text fallback mechanism is safely functioning or that the launch/strict criteria are met. Exit code must be `0`.
+- **Expected Outcome:** Confirm that the complete current Case and Signal art pack (56 files) is present, or that the text fallback mechanism is safely functioning. Exit code must be `0`.
 
 ### 4. Node Regression Tests
 Run the zero-dependency Node.js unit tests (covering dossier exporting, persistence, saving/resuming, and data rules).
