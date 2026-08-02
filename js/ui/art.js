@@ -8,13 +8,13 @@ import { State } from '../engine/state.js';
 export const ART_STYLES = [
   {
     id:'ink',
-    label:'Noir Comic',
-    note:'Hard ink, halftone weather, and street-level color — the city as evidence.'
+    label:'Bold Comic',
+    note:'Thick expressive ink, flat punchy color, and exaggerated street-level silhouettes.'
   },
   {
     id:'expressionist',
-    label:'Anime Noir',
-    note:'Late-90s cyberpunk anime atmosphere, cel-shaded faces, rain, and hard industrial light.'
+    label:'Church Glass',
+    note:'Abstract geometric panes, dark lead lines, sacred symmetry, and luminous color.'
   }
 ];
 

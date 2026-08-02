@@ -25,17 +25,14 @@ and it should never look like a glossy franchise dashboard.
 The project carries two parallel art languages. They are not rarity tiers or
 unlockable skins; they are two ways of looking at the same neighborhood.
 
-- **Noir Comic:** the primary evidence language. Hand-inked silhouettes,
-  off-register halftone, rain-slick light, and a few dirty spot colours make
-  systems and consequences visible. Keep the camera close enough to recognize
-  a storefront, a face, or the thing left in a doorway.
-- **Anime Noir:** the interior language. Use late-1990s Japanese cyberpunk-noir
-  anime fundamentals: expressive ink line, cel-shaded planes, cinematic
-  perspective, rain-slick industrial neighborhoods, hard rim light, and
-  serious human-scale melancholy. Blend jazz-noir atmosphere with tactile
-  infrastructure and lived-in faces; keep each impossible power legible
-  without glossy franchise spectacle. Never use a literal card frame or
-  generic fantasy spectacle.
+- **Bold Comic:** the primary evidence language. Thick expressive outlines,
+  chunky shapes, flat punchy colour, exaggerated poses, and graphic shadows
+  keep each Hero and Threat readable at card size. Let the cartoon energy sit
+  beside serious consequences without drifting into glossy realism.
+- **Church Glass:** the symbolic language. Build the image from fragmented
+  geometric panes, dark lead lines, sacred symmetry, and luminous jewel-tone
+  backlight. Figures should read as icons in a monumental window, not as
+  anime characters or ordinary paintings.
 
 - **Palette:** near-black blue/green, dirty cream paper, oxblood danger,
   streetlamp amber, and restrained electric cyan. Cyan is orientation and

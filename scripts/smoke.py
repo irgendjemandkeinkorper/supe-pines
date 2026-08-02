@@ -157,7 +157,7 @@ with sync_playwright() as playwright:
     assert page.locator("input[name='local-art-style'][value='expressionist']").count() == 1
     # The radio inputs are intentionally visually hidden behind their full-card
     # labels, so click the visible style choice rather than the hidden input.
-    page.locator("label.art-style-option").filter(has_text="Anime Noir").click()
+    page.locator("label.art-style-option").filter(has_text="Church Glass").click()
     assert page.locator("input[name='local-art-style'][value='expressionist']").is_checked()
     page.select_option("#pl-count", "1")
     run_dom_audit(page, "players screen with solo count")
@@ -196,11 +196,11 @@ with sync_playwright() as playwright:
     control.click()
     assert control.get_attribute("aria-pressed") == "true"
     assert tile.locator("[data-gallery-side-label]").inner_text() == "Side II — turned"
-    assert page.get_by_role("button", name="Noir Comic").count() == 1
-    assert page.get_by_role("button", name="Anime Noir").count() == 1
-    page.get_by_role("button", name="Anime Noir").click()
+    assert page.get_by_role("button", name="Bold Comic").count() == 1
+    assert page.get_by_role("button", name="Church Glass").count() == 1
+    page.get_by_role("button", name="Church Glass").click()
     assert page.locator(".gcat-heroes .gtile").count() == 15
-    page.get_by_role("button", name="Noir Comic").click()
+    page.get_by_role("button", name="Bold Comic").click()
     page.get_by_role("button", name="Back to Millhaven").click()
 
     # The in-progress Dossier is readable and does not throw before Act I.

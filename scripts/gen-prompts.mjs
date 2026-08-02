@@ -11,8 +11,8 @@ export const slugify = value => String(value).toLowerCase()
   .replace(/^-+|-+$/g, '');
 
 export const STYLE_PROMPTS = {
-  ink: 'Street-level superhero noir rendered as a hand-inked comic panel: aggressive black brushwork, sharp silhouettes, off-register halftone dots, newsprint texture, selective dirty-cream, oxblood-red, and electric-blue spot color, hard rain-slicked light, human scale and lived-in city detail. Dynamic but readable single composition. No text, letters, logos, captions, speech balloons, borders, panels, watermarks, or gore. One unified full-bleed image, never a grid, montage, triptych, card frame, or repeated subject.',
-  expressionist: 'Late-1990s Japanese cyberpunk noir anime illustration: confident expressive ink line, cel-shaded planes, cinematic perspective, rain-slick industrial neighborhoods, hard rim light, restrained electric cyan and sodium amber, and serious human-scale melancholy. Blend jazz-noir atmosphere with tactile cyberpunk infrastructure and lived-in faces; keep the impossible power legible without glossy franchise spectacle. No text, letters, logos, captions, speech balloons, borders, panels, watermarks, or literal card frames. One unified full-bleed image, never a grid, montage, triptych, or repeated subject.'
+  ink: 'Bold cartoon comic-book illustration: thick confident black outlines, chunky simplified anatomy, exaggerated perspective, graphic shadow shapes, flat saturated spot colors, expressive faces, energetic motion accents, playful visual exaggeration with a dark urban story. Printed comic illustration with clean color blocking and strong silhouette-first design. Palette of ink black, electric blue, punchy red, mustard yellow, dirty cream, and small acid-green accents. No stained glass, anime, photorealism, painterly rendering, text, letters, logos, captions, speech balloons, borders, panels, watermarks, gore, grid, montage, triptych, card frame, or repeated subject. One unified full-bleed image.',
+  expressionist: 'Pure abstract church stained-glass artwork, geometrically fragmented and symbolic. The entire image is constructed from irregular polygonal and triangular translucent glass panes separated by strong dark lead lines. Flatten perspective; use faceted shapes, vertical lancets, radial geometry, asymmetrical fragments, and icon-like silhouettes. It must feel like an actual monumental church window viewed from the inside, with luminous light passing through the glass. Palette of cobalt, ultramarine, wine red, plum, amber gold, pale cream, bottle green, and black lead. No anime, cartoon, comic-book linework, photorealism, painterly fantasy art, glassmorphism, text, letters, logos, captions, speech balloons, borders, panels, watermarks, gore, grid, montage, triptych, card frame, or repeated subject. One unified full-bleed image.'
 };
 
 export const heroArt = {
@@ -179,11 +179,11 @@ export function buildPromptSheet(){
   write('');
   write('## Master styles');
   write('');
-  write('### Comic Ink');
+  write('### Bold Comic');
   write('');
   write(`> ${STYLE_PROMPTS.ink}`);
   write('');
-  write('### Anime Noir');
+  write('### Church Glass');
   write('');
   write(`> ${STYLE_PROMPTS.expressionist}`);
   write('');
@@ -198,8 +198,8 @@ export function buildPromptSheet(){
     write('');
     write(`- Front: ${art.front}`);
     write(`- Turned: ${art.turned}`);
-    write(`- Comic Ink: \`${saveLine('ink', 'heroes', `${id}--front`)}\`, \`${saveLine('ink', 'heroes', `${id}--turned`)}\``);
-    write(`- Anime Noir: \`${saveLine('expressionist', 'heroes', `${id}--front`)}\`, \`${saveLine('expressionist', 'heroes', `${id}--turned`)}\``);
+    write(`- Bold Comic: \`${saveLine('ink', 'heroes', `${id}--front`)}\`, \`${saveLine('ink', 'heroes', `${id}--turned`)}\``);
+    write(`- Church Glass: \`${saveLine('expressionist', 'heroes', `${id}--front`)}\`, \`${saveLine('expressionist', 'heroes', `${id}--turned`)}\``);
     write('');
   });
   write(`## Cases (${CASES.length * 2} images)`);

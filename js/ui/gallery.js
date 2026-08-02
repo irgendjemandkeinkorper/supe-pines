@@ -113,7 +113,7 @@ function renderGallery(){
   const tiles = active.build(gState.style);
   $('overlay-content').innerHTML = `
     <h2 style="color:var(--gold)">The Gallery</h2>
-    <p class="small muted">Browse every card face in Supe Pines. Text fallback is a fully supported and intentional launch state. Currently, 6 card faces feature finalized art (5 Comic Ink Case covers and 1 Anime Noir Case cover) meeting our exact launch targets, while remaining slots show beautifully integrated text previews. Hero cards have two distinct sides: use the turn button to compare their conditions and variants without opening the card.</p>
+    <p class="small muted">Browse every card face in Supe Pines. Text fallback is a fully supported and intentional launch state. Currently, 46 Hero and Threat portraits feature finalized art in both visual languages, while remaining slots show beautifully integrated text previews. Hero cards have two distinct sides: use the turn button to compare their conditions and variants without opening the card.</p>
     <div class="btnrow" style="margin-top:12px">
       ${ART_STYLES.map(style => `<button class="${gState.style===style.id?'primary':'ghost'}" onclick="setGalleryStyle('${style.id}')">${style.label}</button>`).join('')}
     </div>

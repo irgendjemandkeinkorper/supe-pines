@@ -4,13 +4,13 @@ Two visual languages for every Hero side, Case, Signal, and Threat. Each subject
 
 ## Master styles
 
-### Comic Ink
+### Bold Comic
 
-> Street-level superhero noir rendered as a hand-inked comic panel: aggressive black brushwork, sharp silhouettes, off-register halftone dots, newsprint texture, selective dirty-cream, oxblood-red, and electric-blue spot color, hard rain-slicked light, human scale and lived-in city detail. Dynamic but readable single composition. No text, letters, logos, captions, speech balloons, borders, panels, watermarks, or gore. One unified full-bleed image, never a grid, montage, triptych, card frame, or repeated subject.
+> Bold cartoon comic-book illustration: thick confident black outlines, chunky simplified anatomy, exaggerated perspective, graphic shadow shapes, flat saturated spot colors, expressive faces, energetic motion accents, playful visual exaggeration with a dark urban story. Printed comic illustration with clean color blocking and strong silhouette-first design. Palette of ink black, electric blue, punchy red, mustard yellow, dirty cream, and small acid-green accents. No stained glass, anime, photorealism, painterly rendering, text, letters, logos, captions, speech balloons, borders, panels, watermarks, gore, grid, montage, triptych, card frame, or repeated subject. One unified full-bleed image.
 
-### Anime Noir
+### Church Glass
 
-> Late-1990s Japanese cyberpunk noir anime illustration: confident expressive ink line, cel-shaded planes, cinematic perspective, rain-slick industrial neighborhoods, hard rim light, restrained electric cyan and sodium amber, and serious human-scale melancholy. Blend jazz-noir atmosphere with tactile cyberpunk infrastructure and lived-in faces; keep the impossible power legible without glossy franchise spectacle. No text, letters, logos, captions, speech balloons, borders, panels, watermarks, or literal card frames. One unified full-bleed image, never a grid, montage, triptych, or repeated subject.
+> Pure abstract church stained-glass artwork, geometrically fragmented and symbolic. The entire image is constructed from irregular polygonal and triangular translucent glass panes separated by strong dark lead lines. Flatten perspective; use faceted shapes, vertical lancets, radial geometry, asymmetrical fragments, and icon-like silhouettes. It must feel like an actual monumental church window viewed from the inside, with luminous light passing through the glass. Palette of cobalt, ultramarine, wine red, plum, amber gold, pale cream, bottle green, and black lead. No anime, cartoon, comic-book linework, photorealism, painterly fantasy art, glassmorphism, text, letters, logos, captions, speech balloons, borders, panels, watermarks, gore, grid, montage, triptych, card frame, or repeated subject. One unified full-bleed image.
 
 Portrait art uses 3:4; Signals use 1:1. The Gallery also accepts JPG, JPEG, and WebP at the same extensionless paths.
 
@@ -20,106 +20,106 @@ Portrait art uses 3:4; Signals use 1:1. The Gallery also accepts JPG, JPEG, and 
 
 - Front: A Black woman in practical urban rescue gear and a heavy asymmetrical coat, standing at medium density between frightened tenants and a collapsing tenement entrance, masonry stopping against her calm stance while a few feathers drift around her.
 - Turned: The same woman in the same coat made impossibly massive in a rain-slick street, one boot crushing asphalt as a load-bearing column falls toward a getaway car and civilians flee the dust.
-- Comic Ink: `art/images/ink/heroes/ballast--front.png`, `art/images/ink/heroes/ballast--turned.png`
-- Anime Noir: `art/images/expressionist/heroes/ballast--front.png`, `art/images/expressionist/heroes/ballast--turned.png`
+- Bold Comic: `art/images/ink/heroes/ballast--front.png`, `art/images/ink/heroes/ballast--turned.png`
+- Church Glass: `art/images/expressionist/heroes/ballast--front.png`, `art/images/expressionist/heroes/ballast--turned.png`
 
 ### Apex
 
 - Front: A lean Black man in a battered training jacket and taped hands, moving through a rain-dark alley with perfect evasive aikido footwork as several attackers stumble past him without being struck.
 - Turned: The same fighter under a brutal warehouse light, body locked into a bone-breaking finishing strike while ghostlike motion trails of earlier fights coil around his shoulders.
-- Comic Ink: `art/images/ink/heroes/apex--front.png`, `art/images/ink/heroes/apex--turned.png`
-- Anime Noir: `art/images/expressionist/heroes/apex--front.png`, `art/images/expressionist/heroes/apex--turned.png`
+- Bold Comic: `art/images/ink/heroes/apex--front.png`, `art/images/ink/heroes/apex--turned.png`
+- Church Glass: `art/images/expressionist/heroes/apex--front.png`, `art/images/expressionist/heroes/apex--turned.png`
 
 ### The Pulse
 
 - Front: A gender-nonconforming figure in a weatherproof coat and insulated gloves, siphoning a thin blue current from a broken street cabinet while every occupied apartment behind them stays warmly lit.
 - Turned: The same figure at the center of a winter blackout, residential windows dark, electrical arcs crawling through their body as they overcharge for a fight in the street.
-- Comic Ink: `art/images/ink/heroes/the-pulse--front.png`, `art/images/ink/heroes/the-pulse--turned.png`
-- Anime Noir: `art/images/expressionist/heroes/the-pulse--front.png`, `art/images/expressionist/heroes/the-pulse--turned.png`
+- Bold Comic: `art/images/ink/heroes/the-pulse--front.png`, `art/images/ink/heroes/the-pulse--turned.png`
+- Church Glass: `art/images/expressionist/heroes/the-pulse--front.png`, `art/images/expressionist/heroes/the-pulse--turned.png`
 
 ### Dialectic
 
 - Front: A sharp-featured nonbinary performer in a long coat and half-mask, projecting a harmless hard-light carnival across a tense street so armed people stare at a bright impossible parade instead of each other.
 - Turned: The same performer in a fractured apartment corridor surrounded by terrifying duplicate doorways and false teammates, reaching toward a hallucinated friend while every surface insists it is real.
-- Comic Ink: `art/images/ink/heroes/dialectic--front.png`, `art/images/ink/heroes/dialectic--turned.png`
-- Anime Noir: `art/images/expressionist/heroes/dialectic--front.png`, `art/images/expressionist/heroes/dialectic--turned.png`
+- Bold Comic: `art/images/ink/heroes/dialectic--front.png`, `art/images/ink/heroes/dialectic--turned.png`
+- Church Glass: `art/images/expressionist/heroes/dialectic--front.png`, `art/images/expressionist/heroes/dialectic--turned.png`
 
 ### Amp
 
 - Front: A stoic brown-skinned sound specialist in a compact armored coat, holding one hand over a silent gunfight as a clean circular silence field settles around the muzzle flashes and frightened neighbors escape.
 - Turned: The same specialist in a shattered storefront, releasing a violent kinetic wave through speakers and windows while the whole street vibrates like a distorted concert.
-- Comic Ink: `art/images/ink/heroes/amp--front.png`, `art/images/ink/heroes/amp--turned.png`
-- Anime Noir: `art/images/expressionist/heroes/amp--front.png`, `art/images/expressionist/heroes/amp--turned.png`
+- Bold Comic: `art/images/ink/heroes/amp--front.png`, `art/images/ink/heroes/amp--turned.png`
+- Church Glass: `art/images/expressionist/heroes/amp--front.png`, `art/images/expressionist/heroes/amp--turned.png`
 
 ### Knot
 
 - Front: A wiry figure in a hooded coat on a fire escape, telekinetically tying falling debris into a suspended safety net of ropes and wires while restrained thieves wait quietly for police.
 - Turned: The same figure in a webbed alley, chains and cables covering every exit, allies and enemies pinned to the walls as the hero stands possessively at the center.
-- Comic Ink: `art/images/ink/heroes/knot--front.png`, `art/images/ink/heroes/knot--turned.png`
-- Anime Noir: `art/images/expressionist/heroes/knot--front.png`, `art/images/expressionist/heroes/knot--turned.png`
+- Bold Comic: `art/images/ink/heroes/knot--front.png`, `art/images/ink/heroes/knot--turned.png`
+- Church Glass: `art/images/expressionist/heroes/knot--front.png`, `art/images/expressionist/heroes/knot--turned.png`
 
 ### Catharsis
 
 - Front: A tired street medic in a rain-dark clinic doorway, one hand on an injured stranger as the wound leaves the patient and appears as a matching bruise and fracture across the medic’s own body.
 - Turned: The same medic standing over a stunned attacker as a fatal wound tears across the attacker’s body while the innocent bystander beside them heals, the hero’s face cold and resolved.
-- Comic Ink: `art/images/ink/heroes/catharsis--front.png`, `art/images/ink/heroes/catharsis--turned.png`
-- Anime Noir: `art/images/expressionist/heroes/catharsis--front.png`, `art/images/expressionist/heroes/catharsis--turned.png`
+- Bold Comic: `art/images/ink/heroes/catharsis--front.png`, `art/images/ink/heroes/catharsis--turned.png`
+- Church Glass: `art/images/expressionist/heroes/catharsis--front.png`, `art/images/expressionist/heroes/catharsis--turned.png`
 
 ### Gravel
 
 - Front: A broad urban sentinel in work clothes raising a wall of asphalt and concrete between a neighborhood and incoming bullets, a rough ramp leading families toward an open street.
 - Turned: The same sentinel half-petrified in a street of rising asphalt, joints locked into stone as screaming criminals disappear beneath a fresh concrete tomb.
-- Comic Ink: `art/images/ink/heroes/gravel--front.png`, `art/images/ink/heroes/gravel--turned.png`
-- Anime Noir: `art/images/expressionist/heroes/gravel--front.png`, `art/images/expressionist/heroes/gravel--turned.png`
+- Bold Comic: `art/images/ink/heroes/gravel--front.png`, `art/images/ink/heroes/gravel--turned.png`
+- Church Glass: `art/images/expressionist/heroes/gravel--front.png`, `art/images/expressionist/heroes/gravel--turned.png`
 
 ### The Moth
 
 - Front: A compact rooftop guardian in a gliding rig and grappling harness, perched above Millhaven with a precise map of fire escapes and smoke bombs ready, a rescue route glowing below.
 - Turned: The same guardian clinging to a gargoyle far above a mugging, wings folded tight and eyes fixed downward while the terrified victim remains out of reach on the street.
-- Comic Ink: `art/images/ink/heroes/the-moth--front.png`, `art/images/ink/heroes/the-moth--turned.png`
-- Anime Noir: `art/images/expressionist/heroes/the-moth--front.png`, `art/images/expressionist/heroes/the-moth--turned.png`
+- Bold Comic: `art/images/ink/heroes/the-moth--front.png`, `art/images/ink/heroes/the-moth--turned.png`
+- Church Glass: `art/images/expressionist/heroes/the-moth--front.png`, `art/images/expressionist/heroes/the-moth--turned.png`
 
 ### Cipher
 
 - Front: A Black man in a forensic coat and respirator mask crouched at a murder scene, touching one drop of blood to his tongue as a license plate appears in the rain-slick reflection of his eyes.
 - Turned: The same detective swallowing evidence from a drug stash, hallucinated crime-scene colors and chemical symbols spiraling around him while investigators back away.
-- Comic Ink: `art/images/ink/heroes/cipher--front.png`, `art/images/ink/heroes/cipher--turned.png`
-- Anime Noir: `art/images/expressionist/heroes/cipher--front.png`, `art/images/expressionist/heroes/cipher--turned.png`
+- Bold Comic: `art/images/ink/heroes/cipher--front.png`, `art/images/ink/heroes/cipher--turned.png`
+- Church Glass: `art/images/expressionist/heroes/cipher--front.png`, `art/images/expressionist/heroes/cipher--turned.png`
 
 ### Lumen
 
 - Front: A dark-skinned light tracker in a hooded coat, projecting a narrow ultraviolet beam through a warehouse to reveal a blood trail and chemical marks without waking the guards.
 - Turned: The same tracker stumbling blind in a white-hot interrogation room as burning ultraviolet light reflects from a terrified suspect and the hero lashes at shadows.
-- Comic Ink: `art/images/ink/heroes/lumen--front.png`, `art/images/ink/heroes/lumen--turned.png`
-- Anime Noir: `art/images/expressionist/heroes/lumen--front.png`, `art/images/expressionist/heroes/lumen--turned.png`
+- Bold Comic: `art/images/ink/heroes/lumen--front.png`, `art/images/ink/heroes/lumen--turned.png`
+- Church Glass: `art/images/expressionist/heroes/lumen--front.png`, `art/images/expressionist/heroes/lumen--turned.png`
 
 ### Proxy
 
 - Front: A compassionate figure in a dark coat kneeling beside a recently deceased witness, astral light leaving their body as the corpse briefly opens its eyes to whisper a name to grieving family and police.
 - Turned: The same figure’s living body lies cold in an alley while their spirit pilots a decaying corpse as a meat-shield through a brutal street fight.
-- Comic Ink: `art/images/ink/heroes/proxy--front.png`, `art/images/ink/heroes/proxy--turned.png`
-- Anime Noir: `art/images/expressionist/heroes/proxy--front.png`, `art/images/expressionist/heroes/proxy--turned.png`
+- Bold Comic: `art/images/ink/heroes/proxy--front.png`, `art/images/ink/heroes/proxy--turned.png`
+- Church Glass: `art/images/expressionist/heroes/proxy--front.png`, `art/images/expressionist/heroes/proxy--turned.png`
 
 ### Ricochet
 
 - Front: A broad Black man in a reinforced street suit standing in front of his team, bullets and baseball bats flattening into blue kinetic ripples before harmless force drains into the asphalt beneath his boots.
 - Turned: The same man walking into a crossfire with hemorrhage-red energy packed beneath his skin, releasing a block-shattering shockwave through cars, windows, and bystanders.
-- Comic Ink: `art/images/ink/heroes/ricochet--front.png`, `art/images/ink/heroes/ricochet--turned.png`
-- Anime Noir: `art/images/expressionist/heroes/ricochet--front.png`, `art/images/expressionist/heroes/ricochet--turned.png`
+- Bold Comic: `art/images/ink/heroes/ricochet--front.png`, `art/images/ink/heroes/ricochet--turned.png`
+- Church Glass: `art/images/expressionist/heroes/ricochet--front.png`, `art/images/expressionist/heroes/ricochet--turned.png`
 
 ### Splicer
 
 - Front: A disciplined fighter in a sleeveless armored coat, extruding two precise bone-blades from their forearms to disarm a gang member in a narrow alley without drawing blood.
 - Turned: The same fighter inside a massive terrifying bone-mech silhouette, calcium spikes everywhere, spine arched dangerously as gangs kneel in fear around them.
-- Comic Ink: `art/images/ink/heroes/splicer--front.png`, `art/images/ink/heroes/splicer--turned.png`
-- Anime Noir: `art/images/expressionist/heroes/splicer--front.png`, `art/images/expressionist/heroes/splicer--turned.png`
+- Bold Comic: `art/images/ink/heroes/splicer--front.png`, `art/images/ink/heroes/splicer--turned.png`
+- Church Glass: `art/images/expressionist/heroes/splicer--front.png`, `art/images/expressionist/heroes/splicer--turned.png`
 
 ### Strobe
 
 - Front: A compact infiltrator in a matte tactical suit stepping through a security laser grid, consciousness trailing a translucent five-second ghost while their frozen body remains safely hidden behind a pillar.
 - Turned: The same infiltrator waking bloody and concussed after repeated temporal skips, frozen afterimages being beaten apart behind them as they turn toward the attackers with homicidal rage.
-- Comic Ink: `art/images/ink/heroes/strobe--front.png`, `art/images/ink/heroes/strobe--turned.png`
-- Anime Noir: `art/images/expressionist/heroes/strobe--front.png`, `art/images/expressionist/heroes/strobe--turned.png`
+- Bold Comic: `art/images/ink/heroes/strobe--front.png`, `art/images/ink/heroes/strobe--turned.png`
+- Church Glass: `art/images/expressionist/heroes/strobe--front.png`, `art/images/expressionist/heroes/strobe--turned.png`
 
 ## Cases (16 images)
 

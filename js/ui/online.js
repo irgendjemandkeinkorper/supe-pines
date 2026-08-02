@@ -598,7 +598,7 @@ function renderOnlineLobby(room){
     <div class="panel" style="max-width:640px;margin:0 auto">
       <p class="small" style="color:var(--gold)">${esc(room.case.title)}</p>
       <p class="small muted">${esc(room.case.epigraph)}</p>
-      <p class="small" style="color:var(--gold)">Visual language: ${esc(ART_STYLES.find(style=>style.id===normalizeArtStyle(room.artStyle))?.label || 'Noir Comic')}</p>
+      <p class="small" style="color:var(--gold)">Visual language: ${esc(ART_STYLES.find(style=>style.id===normalizeArtStyle(room.artStyle))?.label || 'Bold Comic')}</p>
       <p class="center" style="margin:14px 0">
         <span class="sc" style="color:var(--gold);font-size:.85rem;letter-spacing:.15em">ROOM CODE</span><br>
         <span style="font-size:2.2rem;letter-spacing:.3em;color:#eddfba">${esc(State.onlineRoomCode)}</span>
