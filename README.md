@@ -33,7 +33,7 @@ short enough for a single sitting:
 | Heroes | 15 (6 dealt per game) | 16 (6 dealt per game) |
 | Setup questions | 120 (every Hero × every Case) | 192 |
 | Scene cards | 48/act (144 total) | 61/act (183 total) |
-| Signals | 37 | 44 |
+| Signals | 20 | 44 |
 | Secrets | 10 (mathematically exhaustive over 3 tones — can't be fewer) | 10 |
 | Act Closes | 6 (2/act) | 9 |
 
@@ -206,17 +206,17 @@ The visual and copy rules live in [`docs/design-bible.md`](docs/design-bible.md)
 
 ## Card art
 
-The application's manifest defines 166 image slots, but the game is designed to gracefully degrade to beautifully styled text-only cards whenever an image is absent. **This text fallback is an accepted, intentional, and fully supported launch state.** This ensures the game remains completely readable, accessible, and playable even with partial art coverage.
+The application's manifest defines 132 image slots, but the game is designed to gracefully degrade to beautifully styled text-only cards whenever an image is absent. **This text fallback is an accepted, intentional, and fully supported launch state.** This ensures the game remains completely readable, accessible, and playable even with partial art coverage.
 
 ### Numeric Launch Target
-For the launch build, the agreed target of completed, shipped art is exactly **6/166** files, categorized as follows:
+For the launch build, the agreed target of completed, shipped art is exactly **26/132** files, categorized as follows:
 
 | Category | Visual Style | Launch Target | Shipped Files | Status |
 |---|---|---|---|---|
 | **Cases** | Bold Comic | 5 / 8 | `afterhours`, `casting`, `lastcall`, `renovation`, `toll` | Shipped |
 | **Cases** | Church Glass | 1 / 8 | `afterhours` | Shipped |
 | **Heroes** | All Styles | 0 / 60 | None | Deferred |
-| **Signals** | All Styles | 0 / 74 | None | Deferred |
+| **Signals** | All Styles | 20 / 40 | `art/images/ink/signals/*` | Partially shipped |
 | **Threats** | All Styles | 0 / 16 | None | Deferred |
 
 The `scripts/check-art.mjs` script acts as our CI/CD gate. It strictly enforces that these 6 required assets are present and correct before any commit can be merged.
@@ -225,7 +225,7 @@ The `scripts/check-art.mjs` script acts as our CI/CD gate. It strictly enforces 
 The rest of the manifest's image slots represent a deferred pipeline of future art expansion packs. These will be generated and shipped in waves post-launch:
 1. **Case Expansion Pack (Bold Comic & Church Glass):** Completing the remaining 3 Cases in Bold Comic (`deadair`, `lastroute`, `openhouse`) and 7 Cases in Church Glass.
 2. **The Heroes Pack:** Authoring and shipping 60 card faces (front and turned sides for 15 heroes) in both Bold Comic and Church Glass styles.
-3. **The Signals Pack:** 74 total illustrations (37 unique signals in both styles).
+3. **The Signals Pack:** 40 total illustrations (20 unique signals in both styles); the Church Glass versions remain deferred.
 4. **The Threats Pack:** 16 total illustrations (8 unique threats in both styles).
 
 The Gallery supports the full image set at
@@ -237,7 +237,7 @@ condition follow the face being shown.
 
 The Bleakwood Vale manifest pipeline is now fully adapted for Supe Pines. It
 contains hand-authored art direction for all 15 Heroes (both sides), 8 Cases,
-37 Signals, and 8 Threats in two visual styles — 166 image slots total. Bold
+20 Signals, and 8 Threats in two visual styles — 132 image slots total. Bold
 Comic is the high-contrast cartoon language; Church Glass is the abstract,
 geometrically fragmented stained-glass language.
 Prompt coverage and manifest generation can be

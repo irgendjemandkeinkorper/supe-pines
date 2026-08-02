@@ -25,7 +25,7 @@ console.log(`Art coverage: ${byStyle}.`);
 
 // Define launch targets
 const LAUNCH_TARGET_NUMBERS = {
-  ink: { cases: 5, heroes: 0, signals: 0, threats: 0 },
+  ink: { cases: 5, heroes: 0, signals: 20, threats: 0 },
   expressionist: { cases: 1, heroes: 0, signals: 0, threats: 0 }
 };
 

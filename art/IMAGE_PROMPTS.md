@@ -171,67 +171,7 @@ A neighbourhood youth centre gym prepared for an open house, folding chairs and 
 
 Save as `art/images/ink/cases/openhouse.png` and `art/images/expressionist/cases/openhouse.png`.
 
-## Signals (74 images)
-
-### 📻 A Dead Scanner Channel
-
-A battered handheld police scanner on a kitchen table, waveform frozen mid-syllable and one tiny red status light abruptly dark.
-
-Save as `art/images/ink/signals/a-dead-scanner-channel.png` and `art/images/expressionist/signals/a-dead-scanner-channel.png`.
-
-### ✂ A Torn Flyer
-
-A rain-soaked flyer ripped vertically on a telephone pole, showing half of an anonymous face and half of an unreadable phone number.
-
-Save as `art/images/ink/signals/a-torn-flyer.png` and `art/images/expressionist/signals/a-torn-flyer.png`.
-
-### 🔋 A Phone at One Percent
-
-A scratched smartphone glowing on wet pavement with a nearly empty battery icon and an incoming call just about to vanish, no readable text.
-
-Save as `art/images/ink/signals/a-phone-at-one-percent.png` and `art/images/expressionist/signals/a-phone-at-one-percent.png`.
-
-### 🐈 The Same Stray Cat
-
-A wary one-eared alley cat sitting beneath the same fire escape where distant emergency light spills around a corner.
-
-Save as `art/images/ink/signals/the-same-stray-cat.png` and `art/images/expressionist/signals/the-same-stray-cat.png`.
-
-### 🚨 Sirens, Getting Closer
-
-Empty residential street washed in red and blue reflections from unseen approaching vehicles, the reflected lights ending suddenly halfway down the block.
-
-Save as `art/images/ink/signals/sirens-getting-closer.png` and `art/images/expressionist/signals/sirens-getting-closer.png`.
-
-### 💡 A Streetlight That Won’t Stay Lit
-
-A lone streetlight sputtering above a narrow alley, alternating bright and black around one indistinct figure.
-
-Save as `art/images/ink/signals/a-streetlight-that-wont-stay-lit.png` and `art/images/expressionist/signals/a-streetlight-that-wont-stay-lit.png`.
-
-### 📷 A Traffic Camera, Facing the Wrong Way
-
-A municipal traffic camera freshly twisted away from an intersection, tool scratches bright on its metal neck.
-
-Save as `art/images/ink/signals/a-traffic-camera-facing-the-wrong-way.png` and `art/images/expressionist/signals/a-traffic-camera-facing-the-wrong-way.png`.
-
-### ☂ An Umbrella, Inside Out
-
-A black umbrella blown inside out and abandoned upright on a stoop despite perfectly still rain.
-
-Save as `art/images/ink/signals/an-umbrella-inside-out.png` and `art/images/expressionist/signals/an-umbrella-inside-out.png`.
-
-### 🗝 A Key That Fits Nothing You Own
-
-A strange worn brass key in the palm of a coat pocket, surrounded by unfamiliar lint and one dark red thread.
-
-Save as `art/images/ink/signals/a-key-that-fits-nothing-you-own.png` and `art/images/expressionist/signals/a-key-that-fits-nothing-you-own.png`.
-
-### 📰 Yesterday’s Front Page
-
-A folded newspaper on a diner counter with photographs and columns blurred into unreadable shapes, one front-page image visibly contradicted by the scene outside the window.
-
-Save as `art/images/ink/signals/yesterdays-front-page.png` and `art/images/expressionist/signals/yesterdays-front-page.png`.
+## Signals (40 images)
 
 ### 🩹 A Bandage, Already Bled Through
 
@@ -239,77 +179,65 @@ A hastily wrapped hand resting on a sink edge, white gauze already dark with blo
 
 Save as `art/images/ink/signals/a-bandage-already-bled-through.png` and `art/images/expressionist/signals/a-bandage-already-bled-through.png`.
 
-### 🕳 A Manhole Cover, Slightly Askew
-
-A heavy manhole cover shifted open by one inch on an empty street, warm light and a curl of steam rising through the gap.
-
-Save as `art/images/ink/signals/a-manhole-cover-slightly-askew.png` and `art/images/expressionist/signals/a-manhole-cover-slightly-askew.png`.
-
-### ⏱ A Stopwatch, Still Running
-
-A dented mechanical stopwatch on concrete, second hand still sweeping long after an unseen event ended.
-
-Save as `art/images/ink/signals/a-stopwatch-still-running.png` and `art/images/expressionist/signals/a-stopwatch-still-running.png`.
-
-### 🎭 A Costume Piece, Not Yours
-
-One unfamiliar armored glove hanging from a fire-escape rung beside scraps of several homemade hero costumes.
-
-Save as `art/images/ink/signals/a-costume-piece-not-yours.png` and `art/images/expressionist/signals/a-costume-piece-not-yours.png`.
-
-### 🚂 The El, Running Late
-
-An empty elevated-train platform after midnight, arrival clock unreadable, tunnel lights visible but never moving closer.
-
-Save as `art/images/ink/signals/the-el-running-late.png` and `art/images/expressionist/signals/the-el-running-late.png`.
-
-### 🕊 A Flock of Pigeons, All at Once
-
-A dense burst of pigeons leaving one rooftop simultaneously while a single human silhouette remains below them.
-
-Save as `art/images/ink/signals/a-flock-of-pigeons-all-at-once.png` and `art/images/expressionist/signals/a-flock-of-pigeons-all-at-once.png`.
-
-### ▧ A Chalk Mark Under Fresh Paint
-
-A small geometric chalk mark reappearing through wet grey paint on a brick service door, fresh chalk dust on the ground.
-
-Save as `art/images/ink/signals/a-chalk-mark-under-fresh-paint.png` and `art/images/expressionist/signals/a-chalk-mark-under-fresh-paint.png`.
-
 ### 🚌 A Bus Transfer for a Dead Route
 
 A faded paper bus transfer pinched between two fingers, freshly punched, with route markings intentionally unreadable and an abandoned bus stop behind it.
 
 Save as `art/images/ink/signals/a-bus-transfer-for-a-dead-route.png` and `art/images/expressionist/signals/a-bus-transfer-for-a-dead-route.png`.
 
-### ⚠ Police Tape, Cut Clean
+### 💡 A Lightbulb with No Filament
 
-A strand of police tape sliced neatly and retied across a dark doorway, printed markings abstract and unreadable.
+A bare lightbulb hanging from a dark service corridor, its glass intact but its filament missing, a single hard-edged shadow beneath it.
 
-Save as `art/images/ink/signals/police-tape-cut-clean.png` and `art/images/expressionist/signals/police-tape-cut-clean.png`.
+Save as `art/images/ink/signals/a-lightbulb-with-no-filament.png` and `art/images/expressionist/signals/a-lightbulb-with-no-filament.png`.
 
-### 📼 A Voicemail with No Voice
+### 🕳 A Manhole Cover, Slightly Askew
 
-An old smartphone beside a small speaker waveform showing only footsteps and a door slam, interface symbols visible but no readable words.
+A heavy manhole cover shifted open by one inch on an empty street, warm light and a curl of steam rising through the gap.
 
-Save as `art/images/ink/signals/a-voicemail-with-no-voice.png` and `art/images/expressionist/signals/a-voicemail-with-no-voice.png`.
+Save as `art/images/ink/signals/a-manhole-cover-slightly-askew.png` and `art/images/expressionist/signals/a-manhole-cover-slightly-askew.png`.
 
-### 👣 One Wet Footprint
+### 🪞 A Mirror That Remembers the Wrong Room
 
-One rain-wet shoe print centered on a dry apartment hallway floor, with no other tracks in either direction.
+A cracked hallway mirror reflecting an unfamiliar room instead of the corridor in front of it, one empty doorway open in the reflection.
 
-Save as `art/images/ink/signals/one-wet-footprint.png` and `art/images/expressionist/signals/one-wet-footprint.png`.
+Save as `art/images/ink/signals/a-mirror-that-remembers-the-wrong-room.png` and `art/images/expressionist/signals/a-mirror-that-remembers-the-wrong-room.png`.
 
-### ▰ A Matchbook from a Closed Club
+### 🎞 A Photobooth Strip with One Empty Frame
 
-A vintage matchbook with one match missing on a closed nightclub’s dusty bar, cover design worn blank with no readable lettering.
+A damp photobooth strip held under a streetlamp, three frames showing the same night and a fourth frame containing only a blurred absence.
 
-Save as `art/images/ink/signals/a-matchbook-from-a-closed-club.png` and `art/images/expressionist/signals/a-matchbook-from-a-closed-club.png`.
+Save as `art/images/ink/signals/a-photobooth-strip-with-one-empty-frame.png` and `art/images/expressionist/signals/a-photobooth-strip-with-one-empty-frame.png`.
 
-### 💊 A Prescription Bottle, Wrong Name
+### 🚪 A Rooftop Door Locked from Outside
 
-An amber prescription bottle under bathroom light, label deliberately out of focus, reflected beside an old framed memorial photograph.
+A steel rooftop door chained shut from the roof side, city lights beyond it and fresh scratches around the lock.
 
-Save as `art/images/ink/signals/a-prescription-bottle-wrong-name.png` and `art/images/expressionist/signals/a-prescription-bottle-wrong-name.png`.
+Save as `art/images/ink/signals/a-rooftop-door-locked-from-outside.png` and `art/images/expressionist/signals/a-rooftop-door-locked-from-outside.png`.
+
+### ◒ A Shadow That Arrives First
+
+A long human shadow turning a brick alley corner before its owner, the empty pavement between them sharply lit.
+
+Save as `art/images/ink/signals/a-shadow-that-arrives-first.png` and `art/images/expressionist/signals/a-shadow-that-arrives-first.png`.
+
+### 🧤 A Single Glove on the Fire Escape
+
+One worn glove caught on a rusty fire-escape rung three stories up, a dark handprint above it and no safe way to reach either.
+
+Save as `art/images/ink/signals/a-single-glove-on-the-fire-escape.png` and `art/images/expressionist/signals/a-single-glove-on-the-fire-escape.png`.
+
+### ✂ A Torn Flyer
+
+A rain-soaked flyer ripped vertically on a telephone pole, showing half of an anonymous face and half of an unreadable phone number.
+
+Save as `art/images/ink/signals/a-torn-flyer.png` and `art/images/expressionist/signals/a-torn-flyer.png`.
+
+### 📷 A Traffic Camera, Facing the Wrong Way
+
+A municipal traffic camera freshly twisted away from an intersection, tool scratches bright on its metal neck.
+
+Save as `art/images/ink/signals/a-traffic-camera-facing-the-wrong-way.png` and `art/images/expressionist/signals/a-traffic-camera-facing-the-wrong-way.png`.
 
 ### ↕ An Elevator Between Floors
 
@@ -317,11 +245,11 @@ Old elevator doors opened onto a solid brick wall, one brick displaced inward as
 
 Save as `art/images/ink/signals/an-elevator-between-floors.png` and `art/images/expressionist/signals/an-elevator-between-floors.png`.
 
-### ⛓ A Broken Zip Tie
+### 🧵 Blue Thread on a Fire Escape
 
-A snapped black zip tie on a concrete floor, broken outward with a single dark hair caught in its teeth.
+A single bright blue thread snagged three stories high on a rusty fire escape, pulled taut against the direction of the wind.
 
-Save as `art/images/ink/signals/a-broken-zip-tie.png` and `art/images/expressionist/signals/a-broken-zip-tie.png`.
+Save as `art/images/ink/signals/blue-thread-on-a-fire-escape.png` and `art/images/expressionist/signals/blue-thread-on-a-fire-escape.png`.
 
 ### 🧱 Fresh Concrete, Still Warm
 
@@ -329,71 +257,41 @@ A rectangle of new concrete steaming faintly in an old basement floor, one handp
 
 Save as `art/images/ink/signals/fresh-concrete-still-warm.png` and `art/images/expressionist/signals/fresh-concrete-still-warm.png`.
 
-### ☎ A Payphone Ringing Once
+### 🚨 Sirens Going Quiet
 
-A rain-beaded payphone receiver trembling on its hook under a dead neon awning, one isolated ring visualized by a subtle vibration.
+An empty residential street washed in red and blue reflections from unseen vehicles, the sirens fading just before the dark address.
 
-Save as `art/images/ink/signals/a-payphone-ringing-once.png` and `art/images/expressionist/signals/a-payphone-ringing-once.png`.
+Save as `art/images/ink/signals/sirens-going-quiet.png` and `art/images/expressionist/signals/sirens-going-quiet.png`.
 
-### 🧾 A Grocery Receipt at 3:17 AM
+### 🚂 The El, Running Late
 
-A curling grocery receipt under harsh all-night market light, three item rows and a timestamp rendered as unreadable marks, a handwritten address shape on the back.
+An empty elevated-train platform after midnight, arrival clock unreadable, tunnel lights visible but never moving closer.
 
-Save as `art/images/ink/signals/a-grocery-receipt-at-3-17-am.png` and `art/images/expressionist/signals/a-grocery-receipt-at-3-17-am.png`.
+Save as `art/images/ink/signals/the-el-running-late.png` and `art/images/expressionist/signals/the-el-running-late.png`.
 
-### 🧵 Blue Thread on a Fire Escape
+### ☎ The Phone Booth with the Light On
 
-A single bright blue thread snagged three stories high on a rusty fire escape, pulled taut against the direction of the wind.
+An obsolete phone booth glowing beneath a dead neon awning, receiver lifted inside while the surrounding street remains empty.
 
-Save as `art/images/ink/signals/blue-thread-on-a-fire-escape.png` and `art/images/expressionist/signals/blue-thread-on-a-fire-escape.png`.
+Save as `art/images/ink/signals/the-phone-booth-with-the-light-on.png` and `art/images/expressionist/signals/the-phone-booth-with-the-light-on.png`.
 
-### ▦ An Apartment Light Blinking in Code
+### 🐈 The Same Stray Cat
 
-One apartment window blinking in a deliberate pattern across a mostly dark brick courtyard, then revealing a different silhouette.
+A wary one-eared alley cat sitting beneath the same fire escape where distant emergency light spills around a corner.
 
-Save as `art/images/ink/signals/an-apartment-light-blinking-in-code.png` and `art/images/expressionist/signals/an-apartment-light-blinking-in-code.png`.
+Save as `art/images/ink/signals/the-same-stray-cat.png` and `art/images/expressionist/signals/the-same-stray-cat.png`.
 
-### 🚙 Two Identical License Plates
+### ☀ The Second Sun in a Puddle
 
-Two nearly identical dark sedans parked across from one another, matching license plates visible as the same unreadable pattern and matching dents on both bumpers.
+A rain puddle reflecting a second bright sun beneath an overcast sky, the reflection moving independently of the clouds.
 
-Save as `art/images/ink/signals/two-identical-license-plates.png` and `art/images/expressionist/signals/two-identical-license-plates.png`.
+Save as `art/images/ink/signals/the-second-sun-in-a-puddle.png` and `art/images/expressionist/signals/the-second-sun-in-a-puddle.png`.
 
-### 🖍 A Child’s Drawing of the Block
+### 📰 Yesterday’s Front Page
 
-A crayon drawing of a familiar city block held in small hands, every window black except one impossible extra window glowing yellow, no readable writing.
+A folded newspaper on a diner counter with photographs and columns blurred into unreadable shapes, one front-page image visibly contradicted by the scene outside the window.
 
-Save as `art/images/ink/signals/a-childs-drawing-of-the-block.png` and `art/images/expressionist/signals/a-childs-drawing-of-the-block.png`.
-
-### ◈ Neon Bleed
-
-Rain-slick cobblestones reflecting a garish pink neon sign that stutters overhead, artificial warmth failing to hide cold corruption.
-
-Save as `art/images/ink/signals/neon-bleed.png` and `art/images/expressionist/signals/neon-bleed.png`.
-
-### ≋ Static Fog
-
-Thick unnatural mist rolling off the Millhaven river, distant sirens and radio chatter reduced to distorted shapes in the haze.
-
-Save as `art/images/ink/signals/static-fog.png` and `art/images/expressionist/signals/static-fog.png`.
-
-### ▨ Shattered Glass
-
-Quiet dust settling after violence as streetlamps filter through the jagged teeth of a broken diner window and damaged skyline.
-
-Save as `art/images/ink/signals/shattered-glass.png` and `art/images/expressionist/signals/shattered-glass.png`.
-
-### · Cigarette Embers
-
-One glowing cigarette ember in an otherwise black alley, a tiny signal that someone is watching but not yet acting.
-
-Save as `art/images/ink/signals/cigarette-embers.png` and `art/images/expressionist/signals/cigarette-embers.png`.
-
-### ⏲ Clockwork Sirens
-
-An empty Millhaven street at exactly 3:00 AM, rhythmic siren light and sound repeating with mechanical precision around unseen bleeding lives.
-
-Save as `art/images/ink/signals/clockwork-sirens.png` and `art/images/expressionist/signals/clockwork-sirens.png`.
+Save as `art/images/ink/signals/yesterdays-front-page.png` and `art/images/expressionist/signals/yesterdays-front-page.png`.
 
 ## Threats (16 images)
 
@@ -445,4 +343,4 @@ Omen in an empty bar at closing time, one hour of future violence reflected in t
 
 Save as `art/images/ink/threats/omen.png` and `art/images/expressionist/threats/omen.png`.
 
-Total: 166 images across both styles.
+Total: 132 images across both styles.
