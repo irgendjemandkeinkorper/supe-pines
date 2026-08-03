@@ -254,7 +254,7 @@ not activity buckets.
 | Phase 1: Triage, A11y & Critical UI Bugs | Safe, operable primary journey | blockers closed, keyboard/dialog/form/error paths verified |
 | Phase 2: Design Debt & Component Consolidation | Maintainable presentation and sync boundaries | targeted refactors preserve tests and design tokens/ownership are documented |
 | Phase 3: Interaction, State & Responsive Polish | Predictable feedback and narrow-screen play | state matrix and responsive/browser checks pass |
-| Phase 4: Release Readiness | Reproducible, reviewable deployment | CI, Pages, Firebase decision, console check, two-client check, and rollback evidence recorded |
+| Phase 4: Strategic Enhancements & Release Hardening | Reproducible, reviewable deployment | CI, Pages, Firebase decision, console check, two-client check, and rollback evidence recorded |
 
 Dependencies generally flow Phase 1 → Phase 2/3 → Phase 4. Storyline changes
 can proceed in parallel once the data contract is agreed; infrastructure work
