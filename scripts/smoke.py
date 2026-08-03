@@ -5,14 +5,27 @@ from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from threading import Thread
-import sys
+import argparse
 import re
 
 from playwright.sync_api import sync_playwright
 
 
 ROOT = Path(__file__).resolve().parents[1]
-BASE = sys.argv[1] if len(sys.argv) > 1 else None
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument(
+    "--engine",
+    choices=("chromium", "webkit", "firefox"),
+    default="chromium",
+    help="Playwright browser engine to launch (default: chromium)",
+)
+parser.add_argument(
+    "base",
+    nargs="?",
+    help="Optional already-running Supe Pines URL; otherwise a local server is started",
+)
+args = parser.parse_args()
+BASE = args.base
 server = None
 errors = []
 
@@ -109,7 +122,7 @@ if BASE is None:
 
 
 with sync_playwright() as playwright:
-    browser = playwright.chromium.launch(headless=True)
+    browser = getattr(playwright, args.engine).launch(headless=True)
     page = browser.new_page(viewport={"width": 1440, "height": 1000})
     watch(page)
     page.goto(BASE, wait_until="networkidle")

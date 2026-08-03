@@ -3,5 +3,6 @@
 .DS_Store
 .env
 .venv/
+node_modules/
 __pycache__/
 generate.log

@@ -1,5 +1,7 @@
 # Supe Pines
 
+[![Static site checks](https://github.com/irgendjemandkeinkorper/supe-pines/actions/workflows/static.yml/badge.svg)](https://github.com/irgendjemandkeinkorper/supe-pines/actions/workflows/static.yml)
+
 A superhero re-imagining of the tabletop story game *Tall Pines* (design by Miles
 Gaborit) — by way of its sibling project, [Bleakwood Vale](https://github.com/irgendjemandkeinkorper/bleakwood-vale),
 a gothic murder-mystery re-skin of the same engine. Supe Pines is a one-session,
@@ -13,11 +15,14 @@ Runs entirely in the browser.
 
 ## Status
 
-Hotseat (one browser tab, shared screen) and the real-time remote multiplayer
-code are ready on the public page. Remote rooms use Firebase/Firestore for room
-codes and per-player privacy; the remaining Firebase work is enabling Anonymous
-Auth, publishing the included rules, and authorizing the GitHub Pages domain.
-See "Firebase setup" below.
+Hotseat (one browser tab, shared screen) is the verified baseline on the public
+page. The real-time remote multiplayer code is present, but remote play remains
+gated until Firebase production setup and a two-client privacy/synchronization
+check are explicitly verified. See the current dated status in
+[`CHANGELOG.md`](CHANGELOG.md) and the [release scorecard](docs/release-scorecard.md).
+
+Security reports and the accepted Firestore trust-model boundary are documented
+in [`SECURITY.md`](SECURITY.md).
 
 The table UI includes a ready-to-lead turn board, full-card hand drawers, and a
 three-slot scene tracker that keeps the opening card, buy-ins, lead Hero, and
@@ -154,13 +159,18 @@ resolution, online fallback, and narrow-screen layout:
 
 ```
 python3 -m pip install -r requirements-dev.txt
-playwright install chromium
-python3 scripts/smoke.py
+python3 -m playwright install chromium
+python3 scripts/smoke.py --engine chromium
+
+# Optional second-engine check
+python3 -m playwright install webkit
+python3 scripts/smoke.py --engine webkit
 ```
 
-GitHub Actions runs the same data and browser checks on pull requests and
-`main`; the production site remains a dependency-free static GitHub Pages
-build.
+GitHub Actions runs the same data checks and Chromium smoke test on pull
+requests and `main`, plus a WebKit smoke lane. The production site remains a
+dependency-free static GitHub Pages build. For isolated Firestore rules tests,
+see [`docs/firebase-testing.md`](docs/firebase-testing.md).
 
 ### Production Isolation and Dependency Management
 

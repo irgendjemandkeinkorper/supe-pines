@@ -39,13 +39,34 @@ Run the automated end-to-end browser smoke test which verifies key player flows 
 - **Commands:**
   ```bash
   # Ensure Playwright dependencies are installed
-  python3 -m pip install playwright
-  playwright install chromium
+  python3 -m pip install -r requirements-dev.txt
+  python3 -m playwright install chromium
 
   # Run the smoke test
-  python3 scripts/smoke.py
+  python3 scripts/smoke.py --engine chromium
   ```
 - **Expected Outcome:** local webserver starts, Playwright Chromium client completes all scenarios, and the script exits with code `0`.
+
+To exercise the second CI engine locally, install and select WebKit:
+
+```bash
+python3 -m playwright install webkit
+python3 scripts/smoke.py --engine webkit
+```
+
+- **Expected Outcome:** the same smoke scenarios pass under WebKit. Engine-specific failures are tracked separately and do not silently replace the Chromium gate.
+
+### 6. Firestore Emulator Rules Test
+
+Pull requests use the isolated Firebase Emulator Suite, never the production
+`supe-pine` project. From a clean checkout with Node.js 22, Java 11+, and npm:
+
+```bash
+npm ci
+npx firebase emulators:exec --only firestore "npm run test:rules"
+```
+
+- **Expected Outcome:** all rules tests pass, emulator data is disposable, and no Firebase console credentials or production environment variables are present. See [`docs/firebase-testing.md`](firebase-testing.md).
 
 ---
 
@@ -58,6 +79,20 @@ After pushing to `main`, monitor the GitHub Actions tab.
 - [ ] Go to `https://github.com/<owner>/supe-pines/actions` and confirm the `pages-build-deployment` workflow succeeded.
 - [ ] Open the live URL (e.g., `https://<username>.github.io/supe-pines/`).
 - [ ] Inspect the page's source or developer console (`F12`) to verify no `404` or `500` errors exist for static assets.
+
+### 1a. `main` branch protection
+
+The expected GitHub repository setting is:
+
+- `main` has required status checks enabled with **strict/up-to-date branches**.
+- The `verify` job from `.github/workflows/static.yml` is a required check.
+- Force pushes and branch deletion are disabled; administrators follow the
+  same rule where repository settings permit.
+
+Verification must be recorded with the date and the GitHub API response or a
+repository Settings screenshot. As of 2026-08-03, the repository API reported
+`Branch not protected`; this is an explicit release blocker until the rule is
+enabled and re-checked.
 
 ### 2. Firebase Console Infrastructure Checks
 If online multiplayer is in scope or has been modified, open the [Firebase Console](https://console.firebase.google.com/) and verify:
@@ -78,6 +113,10 @@ If online multiplayer is in scope or has been modified, open the [Firebase Conso
 - **Firestore Room Expiry (TTL):**
   - [ ] Navigate to **Build → Firestore Database → Settings** (or the **TTL** tab, depending on the console layout).
   - [ ] Verify there is a TTL policy set on the `rooms` collection for the `expireAt` field to automatically clean up old, abandoned sessions.
+
+Record each completed production step with a date in [`CHANGELOG.md`](../CHANGELOG.md).
+The emulator rules test does not count as proof that these console settings are
+published.
 
 ### 3. Two-Client Remote Multiplayer Test
 Verify real-time synchronization and privacy boundaries across two independent sessions:
@@ -104,6 +143,11 @@ Verify real-time synchronization and privacy boundaries across two independent s
 ---
 
 ## Phase 3: Evidence Required for Signoff
+
+Maintain the compact cross-workstream worksheet in
+[`docs/release-scorecard.md`](release-scorecard.md) and link it from the
+release issue. Do not mark online play verified without both production
+console confirmation and the two-client privacy/synchronization result.
 
 A release is considered fully signed off and ready for production only when the following evidence is documented in the release issue or pull request:
 
