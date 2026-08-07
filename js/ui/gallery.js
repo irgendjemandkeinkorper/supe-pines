@@ -33,7 +33,13 @@ function signalTiles(style){
   return SIGNALS.map(o=>({cat:'signals', key:slugify(o.title), title:o.title, sub:o.glyph, flavor:o.line, path:`art/images/${style}/signals/${slugify(o.title)}`}));
 }
 function threatTiles(style){
-  return VILLAINS.map(v=>({cat:'threats', key:v.id, title:v.name, sub:v.faction, flavor:v.threat, path:`art/images/${style}/threats/${v.id}`}));
+  return VILLAINS.map(v=>({
+    cat:'threats', key:v.id, title:v.name,
+    sub:`${v.faction} — Side I`, backSub:'Side II — flaw exposed',
+    flavor:v.threat, quote:v.threat, backQuote:v.flaw,
+    path:`art/images/${style}/threats/${v.id}`,
+    backPath:`art/images/${style}/threats/${v.id}--turned`, flippable:true
+  }));
 }
 const CATS = [
   {id:'heroes', label:'Heroes', build:heroTiles},
