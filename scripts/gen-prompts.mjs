@@ -90,14 +90,38 @@ export const caseArt = {
 };
 
 export const threatArt = {
-  sophist:'The Sophist in a dark maintenance tunnel behind hanging fox, rabbit, and bear mascot heads, payment envelopes arranged beside physical ledgers covered in paranoid diagrams, face caught between certainty and doubt.',
-  hemlock:'Hemlock in a clinic corridor filled with smiling, fearless thugs, a translucent chemical haze around her while invisible broken bones and phantom pain coil through her own silhouette.',
-  forge:'The Forge inside an abandoned foundry, body glowing from internal fire as military-grade weapons and molten bullet casings surround him, feverish and starving beneath the orange furnace light.',
-  alderman:'The Alderman in a pristine civic atrium whose architecture bends into calming geometric corridors, smiling crowds moving exactly as designed while an unrenovated brick room waits like a dark void behind him.',
-  broadcaster:'The Broadcaster behind a local news microphone and studio glass, a city map rewriting itself in the reflection while gravity fails around loose papers and impossible shadows repeat on the wall.',
-  ferryman:'The Ferryman standing between two impossible dark alleys connected by a shadow tunnel, a passenger’s fading memory visualized as a missing photograph while route signs point to places that do not exist.',
-  alchemist:'The Alchemist in a cramped street pharmacy laboratory, colorful chemical vapor beading on their skin while gang members reach through a shuttered storefront toward the living source of their next high.',
-  omen:'Omen in an empty bar at closing time, one hour of future violence reflected in their eyes, a silent script of approaching blows laid across the floor like a path they cannot leave.'
+  sophist:{
+    front:'The Sophist in a dark maintenance tunnel behind hanging fox, rabbit, and bear mascot heads, payment envelopes arranged beside physical ledgers covered in paranoid diagrams, face caught between certainty and doubt.',
+    turned:'The Sophist alone in a bare room with every ledger open and every page contradicting the last, mascot shadows circling him as his own certainty fractures into a maze.'
+  },
+  hemlock:{
+    front:'Hemlock in a clinic corridor filled with smiling, fearless thugs, a translucent chemical haze around her while invisible broken bones and phantom pain coil through her own silhouette.',
+    turned:'Hemlock curled in a stark clinic room as ghostly fractures echo through her body, every smiling berserker reflected in the glass as a source of pain she cannot escape.'
+  },
+  forge:{
+    front:'The Forge inside an abandoned foundry, body glowing from internal fire as military-grade weapons and molten bullet casings surround him, feverish and starving beneath the orange furnace light.',
+    turned:'The Forge collapsed beside a cold furnace, his overheated organs suggested by a failing ember-like silhouette while untouched food and melted tools surround him.'
+  },
+  alderman:{
+    front:'The Alderman in a pristine civic atrium whose architecture bends into calming geometric corridors, smiling crowds moving exactly as designed while an unrenovated brick room waits like a dark void behind him.',
+    turned:'The Alderman alone in an old unrenovated house, perfect civic geometry dissolving behind him as his face falls empty and the abandoned rooms swallow every trace of emotion.'
+  },
+  broadcaster:{
+    front:'The Broadcaster behind a local news microphone and studio glass, a city map rewriting itself in the reflection while gravity fails around loose papers and impossible shadows repeat on the wall.',
+    turned:'The Broadcaster trapped in a studio where every rewritten headline becomes a crack in reality, microphones and shadows multiplying around her as the room begins to tear itself apart.'
+  },
+  ferryman:{
+    front:'The Ferryman standing between two impossible dark alleys connected by a shadow tunnel, a passenger’s fading memory visualized as a missing photograph while route signs point to places that do not exist.',
+    turned:'The Ferryman facing a wall of missing photographs inside a collapsing shadow tunnel, their own face absent from every frame as the route consumes the last memory that could identify them.'
+  },
+  alchemist:{
+    front:'The Alchemist in a cramped street pharmacy laboratory, colorful chemical vapor beading on their skin while gang members reach through a shuttered storefront toward the living source of their next high.',
+    turned:'The Alchemist isolated behind a locked pharmacy shutter, narcotic vapor sweating from their skin into a crowd of reaching silhouettes while every escape route is marked by hungry eyes.'
+  },
+  omen:{
+    front:'Omen in an empty bar at closing time, one hour of future violence reflected in their eyes, a silent script of approaching blows laid across the floor like a path they cannot leave.',
+    turned:'Omen walking alone along a single unavoidable path through frozen scenes of their own future defeat, their expression emptied by the knowledge that none of the endings can change.'
+  }
 };
 
 export const signalArt = {
@@ -143,7 +167,8 @@ export function validatePromptCoverage(){
   });
   Object.keys(caseArt).filter(id => !caseIds.has(id)).forEach(id => errors.push(`Cases [${id}]: art direction has no matching Case.`));
   VILLAINS.forEach(villain => {
-    if(!threatArt[villain.id]?.trim()) errors.push(`Threats [${villain.id}]: missing art direction.`);
+    if(!threatArt[villain.id]?.front?.trim()) errors.push(`Threats [${villain.id}]: missing front art direction.`);
+    if(!threatArt[villain.id]?.turned?.trim()) errors.push(`Threats [${villain.id}]: missing turned art direction.`);
   });
   Object.keys(threatArt).filter(id => !villainIds.has(id)).forEach(id => errors.push(`Threats [${id}]: art direction has no matching Villain.`));
 
@@ -158,7 +183,7 @@ export function buildPromptSheet(){
   const saveLine = (style, category, id) => `art/images/${style}/${category}/${id}.png`;
   write('# Supe Pines — Card Art Prompt Sheet');
   write('');
-  write('Two visual languages for every Hero side, Case, Signal, and Threat. Each subject prompt is combined with one of the master style blocks below by `scripts/gen-manifest.mjs`.');
+  write('Two visual languages for every Hero and Threat side, Case, and Signal. Each subject prompt is combined with one of the master style blocks below by `scripts/gen-manifest.mjs`.');
   write('');
   write('## Master styles');
   write('');
@@ -206,17 +231,19 @@ export function buildPromptSheet(){
     write(`Save as \`${saveLine('ink', 'signals', id)}\` and \`${saveLine('expressionist', 'signals', id)}\`.`);
     write('');
   });
-  write(`## Threats (${VILLAINS.length * 2} images)`);
+  write(`## Threats (${VILLAINS.length * 4} images)`);
   write('');
   VILLAINS.forEach(item => {
-    write(`### ${item.name} — The Threat`);
+    write(`### ${item.name}`);
     write('');
-    write(threatArt[item.id]);
+    write(`- Side I — Threat: ${threatArt[item.id].front}`);
+    write(`- Side II — Flaw: ${threatArt[item.id].turned}`);
     write('');
-    write(`Save as \`${saveLine('ink', 'threats', item.id)}\` and \`${saveLine('expressionist', 'threats', item.id)}\`.`);
+    write(`- Bold Comic: \`${saveLine('ink', 'threats', item.id)}\`, \`${saveLine('ink', 'threats', `${item.id}--turned`)}\``);
+    write(`- Church Glass: \`${saveLine('expressionist', 'threats', item.id)}\`, \`${saveLine('expressionist', 'threats', `${item.id}--turned`)}\``);
     write('');
   });
-  write(`Total: ${HEROES.length * 4 + CASES.length * 2 + SIGNALS.length * 2 + VILLAINS.length * 2} images across both styles.`);
+  write(`Total: ${HEROES.length * 4 + CASES.length * 2 + SIGNALS.length * 2 + VILLAINS.length * 4} images across both styles.`);
   return `${lines.join('\n')}\n`;
 }
 

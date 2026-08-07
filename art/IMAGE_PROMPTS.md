@@ -1,6 +1,6 @@
 # Supe Pines — Card Art Prompt Sheet
 
-Two visual languages for every Hero side, Case, Signal, and Threat. Each subject prompt is combined with one of the master style blocks below by `scripts/gen-manifest.mjs`.
+Two visual languages for every Hero and Threat side, Case, and Signal. Each subject prompt is combined with one of the master style blocks below by `scripts/gen-manifest.mjs`.
 
 ## Master styles
 
@@ -293,54 +293,70 @@ A folded newspaper on a diner counter with photographs and columns blurred into 
 
 Save as `art/images/ink/signals/yesterdays-front-page.png` and `art/images/expressionist/signals/yesterdays-front-page.png`.
 
-## Threats (16 images)
+## Threats (32 images)
 
-### The Sophist — The Threat
+### The Sophist
 
-The Sophist in a dark maintenance tunnel behind hanging fox, rabbit, and bear mascot heads, payment envelopes arranged beside physical ledgers covered in paranoid diagrams, face caught between certainty and doubt.
+- Side I — Threat: The Sophist in a dark maintenance tunnel behind hanging fox, rabbit, and bear mascot heads, payment envelopes arranged beside physical ledgers covered in paranoid diagrams, face caught between certainty and doubt.
+- Side II — Flaw: The Sophist alone in a bare room with every ledger open and every page contradicting the last, mascot shadows circling him as his own certainty fractures into a maze.
 
-Save as `art/images/ink/threats/sophist.png` and `art/images/expressionist/threats/sophist.png`.
+- Bold Comic: `art/images/ink/threats/sophist.png`, `art/images/ink/threats/sophist--turned.png`
+- Church Glass: `art/images/expressionist/threats/sophist.png`, `art/images/expressionist/threats/sophist--turned.png`
 
-### Hemlock — The Threat
+### Hemlock
 
-Hemlock in a clinic corridor filled with smiling, fearless thugs, a translucent chemical haze around her while invisible broken bones and phantom pain coil through her own silhouette.
+- Side I — Threat: Hemlock in a clinic corridor filled with smiling, fearless thugs, a translucent chemical haze around her while invisible broken bones and phantom pain coil through her own silhouette.
+- Side II — Flaw: Hemlock curled in a stark clinic room as ghostly fractures echo through her body, every smiling berserker reflected in the glass as a source of pain she cannot escape.
 
-Save as `art/images/ink/threats/hemlock.png` and `art/images/expressionist/threats/hemlock.png`.
+- Bold Comic: `art/images/ink/threats/hemlock.png`, `art/images/ink/threats/hemlock--turned.png`
+- Church Glass: `art/images/expressionist/threats/hemlock.png`, `art/images/expressionist/threats/hemlock--turned.png`
 
-### The Forge — The Threat
+### The Forge
 
-The Forge inside an abandoned foundry, body glowing from internal fire as military-grade weapons and molten bullet casings surround him, feverish and starving beneath the orange furnace light.
+- Side I — Threat: The Forge inside an abandoned foundry, body glowing from internal fire as military-grade weapons and molten bullet casings surround him, feverish and starving beneath the orange furnace light.
+- Side II — Flaw: The Forge collapsed beside a cold furnace, his overheated organs suggested by a failing ember-like silhouette while untouched food and melted tools surround him.
 
-Save as `art/images/ink/threats/forge.png` and `art/images/expressionist/threats/forge.png`.
+- Bold Comic: `art/images/ink/threats/forge.png`, `art/images/ink/threats/forge--turned.png`
+- Church Glass: `art/images/expressionist/threats/forge.png`, `art/images/expressionist/threats/forge--turned.png`
 
-### The Alderman — The Threat
+### The Alderman
 
-The Alderman in a pristine civic atrium whose architecture bends into calming geometric corridors, smiling crowds moving exactly as designed while an unrenovated brick room waits like a dark void behind him.
+- Side I — Threat: The Alderman in a pristine civic atrium whose architecture bends into calming geometric corridors, smiling crowds moving exactly as designed while an unrenovated brick room waits like a dark void behind him.
+- Side II — Flaw: The Alderman alone in an old unrenovated house, perfect civic geometry dissolving behind him as his face falls empty and the abandoned rooms swallow every trace of emotion.
 
-Save as `art/images/ink/threats/alderman.png` and `art/images/expressionist/threats/alderman.png`.
+- Bold Comic: `art/images/ink/threats/alderman.png`, `art/images/ink/threats/alderman--turned.png`
+- Church Glass: `art/images/expressionist/threats/alderman.png`, `art/images/expressionist/threats/alderman--turned.png`
 
-### The Broadcaster — The Threat
+### The Broadcaster
 
-The Broadcaster behind a local news microphone and studio glass, a city map rewriting itself in the reflection while gravity fails around loose papers and impossible shadows repeat on the wall.
+- Side I — Threat: The Broadcaster behind a local news microphone and studio glass, a city map rewriting itself in the reflection while gravity fails around loose papers and impossible shadows repeat on the wall.
+- Side II — Flaw: The Broadcaster trapped in a studio where every rewritten headline becomes a crack in reality, microphones and shadows multiplying around her as the room begins to tear itself apart.
 
-Save as `art/images/ink/threats/broadcaster.png` and `art/images/expressionist/threats/broadcaster.png`.
+- Bold Comic: `art/images/ink/threats/broadcaster.png`, `art/images/ink/threats/broadcaster--turned.png`
+- Church Glass: `art/images/expressionist/threats/broadcaster.png`, `art/images/expressionist/threats/broadcaster--turned.png`
 
-### The Ferryman — The Threat
+### The Ferryman
 
-The Ferryman standing between two impossible dark alleys connected by a shadow tunnel, a passenger’s fading memory visualized as a missing photograph while route signs point to places that do not exist.
+- Side I — Threat: The Ferryman standing between two impossible dark alleys connected by a shadow tunnel, a passenger’s fading memory visualized as a missing photograph while route signs point to places that do not exist.
+- Side II — Flaw: The Ferryman facing a wall of missing photographs inside a collapsing shadow tunnel, their own face absent from every frame as the route consumes the last memory that could identify them.
 
-Save as `art/images/ink/threats/ferryman.png` and `art/images/expressionist/threats/ferryman.png`.
+- Bold Comic: `art/images/ink/threats/ferryman.png`, `art/images/ink/threats/ferryman--turned.png`
+- Church Glass: `art/images/expressionist/threats/ferryman.png`, `art/images/expressionist/threats/ferryman--turned.png`
 
-### The Alchemist — The Threat
+### The Alchemist
 
-The Alchemist in a cramped street pharmacy laboratory, colorful chemical vapor beading on their skin while gang members reach through a shuttered storefront toward the living source of their next high.
+- Side I — Threat: The Alchemist in a cramped street pharmacy laboratory, colorful chemical vapor beading on their skin while gang members reach through a shuttered storefront toward the living source of their next high.
+- Side II — Flaw: The Alchemist isolated behind a locked pharmacy shutter, narcotic vapor sweating from their skin into a crowd of reaching silhouettes while every escape route is marked by hungry eyes.
 
-Save as `art/images/ink/threats/alchemist.png` and `art/images/expressionist/threats/alchemist.png`.
+- Bold Comic: `art/images/ink/threats/alchemist.png`, `art/images/ink/threats/alchemist--turned.png`
+- Church Glass: `art/images/expressionist/threats/alchemist.png`, `art/images/expressionist/threats/alchemist--turned.png`
 
-### Omen — The Threat
+### Omen
 
-Omen in an empty bar at closing time, one hour of future violence reflected in their eyes, a silent script of approaching blows laid across the floor like a path they cannot leave.
+- Side I — Threat: Omen in an empty bar at closing time, one hour of future violence reflected in their eyes, a silent script of approaching blows laid across the floor like a path they cannot leave.
+- Side II — Flaw: Omen walking alone along a single unavoidable path through frozen scenes of their own future defeat, their expression emptied by the knowledge that none of the endings can change.
 
-Save as `art/images/ink/threats/omen.png` and `art/images/expressionist/threats/omen.png`.
+- Bold Comic: `art/images/ink/threats/omen.png`, `art/images/ink/threats/omen--turned.png`
+- Church Glass: `art/images/expressionist/threats/omen.png`, `art/images/expressionist/threats/omen--turned.png`
 
-Total: 132 images across both styles.
+Total: 148 images across both styles.

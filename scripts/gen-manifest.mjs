@@ -16,8 +16,8 @@ const ASPECTS = { heroes:'3:4', cases:'3:4', signals:'1:1', threats:'3:4' };
 
 function artField(style, side){ return side ? `image_${style}_${side}` : `image_${style}`; }
 
-function addRecord(manifest, { id, category, style, side = null, name, subject }){
-  const suffix = side ? `--${side}` : '';
+function addRecord(manifest, { id, category, style, side = null, name, subject, pathSuffix }){
+  const suffix = pathSuffix ?? (side ? `--${side}` : '');
   const basePath = `art/images/${style}/${category}/${id}${suffix}`;
   manifest.push({
     id,
@@ -53,7 +53,8 @@ export function buildManifest(){
     addRecord(manifest, { id:slugify(item.title), category:'signals', style, name:item.title, subject:signalArt[item.title] });
   }));
   VILLAINS.forEach(item => STYLES.forEach(style => {
-    addRecord(manifest, { id:item.id, category:'threats', style, name:item.name, subject:threatArt[item.id] });
+    addRecord(manifest, { id:item.id, category:'threats', style, side:'front', pathSuffix:'', name:item.name, subject:threatArt[item.id].front });
+    addRecord(manifest, { id:item.id, category:'threats', style, side:'turned', name:item.name, subject:threatArt[item.id].turned });
   }));
   return manifest;
 }
@@ -70,15 +71,15 @@ export function validateManifest(manifest){
     }
     if(!categories.has(record?.category)) errors.push(`${label}: unsupported category "${record?.category}".`);
     if(!styles.has(record?.style)) errors.push(`${label}: unsupported style "${record?.style}".`);
-    if(record?.category === 'heroes' && !['front', 'turned'].includes(record?.side)) errors.push(`${label}: Hero record must use front or turned side.`);
-    if(record?.category !== 'heroes' && record?.side !== null) errors.push(`${label}: only Hero records may have a side.`);
+    if(['heroes', 'threats'].includes(record?.category) && !['front', 'turned'].includes(record?.side)) errors.push(`${label}: ${record.category} record must use front or turned side.`);
+    if(!['heroes', 'threats'].includes(record?.category) && record?.side !== null) errors.push(`${label}: only Hero and Threat records may have a side.`);
     if(record?.aspectRatio !== ASPECTS[record?.category]) errors.push(`${label}: expected aspect ratio ${ASPECTS[record?.category]}.`);
     if(!record?.savePath?.startsWith(`art/images/${record?.style}/${record?.category}/`)) errors.push(`${label}: savePath does not match the Gallery convention.`);
     if(record?.savePath?.includes('..')) errors.push(`${label}: savePath may not traverse directories.`);
     if(seenPaths.has(record?.savePath)) errors.push(`${label}: duplicate savePath "${record.savePath}".`);
     seenPaths.add(record?.savePath);
   });
-  const expected = HEROES.length * 4 + CASES.length * 2 + SIGNALS.length * 2 + VILLAINS.length * 2;
+  const expected = HEROES.length * 4 + CASES.length * 2 + SIGNALS.length * 2 + VILLAINS.length * 4;
   if(manifest.length !== expected) errors.push(`Manifest: expected ${expected} records, found ${manifest.length}.`);
   return errors;
 }
@@ -103,7 +104,7 @@ function vaultEntities(){
     tags:['case'],
     summary:item.epigraph,
     body:`# ${item.title}\n\n*${item.epigraph}*\n\n${item.threatLine}\n\n## Read-aloud introduction\n\n${item.intro.replace(/<br><br>/g, '\n\n')}\n`,
-    imageFields:STYLES.map(style => artField(style, null)),
+    imageFields:STYLES.flatMap(style => [artField(style, 'front'), artField(style, 'turned')]),
     related:[item.id]
   }));
   const signals = SIGNALS.map(item => ({
