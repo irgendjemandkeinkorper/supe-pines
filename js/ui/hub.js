@@ -7,6 +7,7 @@ import { actToneCounts } from '../engine/rules.js';
 import { renderScenePlay } from './scene.js';
 import { viewChronicle } from './renderChronicle.js';
 import { saveGame } from '../engine/persistence.js';
+import { replaceOmenByVote } from '../engine/gameplay.js';
 
 /* ---------------- milestone rail ----------------
    A compact, newest-first digest of the story's key beats — act
@@ -49,12 +50,39 @@ function localTurnSeatHTML(G,p,i){
   return `<div class="turn-seat ${state}">
     <div class="turn-seat-head"><strong>${esc(p.name)}</strong><span>${label}</span></div>
     <p>${p.scenesLeft} scene${p.scenesLeft===1?'':'s'} left to lead · ${p.hand.length} scene card${p.hand.length===1?'':'s'} · ${p.signals.length} held Signal${p.signals.length===1?'':'s'}</p>
+    <div class="ready-role-row" aria-label="${esc(p.name)} scene role">
+      ${['lead','follow','watch'].map(role=>`<button class="ghost ${G.readyRoles?.[i]===role?'selected':''}" onclick="setReadyRole(${i},'${role}')">Ready to ${role}</button>`).join('')}
+    </div>
     <div class="turn-seat-actions">
       ${state==='ready'?`<button class="primary" onclick="startSceneFor(${i})">Begin a scene</button>`:''}
       ${state==='blocked' && p.scenesLeft>0?`<button class="blood" onclick="forfeitScene(${i})">Forfeit scene</button>`:''}
       <button class="ghost" onclick="openLocalHand(${i})">View ${esc(p.name)}’s cards</button>
     </div>
   </div>`;
+}
+
+export function setReadyRole(pi, role){
+  const G = State.G;
+  if(!G?.players?.[pi] || !['lead','follow','watch'].includes(role)) return;
+  if(!Array.isArray(G.readyRoles)) G.readyRoles = G.players.map(()=>null);
+  G.readyRoles[pi] = G.readyRoles[pi] === role ? null : role;
+  renderHub();
+  saveGame('scr-hub');
+}
+
+export function voteOmenReplacement(signalIndex, playerIndex){
+  const G = State.G;
+  if(!G?.signalRow?.[signalIndex] || !G.players[playerIndex]) return;
+  if(!G.omenVotes) G.omenVotes = {};
+  const voters = new Set(G.omenVotes[signalIndex] || []);
+  voters.add(playerIndex);
+  G.omenVotes[signalIndex] = [...voters];
+  if(replaceOmenByVote(G, signalIndex, G.omenVotes[signalIndex], G.players.length)){
+    G.signalDeck = shuffle(G.signalDeck);
+    G.omenVotes = {};
+  }
+  renderHub();
+  saveGame('scr-hub');
 }
 
 /* ---------------- acts ---------------- */
@@ -84,6 +112,15 @@ export function renderHub(){
     <p class="center muted">${esc(G.case.title)} · The Threat: ${esc(G.threat.name)}</p>
     ${actTrackHTML(G.act)}
     <div class="ornament">✦ ❦ ✦</div>
+    <div class="panel tight save-tools">
+      <strong style="color:var(--gold)">Keep this case</strong>
+      <span class="small muted">Export a portable save before closing the tab, or import one on another device.</span>
+      <div class="btnrow">
+        <button class="ghost" onclick="downloadGameSave()">Export JSON save</button>
+        <label class="button ghost" for="import-save-file">Import JSON save</label>
+        <input id="import-save-file" type="file" accept="application/json,.json" hidden onchange="importGameFile(this.files[0])">
+      </div>
+    </div>
 
     <div class="panel spotlight turn-board">
       <div class="turn-board-head">
@@ -118,7 +155,7 @@ export function renderHub(){
       <summary>The Signal Row <span class="small muted">(${G.signalRow.length})</span></summary>
       <div class="disclose-body">
         <p class="small muted">Read them literally, metaphorically, or obliquely — as you see fit. They accrue meaning as they recur.</p>
-        <div class="cardgrid compact">${G.signalRow.map(o=>signalCard(o)).join('')}</div>
+        <div class="cardgrid compact">${G.signalRow.map((o,i)=>`<div class="omen-row-card">${signalCard(o, null, i)}<p class="small muted">Vote to replace this Omen — unanimous consent draws a fresh one.</p><div class="btnrow">${G.players.map((p,pi)=>`<button class="ghost" onclick="voteOmenReplacement(${i},${pi})">${esc(p.name)} votes</button>`).join('')}</div></div>`).join('')}</div>
       </div>
     </details>
 

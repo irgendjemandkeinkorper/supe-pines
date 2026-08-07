@@ -8,7 +8,7 @@ import { saveGame } from '../engine/persistence.js';
 
 /* ---------------- scenes ---------------- */
 export function startSceneFor(pi){
-  State.G.current = {type:'scene', starter:pi, phase:'pick', cardIdx:null, archIdx:null,
+  State.G.current = {type:'scene', starter:pi, phase:'pick', cardIdx:null, archIdx:null, archIdxs:[],
                contributions:[], happened:'', opening:'', adding:null};
   renderScenePick();
   show('scr-scene');
@@ -29,7 +29,7 @@ export function renderScenePick(){
     <div class="ornament">❦</div>
     <h3 style="color:var(--gold)">Choose a scene card from your hand</h3>
     <div class="cardgrid">${p.hand.map((sc,i)=>sceneCardHTML(sc,'pickSceneCard',i)).join('')}</div>
-    <h3 style="color:var(--gold)">Choose the lead Hero</h3>
+    <h3 style="color:var(--gold)">Choose up to two lead Heroes</h3>
     <div class="pgrid" style="grid-template-columns:repeat(auto-fill,minmax(280px,1fr));margin-top:8px">
       ${G.heroes.map((a,i)=>heroCard(a,'pickArch',i)).join('')}
     </div>
@@ -38,6 +38,7 @@ export function renderScenePick(){
       <p class="small muted" style="margin-bottom:6px">Every scene begins as if filmed. The block, the light, the hour, who stands where. Then narrate freely, aloud.</p>
       <textarea id="scene-opening" oninput="setSceneOpening(this.value)" placeholder="The camera drifts through…">${esc(c.opening||'')}</textarea>
       <div class="btnrow">
+        <button class="ghost" onclick="bleakifyField('scene-opening','scene opening',this)">Bleakify</button>
         <button class="primary" id="btn-begin" disabled onclick="beginScene()">Begin the Scene</button>
         <button class="ghost" onclick="renderHub();show('scr-hub')">Back to the Table</button>
       </div>
@@ -55,7 +56,12 @@ export function pickSceneCard(i){
   saveGame('scr-scene');
 }
 export function pickArch(i){
-  State.G.current.archIdx = i;
+  const selected = State.G.current.archIdxs || (State.G.current.archIdx===null ? [] : [State.G.current.archIdx]);
+  const at = selected.indexOf(i);
+  if(at >= 0) selected.splice(at,1);
+  else if(selected.length < 2) selected.push(i);
+  State.G.current.archIdxs = selected;
+  State.G.current.archIdx = selected[0] ?? null;
   document.querySelectorAll('[id^="arch-pick-"]').forEach(el=>{ el.classList.remove('selected'); el.setAttribute('aria-pressed','false'); });
   $('arch-pick-'+i).classList.add('selected');
   $('arch-pick-'+i).setAttribute('aria-pressed','true');
@@ -63,7 +69,7 @@ export function pickArch(i){
   saveGame('scr-scene');
 }
 export function checkBegin(){
-  $('btn-begin').disabled = !(State.G.current.cardIdx!==null && State.G.current.archIdx!==null);
+  $('btn-begin').disabled = !(State.G.current.cardIdx!==null && (State.G.current.archIdxs||[]).length>=1);
 }
 export function beginScene(){
   const G = State.G;
@@ -101,6 +107,7 @@ export function renderScenePlay(animateSlot=null){
           <label class="fld" for="contrib-how">How does it manifest in the scene?</label>
           <textarea id="contrib-how" oninput="setContribHow(this.value)" placeholder="Describe how it alters the scene in progress…">${esc(c.adding.how||'')}</textarea>
           <div class="btnrow">
+            <button class="ghost" onclick="bleakifyField('contrib-how','scene contribution',this)">Bleakify</button>
             <button class="primary" onclick="confirmContrib()">Play It</button>
             <button class="ghost" onclick="cancelContrib()">Never mind</button>
           </div>`;
@@ -114,7 +121,7 @@ export function renderScenePlay(animateSlot=null){
 
     ${addingHTML?`<div class="panel scene-action-panel${c.adding?' spotlight':''}">
       <div class="scene-action-head">
-        <div><span class="sc">Add to the scene</span><p>Each storyteller may buy in once; the scene holds three cards at most.</p></div>
+        <div><span class="sc">Add to the scene</span><p>Each storyteller may play up to two cards; the scene holds three cards at most.</p></div>
         <span class="pill">${1+c.contributions.length} of 3 filled</span>
       </div>
       ${addingHTML}
@@ -125,6 +132,7 @@ export function renderScenePlay(animateSlot=null){
       <p class="small muted" style="margin-bottom:6px">Play the scene aloud — narrate, act, cast one another in roles. Note here what the Dossier should remember: who appeared, what was said, what was discovered.</p>
       <textarea id="scene-happened" style="min-height:130px" oninput="setSceneHappened(this.value)" placeholder="What the Dossier will remember of this scene…">${esc(c.happened||'')}</textarea>
       <div class="btnrow">
+        <button class="ghost" onclick="bleakifyField('scene-happened','record of what happened',this)">Bleakify</button>
         <button class="blood" onclick="endScene()">The scene ends — ${esc(p.name)} says so</button>
       </div>
     </div>`;

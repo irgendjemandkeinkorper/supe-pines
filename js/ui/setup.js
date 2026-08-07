@@ -67,7 +67,8 @@ export function confirmPlayers(){
     threat:{name:'', facts:[], profile:villainForCase(State.pendingCase.id)},
     sceneDeck:[], discardTones:[], signalDeck:[], signalRow:[],
     actClose:{1:shuffle(ACT_CLOSES[1])[0], 2:shuffle(ACT_CLOSES[2])[0], 3:shuffle(ACT_CLOSES[3])[0]},
-    journal:[], current:null, archIdx:0, firstScenePlayer:null, closeDone:false
+    journal:[], current:null, archIdx:0, archIdxs:[], firstScenePlayer:null, closeDone:false,
+    readyRoles:players.map(()=>null), omenVotes:{}
   };
   const G = State.G;
   $('intro-text').innerHTML = G.case.intro;

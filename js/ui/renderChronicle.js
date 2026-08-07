@@ -101,6 +101,7 @@ export function showRules(){
   // scene primer) permanently retires this device's first-run nudges.
   markIntroSeen();
   dismissFirstrunHint();
+  State.rulesReturn = document.querySelector('.screen.active')?.id || 'scr-title';
   $('overlay-content').innerHTML = `
     <h2 style="color:var(--gold)">How the Case Is Run</h2>
     <div class="panel tight small" style="line-height:1.7">
@@ -124,9 +125,17 @@ export function showRules(){
       <div class="rules-example">For example: if Dread came up most often this act, the Close might command "include a light that goes out and will not come back on" — whoever the condition names begins the scene, and must weave that in somewhere.</div>
       <p><strong style="color:var(--blood-bright)">The Strike.</strong> Anyone may strike anything from the story at any moment — no questions asked, no reasons owed. Use the ☒ in the Dossier, or simply say so aloud. The stricken thing never was. Care for the people at your table above all else.</p>
     </div>
-    <div class="btnrow"><button class="primary" onclick="closeOverlay()">Return</button></div>`;
+    <div class="btnrow"><button class="primary" onclick="returnFromRules()">Return to the game</button></div>`;
   openOverlay();
   $('overlay-content').querySelector('button')?.focus();
+}
+
+export function returnFromRules(){
+  const target = State.rulesReturn;
+  State.rulesReturn = null;
+  closeOverlay();
+  if(target && target !== document.querySelector('.screen.active')?.id && $(target)) show(target);
+  window.scrollTo({top:0, behavior:'auto'});
 }
 
 export function initOverlayDismiss(){

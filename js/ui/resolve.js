@@ -1,4 +1,4 @@
-import { $, esc, toneBadge } from '../engine/utils.js';
+import { $, esc, toneBadge, shuffle } from '../engine/utils.js';
 import { State } from '../engine/state.js';
 import { show } from './screens.js';
 import { faceUp, matchSecret } from '../engine/rules.js';
@@ -64,20 +64,22 @@ export function applyResolve(){
   const c = G.current;
   const flips = [];
   G.heroes.forEach((a,i)=>{
-    if($('flip-'+i).checked){ a.flipped = !a.flipped; flips.push(`${a.name||a.role} turned to side ${a.flipped?'II':'I'}`); }
+    if($('flip-'+i).checked){ a.flipped = !a.flipped; flips.push(`${a.name||a.role} turned to ${a.flipped?'Bad Day':'Good Day'}`); }
   });
-  const lead = G.heroes[c.archIdx];
+  const leadIndices = [...new Set((c.archIdxs?.length ? c.archIdxs : [c.archIdx]).filter(Number.isInteger))].slice(0,2);
   const tones = [];
   if(c.card.tone) tones.push(c.card.tone);
   c.contributions.forEach(x=>{ if(x.kind==='scene') tones.push(x.card.tone); });
-  tones.push(faceUp(lead).tone);
+  leadIndices.forEach(i=>tones.push(faceUp(G.heroes[i]).tone));
   G.discardTones.push(...tones);
-  c.contributions.forEach(x=>{ if(x.kind==='omen') G.players[x.pi].signals.push(x.card); });
+  c.contributions.forEach(x=>{ if(x.kind==='omen') G.signalDeck.push(x.card); });
+  G.signalDeck = shuffle(G.signalDeck);
 
   G.journal.push({
     type:c.type, act:G.act,
     playerName:G.players[c.starter].name,
-    archName:lead.name||lead.role, archRole:lead.role,
+    archName:leadIndices.map(i=>G.heroes[i].name||G.heroes[i].role).join(' + '),
+    archRole:leadIndices.map(i=>G.heroes[i].role).join(' + '),
     cardTitle:c.card.title, cardPrompt:c.card.prompt, element:c.element||null,
     opening:c.opening, happened:c.happened,
     contributions:c.contributions.map(x=>({playerName:G.players[x.pi].name, kind:x.kind,
@@ -128,6 +130,7 @@ export function renderSecretUnlock(unlock, tones){
         <p class="small muted" style="margin-bottom:6px">Use the three signals — literally, metaphorically, obliquely — to show us the answer.</p>
         <textarea id="secret-answer" style="min-height:120px" oninput="setSecretAnswer(this.value)" placeholder="Show us…">${esc(unlock.answer)}</textarea>
         <div class="btnrow">
+          <button class="ghost" onclick="bleakifyField('secret-answer','secret reveal vignette',this)">Bleakify</button>
           <button class="primary" id="btn-secret" ${btnDisabled ? 'disabled' : ''} onclick="confirmSecret()">So It Is Revealed</button>
         </div>
       </div>

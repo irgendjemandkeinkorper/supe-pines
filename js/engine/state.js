@@ -8,5 +8,6 @@ export const State = {
   artStyle: 'ink',   // selected visual language for the next local or remote Case
   secretSel: [],     // signal indices picked while composing a Buried Secret reveal
   chronReturn: null, // screen id to return to after an interim Dossier view
+  rulesReturn: null, // screen id to restore when Rules is opened over gameplay
   onlineRoomCode: null // non-null while playing in a synced Firebase room; null in local hotseat mode
 };

@@ -641,6 +641,9 @@ label.fld{display:block;margin:12px 0 4px;color:var(--gold);font-family:'Work Sa
 .turn-seat.blocked .turn-seat-head span{color:#ed9ba5}
 .turn-seat.done .turn-seat-head span{color:#9199a3}
 .turn-seat>p{color:#969eaa;font-size:.75rem;line-height:1.3}
+.ready-role-row{display:flex;gap:5px;flex-wrap:wrap;margin:2px 0 5px}
+.ready-role-row button{padding:4px 7px;font-size:.65rem}
+.ready-role-row button.selected{border-color:var(--moon);color:#d7f6f8;background:rgba(127,217,230,.12)}
 .turn-seat-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto;padding-top:2px}
 .turn-seat-actions button{padding:6px 11px;font-size:.76rem}
 .personal-hand{border-color:rgba(127,217,230,.4)}
@@ -684,6 +687,13 @@ label.fld{display:block;margin:12px 0 4px;color:var(--gold);font-family:'Work Sa
 .gallery-flip-control{position:absolute;z-index:4;right:7px;bottom:7px;display:flex;align-items:center;gap:4px;padding:5px 8px;border-radius:12px;background:rgba(8,11,18,.92);color:#ffe8b0;border-color:rgba(242,169,31,.85);font-size:.65rem;line-height:1}
 .gallery-flip-control:hover{transform:translateY(-1px)}
 .gallery-face.g-missing{background:var(--paper)}
+.card-inspect{position:absolute;z-index:5;top:7px;right:7px;width:28px;height:28px;padding:0;border-radius:50%;font-size:.82rem;line-height:1;background:rgba(8,11,18,.9);color:#ffe8b0;border:1px solid rgba(242,169,31,.8)}
+.card-inspect:hover,.card-inspect:focus-visible{transform:translateY(-1px);color:#fff5d7;border-color:#fff5d7}
+.card-detail-modal{max-width:560px;margin:0 auto;text-align:center}
+.card-detail-modal>.hero-flip,.card-detail-modal>.card{margin:12px auto 0;max-width:360px}
+.gallery-background{margin-top:14px;text-align:left;border-top:1px solid rgba(242,169,31,.24);padding-top:10px}
+.gallery-background summary{cursor:pointer;color:var(--gold);font-family:'Work Sans',Arial,sans-serif;font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.gallery-background p{color:#c3c9d3;line-height:1.45;margin:9px 0}
 
 @media (prefers-reduced-motion: reduce){
   .gallery-face{transition:none}

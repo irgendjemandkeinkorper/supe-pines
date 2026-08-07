@@ -17,6 +17,7 @@ import { db } from './firebase-init.js';
 import { SCENES, SIGNALS, SECRETS, TONES, villainForCase } from '../data/index.js';
 import { shuffle } from '../engine/utils.js';
 import { maxContrib, HEROES_PER_GAME } from '../engine/rules.js';
+import { canAddContribution, normalizeArchIndices, replaceOmenByVote, roomExpiryTimestamp } from '../engine/gameplay.js';
 
 function mySeat(room){
   const uid = getUid();
@@ -125,7 +126,9 @@ export async function liveBeginScene(code, cardIdx, archIdx, opening){
     const card = priv.hand.splice(cardIdx,1)[0];
     p.handCount = priv.hand.length;
 
-    room.current = {type:'scene', starter:pi, archIdx, card, contributions:[], happened:'', opening:(opening||'').trim(), phase:'play'};
+    const archIdxs = normalizeArchIndices(Array.isArray(archIdx) ? archIdx : [archIdx], room.heroes.length);
+    if(!archIdxs.length) throw new Error('Choose at least one lead Hero.');
+    room.current = {type:'scene', starter:pi, archIdx:archIdxs[0], archIdxs, card, contributions:[], happened:'', opening:(opening||'').trim(), phase:'play'};
 
     t.set(roomRef(code), room);
     t.set(pref, priv);
@@ -159,7 +162,7 @@ export async function liveContribute(code, kind, idx, how){
     if(c.contributions.length >= maxContrib()) throw new Error('This scene already holds three cards.');
     const pi = mySeat(room);
     if(pi === c.starter) throw new Error('You already opened this scene.');
-    if(c.contributions.some(x=>x.pi===pi)) throw new Error('You already played into this scene.');
+    if(!canAddContribution(c.contributions, pi)) throw new Error('You already played two cards into this scene.');
 
     let card, pref, priv;
     if(kind==='scene'){
@@ -184,23 +187,25 @@ export async function liveContribute(code, kind, idx, how){
 function countTonesAndResolve(room, flips){
   const c = room.current;
   flips.forEach(i=>{ const h = room.heroes[i]; h.flipped = !h.flipped; });
-  const lead = room.heroes[c.archIdx];
+  const leadIndices = [...new Set((c.archIdxs?.length ? c.archIdxs : [c.archIdx]).filter(Number.isInteger))].slice(0,2);
+  const leads = leadIndices.map(i=>room.heroes[i]).filter(Boolean);
   const tones = [];
   if(c.card.tone) tones.push(c.card.tone);
   c.contributions.forEach(x=>{ if(x.kind==='scene') tones.push(x.card.tone); });
-  tones.push(lead.sides[lead.flipped?1:0].tone);
+  leads.forEach(lead=>tones.push(lead.sides[lead.flipped?1:0].tone));
   room.discardTones.push(...tones);
-  c.contributions.forEach(x=>{ if(x.kind==='signal') room.players[x.pi].signals.push(x.card); });
+  c.contributions.forEach(x=>{ if(x.kind==='signal') room.signalDeck.push(x.card); });
+  room.signalDeck = shuffle(room.signalDeck);
 
   const flipNames = flips.map(i=>{
     const h = room.heroes[i];
-    return `${h.name||h.role} turned to side ${h.flipped?'II':'I'}`;
+    return `${h.name||h.role} turned to side ${h.flipped?'Bad Day':'Good Day'}`;
   });
 
   room.journal.push({
     type:c.type, act:room.act,
     playerName:room.players[c.starter].name,
-    archName:lead.name||lead.role, archRole:lead.role,
+    archName:leads.map(h=>h.name||h.role).join(' + '), archRole:leads.map(h=>h.role).join(' + '),
     cardTitle:c.card.title, cardPrompt:c.card.prompt, element:c.element||null,
     opening:c.opening, happened:c.happened,
     contributions:c.contributions.map(x=>({playerName:room.players[x.pi].name, kind:x.kind,
@@ -361,6 +366,48 @@ export async function liveToggleStrike(code, journalIndex){
     const room = await readRoom(t, code);
     if(!room.journal[journalIndex]) throw new Error('No such entry.');
     room.journal[journalIndex].struck = !room.journal[journalIndex].struck;
+    t.set(roomRef(code), room);
+  });
+}
+
+export async function touchRoomPresence(code){
+  await runTransaction(db, async t => {
+    const room = await readRoom(t, code);
+    const pi = mySeat(room);
+    if(pi < 0) throw new Error('Not seated at this table.');
+    const now = Date.now();
+    room.players[pi].lastSeen = now;
+    room.lastActivityAt = now;
+    room.expireAt = new Date(roomExpiryTimestamp(now));
+    t.set(roomRef(code), room);
+  });
+}
+
+export async function liveSetReadyRole(code, role){
+  if(!['lead','follow','watch'].includes(role)) throw new Error('Unknown readiness role.');
+  await runTransaction(db, async t => {
+    const room = await readRoom(t, code);
+    const pi = mySeat(room);
+    if(pi < 0) throw new Error('Not seated at this table.');
+    room.players[pi].readyRole = role;
+    t.set(roomRef(code), room);
+  });
+}
+
+export async function liveVoteOmenReplacement(code, signalIndex){
+  await runTransaction(db, async t => {
+    const room = await readRoom(t, code);
+    const pi = mySeat(room);
+    if(pi < 0) throw new Error('Not seated at this table.');
+    room.omenVotes = room.omenVotes || {};
+    const key = String(signalIndex);
+    const voters = new Set(Array.isArray(room.omenVotes[key]) ? room.omenVotes[key] : []);
+    voters.add(pi);
+    room.omenVotes[key] = [...voters];
+    if(replaceOmenByVote(room, signalIndex, room.omenVotes[key], room.players.length)){
+      room.omenVotes = {};
+      room.signalDeck = shuffle(room.signalDeck);
+    }
     t.set(roomRef(code), room);
   });
 }

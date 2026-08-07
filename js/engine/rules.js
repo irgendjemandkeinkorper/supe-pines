@@ -1,5 +1,6 @@
 import { TONES } from '../data/index.js';
 import { State } from './state.js';
+import { canAddContribution } from './gameplay.js';
 
 export function actToneCounts(){
   const G = State.G;
@@ -34,11 +35,10 @@ export const HEROES_PER_GAME = 6; // how many Heroes are dealt into a single gam
 export function eligibleContributors(){
   const G = State.G;
   const c = G.current, np = G.players.length;
-  const done = new Set(c.contributions.map(x=>x.pi));
   if(np===1) return c.contributions.length<maxContrib() ? [0] : [];
   const out=[];
   for(let i=0;i<np;i++){
-    if(i===c.starter || done.has(i)) continue;
+    if(i===c.starter || !canAddContribution(c.contributions, i)) continue;
     if(G.players[i].hand.length>0 || G.signalRow.length>0) out.push(i);
   }
   return out;

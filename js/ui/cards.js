@@ -1,12 +1,13 @@
 import { esc, nl2br, toneBadge, ACT_NAMES } from '../engine/utils.js';
 import { State } from '../engine/state.js';
 import { heroArtHTML, signalArtHTML, currentArtStyle } from './art.js';
+import { characterSideLabel } from '../engine/gameplay.js';
 
 function heroFaceHTML(h, sideIdx, turned){
   const s = h.sides[sideIdx];
   return `<div class="hero${turned?' flipped':''}">
     ${heroArtHTML(h, sideIdx, {className:'hero-art', style:currentArtStyle()})}
-    <div class="a-side">SIDE ${sideIdx===0?'I':'II'}${turned?' — TURNED':''}</div>
+    <div class="a-side">${characterSideLabel('hero', sideIdx)}${turned?' — TURNED':''}</div>
     <div class="a-name">${esc(h.name||h.role)}</div>
     <div class="a-role">${esc(h.role)}</div>
     <div class="a-state">${esc(s.state)} · ${esc(s.title)}</div>
@@ -25,11 +26,13 @@ function heroFaceHTML(h, sideIdx, turned){
    toggle (see flipHeroCard below), not game state. */
 export function heroCard(h, selectable, idx){
   const frontIdx = h.flipped?1:0, backIdx = h.flipped?0:1;
-  const isSelected = selectable === 'pickArch' && State.G?.current?.archIdx === idx;
+  const selectedArchs = State.G?.current?.archIdxs || (State.G?.current?.archIdx===idx ? [idx] : []);
+  const isSelected = selectable === 'pickArch' && selectedArchs.includes(idx);
   const selectAttrs = selectable
     ? `role="button" tabindex="0" aria-pressed="${isSelected?'true':'false'}" onclick="${selectable}(${idx})" onkeydown="if((event.key==='Enter'||event.key===' ')&&event.target===this){event.preventDefault();${selectable}(${idx})}" id="arch-pick-${idx}"`
     : '';
   return `<div class="hero-flip${selectable?' selectable':''}${isSelected?' selected':''}" ${selectAttrs}>
+    <button class="card-inspect" type="button" onclick="event.stopPropagation();openCardDetail('hero',${idx ?? State.G?.heroes?.indexOf(h) ?? -1})" aria-label="Read ${esc(h.name||h.role)} card larger">↗</button>
     <button class="flip-btn" type="button" onclick="event.stopPropagation();flipHeroCard(this)"
       data-front-side="${frontIdx===0?'I':'II'}" data-back-side="${backIdx===0?'I':'II'}"
       aria-label="View Side ${backIdx===0?'I':'II'}" aria-pressed="false" title="View Side ${backIdx===0?'I':'II'}">
@@ -105,6 +108,7 @@ export function signalCard(o, selectable, idx){
     ? `role="button" tabindex="0" aria-pressed="${isSelected?'true':'false'}" onclick="${selectable}(${idx})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();${selectable}(${idx})}" id="omen-pick-${idx}"`
     : '';
   return `<div class="card signal${selectable?' selectable':''}${isSelected?' selected':''}" ${selectAttrs}>
+    <button class="card-inspect" type="button" onclick="event.stopPropagation();openCardDetail('omen',${idx ?? -1})" aria-label="Read ${esc(o.title)} card larger">↗</button>
     ${signalArtHTML(o, {className:'signalcard-art', style:currentArtStyle()})}
     <div class="c-kicker">Signal</div>
     <div class="glyph">${o.glyph}</div>
@@ -134,8 +138,8 @@ export function sceneTrackerHTML(G, opts={}){
   if(!c?.card) return '';
 
   const starter = G.players[c.starter];
-  const lead = G.heroes[c.archIdx];
-  const leadFace = lead.sides[lead.flipped?1:0];
+  const leadIndices = [...new Set((c.archIdxs?.length ? c.archIdxs : [c.archIdx]).filter(Number.isInteger))].slice(0,2);
+  const lead = G.heroes[leadIndices[0]];
   const resolving = opts.phase === 'resolve';
   const happened = opts.happened ?? c.happened;
   const viewerSeat = Number.isInteger(opts.viewerSeat) ? opts.viewerSeat : null;
@@ -180,7 +184,10 @@ export function sceneTrackerHTML(G, opts={}){
   c.contributions.forEach(x=>{
     if(x.kind==='scene') toneSources.push({tone:x.card.tone, source:x.card.title});
   });
-  toneSources.push({tone:leadFace.tone, source:`${lead.name||lead.role} · face-up`});
+  leadIndices.forEach(i=>{
+    const h = G.heroes[i];
+    toneSources.push({tone:h.sides[h.flipped?1:0].tone, source:`${h.name||h.role} · face-up`});
+  });
   const hasSignal = c.contributions.some(x=>x.kind==='omen');
 
   const contributed = new Map();
@@ -191,7 +198,7 @@ export function sceneTrackerHTML(G, opts={}){
     const played = contributed.get(i)||0;
     const handCount = Array.isArray(p.hand) ? p.hand.length : (p.handCount||0);
     const canBuyIn = hasOpenSlot && (G.players.length===1 || i!==c.starter) &&
-      (G.players.length===1 || !played) && (handCount>0 || G.signalRow.length>0);
+      (G.players.length===1 || played<2) && (handCount>0 || G.signalRow.length>0);
     let status, cls;
     if(i===c.starter && G.players.length===1){
       status = played ? `Directing · ${played} buy-in${played===1?'':'s'}` : canBuyIn ? 'Directing · may buy in' : 'Directing';
@@ -231,9 +238,9 @@ export function sceneTrackerHTML(G, opts={}){
     <div class="scene-table">
       <div class="scene-slots">${slotHTML}</div>
       <aside class="scene-lead-card">
-        <div class="scene-lead-label"><span>Lead in this scene</span>${toneBadge(leadFace.tone)}</div>
-        ${heroCard(lead)}
-        <p>Check the face-up condition when the scene ends. Its tone is counted after any turn.</p>
+        <div class="scene-lead-label"><span>Archetypes in this scene</span></div>
+        ${leadIndices.map(i=>heroCard(G.heroes[i])).join('')}
+        <p>Check each face-up condition when the scene ends. Both selected tones are counted.</p>
       </aside>
     </div>
 

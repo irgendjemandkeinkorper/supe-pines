@@ -140,7 +140,7 @@ test('Hero face transitions and recorded flip names', () => {
 
   // Verify journal flip logs
   const lastJournal = State.G.journal[State.G.journal.length - 1];
-  assert.deepEqual(lastJournal.flips, ['The Nightwatch turned to side II']);
+  assert.deepEqual(lastJournal.flips, ['The Nightwatch turned to Bad Day']);
 
   // Now resolve another scene and flip back (The Nightwatch true to false, i.e. side I)
   State.G.current = {
@@ -162,8 +162,8 @@ test('Hero face transitions and recorded flip names', () => {
   assert.equal(State.G.heroes[1].flipped, true);  // Side II
 
   const lastJournal2 = State.G.journal[State.G.journal.length - 1];
-  assert.ok(lastJournal2.flips.includes('The Nightwatch turned to side I'));
-  assert.ok(lastJournal2.flips.includes('Powerline turned to side II'));
+  assert.ok(lastJournal2.flips.includes('The Nightwatch turned to Good Day'));
+  assert.ok(lastJournal2.flips.includes('Powerline turned to Bad Day'));
 });
 
 test('Secret matching, used Secret exclusion, and one-time reveal behavior', () => {

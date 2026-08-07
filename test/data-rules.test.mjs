@@ -54,7 +54,7 @@ test('Secret matching checks the next player and skips used Secrets', () => {
   State.G = null;
 });
 
-test('eligible contributors enforce starter exclusion, one buy-in each, and solo cap', () => {
+test('eligible contributors enforce starter exclusion, two-card cap, and solo cap', () => {
   State.G = {
     players: [
       {hand:[{title:'a'}], signals:[]},
@@ -64,7 +64,7 @@ test('eligible contributors enforce starter exclusion, one buy-in each, and solo
     signalRow: [{title:'signal'}],
     current: {starter:0, contributions:[{pi:1}]}
   };
-  assert.deepEqual(eligibleContributors(), [2]);
+  assert.deepEqual(eligibleContributors(), [1, 2]);
   State.G.players = [{hand:[{title:'a'}], signals:[]}];
   State.G.current = {starter:0, contributions:[]};
   assert.deepEqual(eligibleContributors(), [0]);

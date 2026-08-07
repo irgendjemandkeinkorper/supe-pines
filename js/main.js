@@ -4,22 +4,24 @@
    the two. Everything else stays module-scoped. */
 import { show, closeOverlay, initHistoryNav, applyFirstrunVisibility, dismissFirstrunHint } from './ui/screens.js';
 import { flipHeroCard } from './ui/cards.js';
+import { openCardDetail, closeCardDetail } from './ui/cardModal.js';
 import { showIdleClicker, idleClick } from './ui/idle.js';
 import { showGallery, setGalleryStyle, setGalleryCat, openGalleryDetail,
          closeGalleryDetail, galleryImgError, flipGalleryCard } from './ui/gallery.js';
 import { gameArtImgError } from './ui/art.js';
 import { renderHooks, chooseCase, renderPlayerInputs, confirmPlayers,
          beginArchSetup, renderArchSetup, saveArchSetup, renderVictim, finishVictim } from './ui/setup.js';
-import { renderHub, renderCloseIntro, openLocalHand, tradeSignal, forfeitScene, beginClose } from './ui/hub.js';
+import { renderHub, renderCloseIntro, openLocalHand, tradeSignal, forfeitScene, beginClose, setReadyRole, voteOmenReplacement } from './ui/hub.js';
 import { startSceneFor, renderScenePick, renderScenePlay, pickSceneCard, pickArch, beginScene, pickContrib,
          pickContribScene, pickContribOmen, confirmContrib, cancelContrib,
          setContribHow, setSceneHappened, dismissScenePrimer, setSceneOpening } from './ui/scene.js';
 import { endScene, renderResolve, renderSecretUnlock, applyResolve, toggleSecretOmen, confirmSecret, toggleResolveFlip, setSecretAnswer } from './ui/resolve.js';
 import { viewChronicle, returnFromChronicle, toggleStrike, showRules,
-         initOverlayDismiss, renderChronicle } from './ui/renderChronicle.js';
+         returnFromRules, initOverlayDismiss, renderChronicle } from './ui/renderChronicle.js';
 import { copyChronicle, downloadChronicle } from './chronicle/markdown.js';
+import { bleakifyField } from './ai/bleakify.js';
 import { State } from './engine/state.js';
-import { clearSavedGame, hasSavedGame, readSave, saveGame } from './engine/persistence.js';
+import { clearSavedGame, hasSavedGame, readSave, saveGame, exportSaveJSON, importSaveJSON } from './engine/persistence.js';
 import { ensureSignedIn } from './sync/auth.js';
 import { firebaseConfigured } from './sync/config.js';
 import {
@@ -27,6 +29,7 @@ import {
   onlineRefreshArtPicker,
   onlineBeginTale, onlineSaveArchSetup, onlineFinishVictim,
   onlineStartScene, onlineTradeOmen, onlineForfeitScene, onlineBeginClose,
+  onlineSetReadyRole, onlineVoteOmenReplacement,
   onlinePickSceneCard, onlinePickArch, onlineBeginScene, routeAndRenderCurrent,
   onlineStartContrib, onlinePickContribScene, onlinePickContribOmen, onlineCancelContrib,
   onlineSetContribHow, onlineSetSceneHappened, onlineSetSecretAnswer,
@@ -39,19 +42,21 @@ import {
 
 Object.assign(window, {
   State,
-  show, flipHeroCard, showIdleClicker, idleClick, dismissFirstrunHint,
+  show, flipHeroCard, openCardDetail, closeCardDetail, showIdleClicker, idleClick, dismissFirstrunHint,
   showGallery, setGalleryStyle, setGalleryCat, openGalleryDetail, closeGalleryDetail, galleryImgError, flipGalleryCard, gameArtImgError,
   chooseCase, renderPlayerInputs, confirmPlayers, beginArchSetup, renderArchSetup, saveArchSetup, renderVictim, finishVictim,
-  renderHub, openLocalHand, tradeSignal, forfeitScene, beginClose,
+  renderHub, openLocalHand, tradeSignal, forfeitScene, beginClose, setReadyRole, voteOmenReplacement,
   startSceneFor, renderScenePick, renderScenePlay, pickSceneCard, pickArch, beginScene, pickContrib, pickContribScene, pickContribOmen,
   confirmContrib, cancelContrib, setContribHow, setSceneHappened, dismissScenePrimer, setSceneOpening,
   endScene, renderResolve, renderSecretUnlock, applyResolve, toggleSecretOmen, confirmSecret, toggleResolveFlip, setSecretAnswer,
-  viewChronicle, returnFromChronicle, toggleStrike, showRules, closeOverlay,
+  viewChronicle, returnFromChronicle, toggleStrike, showRules, returnFromRules, closeOverlay,
   copyChronicle, downloadChronicle,
+  bleakifyField,
   showOnlineEntry, onlineCreateRoom, onlineJoinRoom, leaveOnlineRoom,
   onlineRefreshArtPicker,
   onlineBeginTale, onlineSaveArchSetup, onlineFinishVictim,
   onlineStartScene, onlineTradeOmen, onlineForfeitScene, onlineBeginClose,
+  onlineSetReadyRole, onlineVoteOmenReplacement,
   onlinePickSceneCard, onlinePickArch, onlineBeginScene, routeAndRenderCurrent,
   onlineStartContrib, onlinePickContribScene, onlinePickContribOmen, onlineCancelContrib,
   onlineSetContribHow, onlineSetSceneHappened, onlineSetSecretAnswer,
@@ -103,6 +108,21 @@ export function startNewCase(){
 }
 
 Object.assign(window, { State, resumeLocalGame, refreshResumeControl, startNewCase, saveGame });
+
+export function downloadGameSave(){
+  const raw = exportSaveJSON();
+  if(!raw) return;
+  const url = URL.createObjectURL(new Blob([raw], {type:'application/json'}));
+  const link = document.createElement('a');
+  link.href = url; link.download = 'supe-pines-save.json'; link.click();
+  setTimeout(()=>URL.revokeObjectURL(url), 1000);
+}
+export async function importGameFile(file){
+  if(!file) return;
+  try { importSaveJSON(await file.text()); resumeLocalGame(); }
+  catch(error){ window.alert(error.message || 'Could not import that save.'); }
+}
+Object.assign(window, { downloadGameSave, importGameFile });
 
 /* ---------------- init ---------------- */
 renderHooks();

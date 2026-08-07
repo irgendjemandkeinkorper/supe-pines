@@ -8,6 +8,7 @@ import { HEROES, ACT_CLOSES, villainForCase } from '../data/index.js';
 import { shuffle } from '../engine/utils.js';
 import { HEROES_PER_GAME } from '../engine/rules.js';
 import { normalizeArtStyle } from '../ui/art.js';
+import { roomExpiryTimestamp } from '../engine/gameplay.js';
 
 export let roomCode = null;
 let unsub = null;
@@ -26,12 +27,13 @@ function emptyPlayer(name, uid){
   // counts; hand/secrets are private (rooms/{code}/private/{uid}) so other
   // players' UIs can show "has 3 cards, 1 unrevealed secret" without ever
   // reading their data.
-  return {name, uid, signals:[], handCount:0, secretsCount:0, unrevealedSecretsCount:0, scenesLeft:0};
+  return {name, uid, signals:[], handCount:0, secretsCount:0, unrevealedSecretsCount:0, scenesLeft:0, readyRole:null, lastSeen:Date.now()};
 }
 
 export async function createRoom(theCase, hostName, artStyle='ink'){
   const uid = await ensureSignedIn();
   const code = genCode();
+  const now = Date.now();
   await setDoc(roomRef(code), {
     status:'lobby', phase:'lobby', hostUid:uid, case:theCase, artStyle:normalizeArtStyle(artStyle),
     players:[emptyPlayer(hostName||'Storyteller I', uid)],
@@ -39,12 +41,11 @@ export async function createRoom(theCase, hostName, artStyle='ink'){
     act:0, heroes:[], threat:{name:'', facts:[], profile:villainForCase(theCase.id)},
     sceneDeck:[], discardTones:[], signalDeck:[], signalRow:[],
     actClose:{}, journal:[], current:null, archIdx:0,
-    firstScenePlayer:null, closeDone:false, pendingSecret:null,
-    createdAt: Date.now(),
+    firstScenePlayer:null, closeDone:false, pendingSecret:null, omenVotes:{},
+    createdAt: now, lastActivityAt: now,
     // Firestore TTL can reap abandoned rooms once the project enables a
-    // policy on this field. Seven days leaves enough room for a long-running
-    // case without keeping a public room forever.
-    expireAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+    // policy on this field. Reconnection extends the one-hour idle window.
+    expireAt: new Date(roomExpiryTimestamp(now))
   });
   // Pre-create my own private doc. Not strictly required by the rules
   // (I could write it lazily later, since I always have write access to
@@ -65,13 +66,23 @@ export async function joinRoom(code, name){
     const snap = await tx.get(ref);
     if(!snap.exists()) throw new Error('No case is being run at that code.');
     const room = snap.data();
-    if(room.seats && uid in room.seats) return; // already seated — just reconnecting
+    if(room.seats && uid in room.seats){
+      const idx = room.seats[uid];
+      const now = Date.now();
+      room.players[idx].lastSeen = now;
+      room.lastActivityAt = now;
+      room.expireAt = new Date(roomExpiryTimestamp(now));
+      tx.update(ref, {players:room.players, lastActivityAt:room.lastActivityAt, expireAt:room.expireAt});
+      return; // already seated — just reconnecting
+    }
     if(room.status !== 'lobby') throw new Error('This case already has its full team.');
     if(room.players.length >= 6) throw new Error('The team is full — six storytellers is the most this case allows.');
     const idx = room.players.length;
     const players = room.players.concat([emptyPlayer(name||`Storyteller ${idx+1}`, uid)]);
     const seats = {...room.seats, [uid]: idx};
-    tx.update(ref, {players, seats});
+    const now = Date.now();
+    players[idx].lastSeen = now;
+    tx.update(ref, {players, seats, lastActivityAt:now, expireAt:new Date(roomExpiryTimestamp(now))});
     joined = true;
   });
   if(joined) await setDoc(privateRef(code, uid), {hand:[], secrets:[]});

@@ -19,8 +19,9 @@ function heroTiles(style){
   return HEROES.map(a=>{
     const slug = slugify(a.role);
     return {
-      cat:'heroes', key:slug, title:a.role, sub:'Side I', backSub:'Side II — turned',
+      cat:'heroes', key:slug, title:a.role, sub:'Good Day', backSub:'Bad Day',
       flavor:a.flavor, quote:a.sides[0].cond, backQuote:a.sides[1].cond,
+      frontBackground:a.sides[0].detail, backBackground:a.sides[1].detail,
       path:`art/images/${style}/heroes/${slug}--front`,
       backPath:`art/images/${style}/heroes/${slug}--turned`, flippable:true
     };
@@ -35,8 +36,9 @@ function signalTiles(style){
 function threatTiles(style){
   return VILLAINS.map(v=>({
     cat:'threats', key:v.id, title:v.name,
-    sub:`${v.faction} — Side I`, backSub:'Side II — flaw exposed',
+    sub:'Good Day', backSub:'Bad Day — attachment exposed',
     flavor:v.threat, quote:v.threat, backQuote:v.flaw,
+    frontBackground:v.role, backBackground:v.flaw,
     path:`art/images/${style}/threats/${v.id}`,
     backPath:`art/images/${style}/threats/${v.id}--turned`, flippable:true
   }));
@@ -79,7 +81,7 @@ function galleryMediaHTML(t, detail=false){
       <div class="gallery-face gallery-front">${imgWithFallback(t.path,`${t.title}, ${t.sub}`)}${fallbackHTML(t,t.sub)}<span class="gallery-face-label">${esc(t.sub)}</span></div>
       <div class="gallery-face gallery-back">${imgWithFallback(t.backPath,`${t.title}, ${t.backSub}`)}${fallbackHTML(t,t.backSub)}<span class="gallery-face-label">${esc(t.backSub)}</span></div>
     </div>
-    <button class="gallery-flip-control" type="button" onclick="event.stopPropagation();flipGalleryCard(this)" aria-label="View Side II" aria-pressed="false">⟳ <span>Side II</span></button>
+    <button class="gallery-flip-control" type="button" onclick="event.stopPropagation();flipGalleryCard(this)" data-front-label="${esc(t.sub)}" data-back-label="${esc(t.backSub)}" aria-label="View ${esc(t.backSub)}" aria-pressed="false">⟳ <span>${esc(t.backSub)}</span></button>
   </div>`;
 }
 function tileHTML(t){
@@ -98,12 +100,14 @@ export function flipGalleryCard(btn){
   const card = btn.closest('.gallery-flip');
   if(!card) return;
   const flipped = card.classList.toggle('is-flipped');
-  btn.setAttribute('aria-label',flipped?'View Side I':'View Side II');
+  const frontLabel = btn.dataset.frontLabel || 'Good Day';
+  const backLabel = btn.dataset.backLabel || 'Bad Day';
+  btn.setAttribute('aria-label',`View ${flipped?frontLabel:backLabel}`);
   btn.setAttribute('aria-pressed',String(flipped));
-  btn.innerHTML = `${flipped?'↶':'⟳'} <span>${flipped?'Side I':'Side II'}</span>`;
+  btn.innerHTML = `${flipped?'↶':'⟳'} <span>${esc(flipped?frontLabel:backLabel)}</span>`;
   const container = card.closest('.gtile, .gdetail');
   const label = container?.querySelector('[data-gallery-side-label]');
-  if(label) label.textContent = flipped ? 'Side II — turned' : 'Side I';
+  if(label) label.textContent = flipped ? backLabel : frontLabel;
   const quote = container?.querySelector('[data-gallery-side-quote]');
   if(quote) quote.textContent = flipped ? quote.dataset.backQuote : quote.dataset.frontQuote;
 }
@@ -154,6 +158,7 @@ function detailHTML(){
       ${t.sub?`<p class="small muted"><span data-gallery-side-label>${esc(t.sub)}</span></p>`:''}
       ${t.flippable?gallerySideQuoteHTML(t):''}
       ${t.flavor?`<p class="gallery-flavor">${esc(t.flavor)}</p>`:''}
+      ${t.frontBackground?`<details class="gallery-background"><summary>Character background</summary><div class="small"><p><strong>${esc(t.sub)}</strong><br>${esc(t.frontBackground)}</p><p><strong>${esc(t.backSub)}</strong><br>${esc(t.backBackground||'')}</p></div></details>`:''}
       ${t.flippable?'<p class="small muted" style="margin-top:8px">Use the turn button on the card to compare its two faces.</p>':''}
     </div>
     <div class="btnrow" style="justify-content:center;margin-top:16px"><button class="primary" onclick="closeGalleryDetail()">← Back to the Gallery</button></div>`;

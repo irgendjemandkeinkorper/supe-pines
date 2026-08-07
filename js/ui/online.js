@@ -199,7 +199,8 @@ import { ART_STYLES, artStylePickerHTML, normalizeArtStyle } from './art.js';
 import {
   liveBeginTale, liveSaveHeroSetup, liveFinishThreat, liveBeginScene, liveBeginClose,
   liveContribute, liveEndSceneAndResolve, liveConfirmSecret, liveClaimSecret,
-  liveAdvanceAfterClose, liveTradeSignal, liveForfeitScene
+  liveAdvanceAfterClose, liveTradeSignal, liveForfeitScene, touchRoomPresence,
+  liveSetReadyRole, liveVoteOmenReplacement
 } from '../sync/liveActions.js';
 import { renderHub, afterSceneFlow } from './hub.js';
 import { renderScenePlay } from './scene.js';
@@ -211,6 +212,7 @@ import { renderScenePlay } from './scene.js';
    room-driven phase changes shape from under it. */
 let draft = {};
 let draftContext = null;
+let presenceTimer = null;
 function resetDraft(){ draft = {}; draftContext = null; }
 
 /* Keep local composition state while a peer's snapshot updates the same
@@ -524,6 +526,9 @@ function enterRoom(code){
   try { history.replaceState(null, '', '?room='+code); } catch(e){}
   myPrivate = {hand:[], secrets:[]};
   resetDraft();
+  if(presenceTimer) clearInterval(presenceTimer);
+  touchRoomPresence(code).catch(()=>{});
+  presenceTimer = setInterval(()=>touchRoomPresence(code).catch(()=>{}), 30000);
   lastClaimAttempt = -1;
   subscribeMyPrivate(code, getUid(), priv => { myPrivate = priv; });
   subscribeRoom(code, routeAndRender, error => {
@@ -537,6 +542,8 @@ export async function leaveOnlineRoom(btn){
     await withPendingState(btn, "Leaving...", async () => {
       unsubscribeRoom();
       unsubscribeMyPrivate();
+      if(presenceTimer) clearInterval(presenceTimer);
+      presenceTimer = null;
       clearAdvanceTimer();
       resetDraft();
       State.onlineRoomCode = null;
@@ -713,6 +720,9 @@ function onlineTurnSeatHTML(room,p,i,mySeat){
   return `<div class="turn-seat ${state}${isMe?' mine':''}">
     <div class="turn-seat-head"><strong>${esc(p.name)}${isMe?' · you':''}</strong><span>${label}</span></div>
     <p>${p.scenesLeft} scene${p.scenesLeft===1?'':'s'} left to lead · ${p.handCount} scene card${p.handCount===1?'':'s'} · ${p.signals.length} held Signal${p.signals.length===1?'':'s'}</p>
+    <div class="ready-role-row" aria-label="${esc(p.name)} scene preference">
+      ${['lead','follow','watch'].map(role=>`<button class="ghost ${p.readyRole===role?'selected':''}" onclick="onlineSetReadyRole('${role}')" ${i!==mySeat?'disabled':''}>Ready to ${role}</button>`).join('')}
+    </div>
     <div class="turn-seat-actions">
       ${state==='ready' && isMe?'<button class="primary" onclick="onlineStartScene()">Begin a scene</button>':''}
       ${state==='blocked' && p.scenesLeft>0?`<button class="blood" onclick="onlineForfeitScene(${i}, this)">${isMe?'Forfeit my scene':`Forfeit for ${esc(p.name)}`}</button>`:''}
@@ -747,6 +757,7 @@ function renderOnlineHub(room){
   const iCanLead = me && me.scenesLeft>0 && me.handCount>0;
   $('scr-hub').innerHTML = `
     <h2 class="center" style="margin-top:8px">${ACT_NAMES[room.act]}</h2>
+    <p class="center"><span class="pill">Room code: <strong>${esc(State.onlineRoomCode||'')}</strong></span></p>
     <p class="center muted">${esc(room.case.title)} · The Threat: ${esc(room.threat.name)}</p>
     ${actTrackHTML(room.act)}
     <div class="ornament">✦ ❦ ✦</div>
@@ -778,7 +789,7 @@ function renderOnlineHub(room){
     <details class="disclose" open>
       <summary>The Signal Row <span class="small muted">(${room.signalRow.length})</span></summary>
       <div class="disclose-body">
-        <div class="cardgrid compact">${room.signalRow.map(o=>signalCard(o)).join('')}</div>
+        <div class="cardgrid compact">${room.signalRow.map((o,i)=>`<div class="card-vote-wrap">${signalCard(o,null,i)}<button class="ghost" onclick="onlineVoteOmenReplacement(${i}, this)">Vote to replace <span class="small muted">(${(room.omenVotes?.[String(i)]||[]).length}/${room.players.length})</span></button></div>`).join('')}</div>
       </div>
     </details>
     <details class="disclose">
@@ -815,12 +826,18 @@ export function openOnlineHand(){
   });
 }
 export function onlineStartScene(){
-  draft = {cardIdx:null, archIdx:null};
+  draft = {cardIdx:null, archIdxs:[]};
   renderOnlineScenePick();
   show('scr-scene');
 }
 export async function onlineTradeOmen(signalIdx, btn){
   try{ await withPendingState(btn, "Trading...", () => liveTradeSignal(State.onlineRoomCode, signalIdx)); } catch(err){ fail(err); }
+}
+export async function onlineSetReadyRole(role, btn){
+  try{ await withPendingState(btn, "Saving...", () => liveSetReadyRole(State.onlineRoomCode, role)); } catch(err){ fail(err); }
+}
+export async function onlineVoteOmenReplacement(signalIndex, btn){
+  try{ await withPendingState(btn, "Voting...", () => liveVoteOmenReplacement(State.onlineRoomCode, signalIndex)); } catch(err){ fail(err); }
 }
 export async function onlineForfeitScene(seat, btn){
   try{ await withPendingState(btn, "Forfeiting...", () => liveForfeitScene(State.onlineRoomCode, seat)); } catch(err){ fail(err); }
@@ -887,7 +904,7 @@ function renderOnlineScenePick(){
     <div class="ornament">❦</div>
     <h3 style="color:var(--gold)">Choose a scene card from your hand</h3>
     <div class="cardgrid">${myPrivate.hand.map((sc,i)=>sceneCardHTML(sc,'onlinePickSceneCard',i)).join('')}</div>
-    <h3 style="color:var(--gold)">Choose the lead Hero</h3>
+    <h3 style="color:var(--gold)">Choose up to two lead Heroes</h3>
     <div class="pgrid" style="grid-template-columns:repeat(auto-fill,minmax(280px,1fr));margin-top:8px">
       ${room.heroes.map((a,i)=>heroCard(a,'onlinePickArch',i)).join('')}
     </div>
@@ -895,6 +912,7 @@ function renderOnlineScenePick(){
       <label class="fld" for="scene-opening">What the camera sees as the scene opens</label>
       <textarea id="scene-opening" placeholder="The camera drifts through…"></textarea>
       <div class="btnrow">
+        <button class="ghost" onclick="bleakifyField('scene-opening','scene opening',this)">Bleakify</button>
         <button class="primary" id="btn-begin" disabled onclick="onlineBeginScene(this)">Begin the Scene</button>
         <button class="ghost" onclick="routeAndRenderCurrent()">Back to the Table</button>
       </div>
@@ -908,16 +926,18 @@ export function onlinePickSceneCard(i){
   onlineCheckBegin();
 }
 export function onlinePickArch(i){
-  draft.archIdx = i;
+  const at = draft.archIdxs.indexOf(i);
+  if(at>=0) draft.archIdxs.splice(at,1);
+  else if(draft.archIdxs.length<2) draft.archIdxs.push(i);
   document.querySelectorAll('[id^="arch-pick-"]').forEach(el=>el.classList.remove('selected'));
   $('arch-pick-'+i).classList.add('selected');
   onlineCheckBegin();
 }
 function onlineCheckBegin(){
-  $('btn-begin').disabled = !(draft.cardIdx!=null && draft.archIdx!=null);
+  $('btn-begin').disabled = !(draft.cardIdx!=null && draft.archIdxs.length>0);
 }
 export async function onlineBeginScene(btn){
-  try{ await withPendingState(btn, "Beginning Scene...", () => liveBeginScene(State.onlineRoomCode, draft.cardIdx, draft.archIdx, $('scene-opening').value)); }
+  try{ await withPendingState(btn, "Beginning Scene...", () => liveBeginScene(State.onlineRoomCode, draft.cardIdx, draft.archIdxs, $('scene-opening').value)); }
   catch(err){ fail(err); }
 }
 export function routeAndRenderCurrent(){
@@ -933,10 +953,10 @@ function renderOnlineScene(room){
   const c = room.current, p = room.players[c.starter];
   const mySeat = mySeatIndex(room);
   const iAmStarter = mySeat===c.starter;
-  const iAlreadyContributed = c.contributions.some(x=>x.pi===mySeat);
+  const contributionCount = c.contributions.filter(x=>x.pi===mySeat).length;
 
   let addingHTML = '';
-  if(!iAmStarter && !iAlreadyContributed && c.contributions.length < maxContrib()){
+  if(!iAmStarter && contributionCount < 2 && c.contributions.length < maxContrib()){
     if(!draft.adding){
       addingHTML = `<div class="btnrow"><button class="ghost" onclick="onlineStartContrib()">Play a card into this scene</button></div>`;
     } else if(!draft.adding.pick){
@@ -953,6 +973,7 @@ function renderOnlineScene(room){
         <label class="fld" for="contrib-how">How does it manifest in the scene?</label>
         <textarea id="contrib-how" oninput="onlineSetContribHow(this.value)">${esc(draft.adding.how||'')}</textarea>
         <div class="btnrow">
+          <button class="ghost" onclick="bleakifyField('contrib-how','scene contribution',this)">Bleakify</button>
           <button class="primary" onclick="onlineConfirmContrib(this)">Play It</button>
           <button class="ghost" onclick="onlineCancelContrib()">Never mind</button>
         </div>`;
@@ -964,15 +985,15 @@ function renderOnlineScene(room){
       <label class="fld" for="scene-happened">The record of what happens</label>
       <p class="small muted" style="margin-bottom:6px">Play the scene aloud. Note what the Dossier should remember: who appeared, what was said, and what was discovered.</p>
       <textarea id="scene-happened" style="min-height:130px" oninput="onlineSetSceneHappened(this.value)" placeholder="What the Dossier will remember of this scene…">${esc(draft.happened||'')}</textarea>
-      <div class="btnrow"><button class="blood" onclick="onlineEndScene()">The scene ends</button></div>
+      <div class="btnrow"><button class="ghost" onclick="bleakifyField('scene-happened','record of what happened',this)">Bleakify</button><button class="blood" onclick="onlineEndScene()">The scene ends</button></div>
     </div>` : renderOnlineResolveInline(room)) : '';
 
   $('scr-scene').innerHTML = `
     ${sceneTrackerHTML(room,{viewerSeat:mySeat,phase:draft.resolving?'resolve':'play',happened:draft.happened})}
     ${addingHTML?`<div class="panel scene-action-panel${draft.adding?' spotlight':''}">
       <div class="scene-action-head">
-        <div><span class="sc">Add to the scene</span><p>You may buy in once; the scene holds three cards at most.</p></div>
-        <span class="pill">${1+c.contributions.length} of 3 filled</span>
+          <div><span class="sc">Add to the scene</span><p>You may play up to two cards; the scene holds three cards at most.</p></div>
+          <span class="pill">${1+c.contributions.length} of 3 filled · ${contributionCount}/2 by you</span>
       </div>
       ${addingHTML}
     </div>`:''}
@@ -1055,7 +1076,7 @@ function renderOnlineSecret(room){
       <div class="panel spotlight">
         <label class="fld" style="color:#c9b3de" for="secret-answer">The vignette</label>
         <textarea id="secret-answer" style="min-height:120px" oninput="onlineSetSecretAnswer(this.value)">${esc(draft.secretAnswer||'')}</textarea>
-        <div class="btnrow"><button class="primary" ${sel.length!==Math.min(3,room.signalRow.length)?'disabled':''} onclick="onlineConfirmSecret(this)">So It Is Revealed</button></div>
+        <div class="btnrow"><button class="ghost" onclick="bleakifyField('secret-answer','secret reveal vignette',this)">Bleakify</button><button class="primary" ${sel.length!==Math.min(3,room.signalRow.length)?'disabled':''} onclick="onlineConfirmSecret(this)">So It Is Revealed</button></div>
       </div>
     </div>`;
   document.querySelectorAll('[id^="omen-pick-"]').forEach((el,idx)=>el.classList.toggle('selected', sel.includes(idx)));
