@@ -2,6 +2,7 @@ import { $, esc, slugify } from '../engine/utils.js';
 import { HEROES, CASES, SIGNALS, VILLAINS } from '../data/index.js';
 import { openOverlay } from './screens.js';
 import { ART_STYLES, normalizeArtStyle } from './art.js';
+import { VILLAIN_BACKGROUNDS } from '../data/characterBackgrounds.js';
 
 /* The card-art Gallery — a pure browsing surface, deliberately independent
    of any game in progress (uses the static data tables, not State.G), so
@@ -19,8 +20,10 @@ function heroTiles(style){
   return HEROES.map(a=>{
     const slug = slugify(a.role);
     return {
-      cat:'heroes', key:slug, title:a.role, sub:'Good Day', backSub:'Bad Day',
+      cat:'heroes', key:slug, title:a.role, sub:a.sides[0].state, backSub:a.sides[1].state,
       flavor:a.flavor, quote:a.sides[0].cond, backQuote:a.sides[1].cond,
+      power:a.power, flaw:a.flaw,
+      frontTitle:a.sides[0].title, backTitle:a.sides[1].title,
       frontBackground:a.sides[0].detail, backBackground:a.sides[1].detail,
       path:`art/images/${style}/heroes/${slug}--front`,
       backPath:`art/images/${style}/heroes/${slug}--turned`, flippable:true
@@ -36,9 +39,13 @@ function signalTiles(style){
 function threatTiles(style){
   return VILLAINS.map(v=>({
     cat:'threats', key:v.id, title:v.name,
-    sub:'Good Day', backSub:'Bad Day — attachment exposed',
+    sub:'Good Day', backSub:'Bad Day',
     flavor:v.threat, quote:v.threat, backQuote:v.flaw,
-    frontBackground:v.role, backBackground:v.flaw,
+    role:v.role, power:v.power, flaw:v.flaw,
+    frontTitle:VILLAIN_BACKGROUNDS[v.id]?.goodTitle,
+    backTitle:VILLAIN_BACKGROUNDS[v.id]?.badTitle,
+    frontBackground:VILLAIN_BACKGROUNDS[v.id]?.good || v.threat,
+    backBackground:VILLAIN_BACKGROUNDS[v.id]?.bad || v.flaw,
     path:`art/images/${style}/threats/${v.id}`,
     backPath:`art/images/${style}/threats/${v.id}--turned`, flippable:true
   }));
@@ -148,6 +155,21 @@ export function openGalleryDetail(cat, key){
   renderGallery();
 }
 export function closeGalleryDetail(){ gState.detail = null; renderGallery(); }
+export function navigateGallery(delta){
+  if(!gState.detail) return;
+  const active = CATS.find(x=>x.id===gState.cat);
+  const tiles = active?.build(gState.style) || [];
+  const index = tiles.findIndex(tile=>tile.key===gState.detail.key);
+  if(index<0 || !tiles.length) return;
+  gState.detail = tiles[(index + delta + tiles.length) % tiles.length];
+  renderGallery();
+}
+window.addEventListener('keydown', event=>{
+  if(gState.detail && (event.key==='ArrowLeft' || event.key==='ArrowRight')){
+    event.preventDefault();
+    navigateGallery(event.key==='ArrowRight'?1:-1);
+  }
+});
 function detailHTML(){
   const t = gState.detail;
   return `
@@ -158,8 +180,18 @@ function detailHTML(){
       ${t.sub?`<p class="small muted"><span data-gallery-side-label>${esc(t.sub)}</span></p>`:''}
       ${t.flippable?gallerySideQuoteHTML(t):''}
       ${t.flavor?`<p class="gallery-flavor">${esc(t.flavor)}</p>`:''}
-      ${t.frontBackground?`<details class="gallery-background"><summary>Character background</summary><div class="small"><p><strong>${esc(t.sub)}</strong><br>${esc(t.frontBackground)}</p><p><strong>${esc(t.backSub)}</strong><br>${esc(t.backBackground||'')}</p></div></details>`:''}
+      ${t.frontBackground?`<details class="gallery-background" open><summary>Character background</summary><div class="gallery-lore">
+        ${t.role?`<p class="gallery-lore-lede">${esc(t.role)}</p>`:''}
+        ${t.power?`<section><h4>Power</h4><p>${esc(t.power)}</p></section>`:''}
+        ${t.flaw?`<section><h4>The Flaw</h4><p>${esc(t.flaw)}</p></section>`:''}
+        <section class="gallery-day good"><h4>${esc(t.sub)}${t.frontTitle?` · ${esc(t.frontTitle)}`:''}</h4><p>${esc(t.frontBackground)}</p></section>
+        <section class="gallery-day bad"><h4>${esc(t.backSub)}${t.backTitle?` · ${esc(t.backTitle)}`:''}</h4><p>${esc(t.backBackground||'')}</p></section>
+      </div></details>`:''}
       ${t.flippable?'<p class="small muted" style="margin-top:8px">Use the turn button on the card to compare its two faces.</p>':''}
     </div>
-    <div class="btnrow" style="justify-content:center;margin-top:16px"><button class="primary" onclick="closeGalleryDetail()">← Back to the Gallery</button></div>`;
+    <div class="btnrow gallery-nav" style="justify-content:center;margin-top:16px">
+      <button class="ghost" onclick="navigateGallery(-1)" aria-label="Previous gallery card">← Previous</button>
+      <button class="primary" onclick="closeGalleryDetail()">Back to the Gallery</button>
+      <button class="ghost" onclick="navigateGallery(1)" aria-label="Next gallery card">Next →</button>
+    </div>`;
 }

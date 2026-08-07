@@ -81,6 +81,12 @@ export function initHistoryNav(){
       if(e.state?.session!==historySession) history.replaceState(st, '');
     } finally { suppressHistory = false; }
   });
+  window.addEventListener('keydown', event=>{
+    if(event.key==='Escape' && $('overlay').style.display==='block'){
+      event.preventDefault();
+      closeOverlay();
+    }
+  });
 }
 
 /* Title-screen first-run nudge — see js/engine/firstrun.js. Hidden

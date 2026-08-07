@@ -694,6 +694,14 @@ label.fld{display:block;margin:12px 0 4px;color:var(--gold);font-family:'Work Sa
 .gallery-background{margin-top:14px;text-align:left;border-top:1px solid rgba(242,169,31,.24);padding-top:10px}
 .gallery-background summary{cursor:pointer;color:var(--gold);font-family:'Work Sans',Arial,sans-serif;font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
 .gallery-background p{color:#c3c9d3;line-height:1.45;margin:9px 0}
+.gallery-lore{max-width:760px;padding:4px 2px 2px}
+.gallery-lore-lede{font-family:Georgia,serif;font-size:1.05rem;line-height:1.6;color:#eadfc7;font-style:italic;border-left:3px solid var(--gold);padding-left:14px}
+.gallery-lore section{margin:16px 0;padding:12px 14px;border:1px solid rgba(255,255,255,.1);background:rgba(0,0,0,.16);border-radius:3px}
+.gallery-lore h4{margin:0 0 5px;color:var(--gold);font-size:.76rem;letter-spacing:.12em;text-transform:uppercase}
+.gallery-lore p{font-family:Georgia,serif;font-size:.98rem;line-height:1.62;margin:0;color:#d9d2c4}
+.gallery-lore .gallery-day.good{border-color:rgba(224,181,78,.32);background:linear-gradient(135deg,rgba(224,181,78,.1),rgba(0,0,0,.18))}
+.gallery-lore .gallery-day.bad{border-color:rgba(164,76,92,.38);background:linear-gradient(135deg,rgba(164,76,92,.12),rgba(0,0,0,.2))}
+.gallery-nav{gap:8px}
 
 @media (prefers-reduced-motion: reduce){
   .gallery-face{transition:none}

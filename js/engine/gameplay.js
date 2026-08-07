@@ -1,6 +1,7 @@
 const HOUR_MS = 60 * 60 * 1000;
 
-export function characterSideLabel(_kind, sideIndex){
+export function characterSideLabel(_kind, sideIndex, authoredState){
+  if(authoredState === 'Good Day' || authoredState === 'Bad Day') return authoredState;
   return sideIndex === 1 ? 'Bad Day' : 'Good Day';
 }
 

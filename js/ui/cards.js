@@ -7,7 +7,7 @@ function heroFaceHTML(h, sideIdx, turned){
   const s = h.sides[sideIdx];
   return `<div class="hero${turned?' flipped':''}">
     ${heroArtHTML(h, sideIdx, {className:'hero-art', style:currentArtStyle()})}
-    <div class="a-side">${characterSideLabel('hero', sideIdx)}${turned?' — TURNED':''}</div>
+    <div class="a-side">${characterSideLabel('hero', sideIdx, s.state)}${turned?' — TURNED':''}</div>
     <div class="a-name">${esc(h.name||h.role)}</div>
     <div class="a-role">${esc(h.role)}</div>
     <div class="a-state">${esc(s.state)} · ${esc(s.title)}</div>

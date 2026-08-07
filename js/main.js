@@ -7,7 +7,7 @@ import { flipHeroCard } from './ui/cards.js';
 import { openCardDetail, closeCardDetail } from './ui/cardModal.js';
 import { showIdleClicker, idleClick } from './ui/idle.js';
 import { showGallery, setGalleryStyle, setGalleryCat, openGalleryDetail,
-         closeGalleryDetail, galleryImgError, flipGalleryCard } from './ui/gallery.js';
+         closeGalleryDetail, navigateGallery, galleryImgError, flipGalleryCard } from './ui/gallery.js';
 import { gameArtImgError } from './ui/art.js';
 import { renderHooks, chooseCase, renderPlayerInputs, confirmPlayers,
          beginArchSetup, renderArchSetup, saveArchSetup, renderVictim, finishVictim } from './ui/setup.js';
@@ -43,7 +43,7 @@ import {
 Object.assign(window, {
   State,
   show, flipHeroCard, openCardDetail, closeCardDetail, showIdleClicker, idleClick, dismissFirstrunHint,
-  showGallery, setGalleryStyle, setGalleryCat, openGalleryDetail, closeGalleryDetail, galleryImgError, flipGalleryCard, gameArtImgError,
+  showGallery, setGalleryStyle, setGalleryCat, openGalleryDetail, closeGalleryDetail, navigateGallery, galleryImgError, flipGalleryCard, gameArtImgError,
   chooseCase, renderPlayerInputs, confirmPlayers, beginArchSetup, renderArchSetup, saveArchSetup, renderVictim, finishVictim,
   renderHub, openLocalHand, tradeSignal, forfeitScene, beginClose, setReadyRole, voteOmenReplacement,
   startSceneFor, renderScenePick, renderScenePlay, pickSceneCard, pickArch, beginScene, pickContrib, pickContribScene, pickContribOmen,

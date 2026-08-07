@@ -12,6 +12,7 @@ import {
 test('character sides use Good Day and Bad Day labels', () => {
   assert.equal(characterSideLabel('hero', 0), 'Good Day');
   assert.equal(characterSideLabel('hero', 1), 'Bad Day');
+  assert.equal(characterSideLabel('hero', 0, 'Bad Day'), 'Bad Day');
   assert.equal(characterSideLabel('villain', 0), 'Good Day');
   assert.equal(characterSideLabel('villain', 1), 'Bad Day');
 });
