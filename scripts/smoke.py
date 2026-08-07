@@ -205,10 +205,10 @@ with sync_playwright() as playwright:
     assert page.locator(".gcat-cases .gtile").count() == 0
     tile = page.locator(".gcat-heroes .gtile").first
     control = tile.locator(".gallery-flip-control")
-    assert control.get_attribute("aria-label") == "View Side II"
+    assert control.get_attribute("aria-label") == "View Bad Day"
     control.click()
     assert control.get_attribute("aria-pressed") == "true"
-    assert tile.locator("[data-gallery-side-label]").inner_text() == "Side II — turned"
+    assert tile.locator("[data-gallery-side-label]").inner_text() == "Bad Day"
     assert page.get_by_role("button", name="Bold Comic").count() == 1
     assert page.get_by_role("button", name="Church Glass").count() == 1
     page.get_by_role("button", name="Church Glass").click()
