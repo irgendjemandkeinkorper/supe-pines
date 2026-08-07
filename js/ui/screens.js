@@ -47,6 +47,10 @@ export function closeOverlay(){
   lastFocusBeforeOverlay?.focus?.();
   lastFocusBeforeOverlay = null;
   if(!suppressHistory && history.state?.overlay) history.back();
+  // Let any overlay consumer (e.g. the idle Stakeout) clean up
+  if(typeof CustomEvent !== "undefined") {
+    try { document.dispatchEvent(new CustomEvent("sp:overlayClosed")); } catch(_){}
+  }
 }
 
 function currentScreenState(){
