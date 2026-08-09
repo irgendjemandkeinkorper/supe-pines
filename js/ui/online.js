@@ -1,4 +1,4 @@
-import { $, esc, toneBadge, ACT_NAMES, ROMAN, progressDotsHTML, actTrackHTML } from '../engine/utils.js';
+import { $, esc, toneBadge, toneCountBadge, ACT_NAMES, ROMAN, progressDotsHTML, actTrackHTML } from '../engine/utils.js';
 import { CASES, TONES, villainForCase } from '../data/index.js';
 import { State } from '../engine/state.js';
 import { show } from './screens.js';
@@ -862,7 +862,7 @@ function renderOnlineCloseIntro(room){
       </div>
       <div class="panel spotlight">
         <p class="small" style="color:var(--gold)">${esc(close.cond)}</p>
-        <p class="small muted">Tones this act: ${TONES.map(t=>`<span class="tone count ${t}">${counts[t]}</span>`).join(' ')}</p>
+        <p class="small muted">Tones this act: ${TONES.map(t=>toneCountBadge(t, counts[t])).join(' ')}</p>
         ${tied.length===1
           ? `<p><strong style="color:var(--blood-bright)">Dominant tone: ${toneBadge(tied[0])}</strong> — must <span>${esc(close.elements[tied[0]])}</span></p>`
           : `<label class="fld" for="close-el">The tones are tied — choose the element</label>

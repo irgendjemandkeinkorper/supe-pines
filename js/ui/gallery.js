@@ -1,7 +1,8 @@
 import { $, esc, slugify } from '../engine/utils.js';
 import { HEROES, CASES, SIGNALS, VILLAINS } from '../data/index.js';
 import { openOverlay } from './screens.js';
-import { ART_STYLES, normalizeArtStyle } from './art.js';
+import { State } from '../engine/state.js';
+import { ART_STYLES, normalizeArtStyle, applyArtStyleTheme } from './art.js';
 import { VILLAIN_BACKGROUNDS } from '../data/characterBackgrounds.js';
 
 /* The card-art Gallery — a pure browsing surface, deliberately independent
@@ -121,6 +122,7 @@ export function flipGalleryCard(btn){
 
 export function showGallery(){
   gState.detail = null;
+  applyArtStyleTheme(gState.style);
   renderGallery();
   openOverlay();
 }
@@ -144,6 +146,7 @@ export function setGalleryStyle(style){
   const normalized = normalizeArtStyle(style);
   if(!STYLE_READY[normalized]) return;
   gState.style = normalized;
+  applyArtStyleTheme(normalized);
   renderGallery();
 }
 export function setGalleryCat(cat){ gState.cat = cat; renderGallery(); }
@@ -165,10 +168,22 @@ export function navigateGallery(delta){
   renderGallery();
 }
 window.addEventListener('keydown', event=>{
-  if(gState.detail && (event.key==='ArrowLeft' || event.key==='ArrowRight')){
+  if(!gState.detail || $('overlay').style.display!=='block') return;
+  if(event.key==='ArrowLeft' || event.key==='ArrowRight'){
     event.preventDefault();
     navigateGallery(event.key==='ArrowRight'?1:-1);
   }
+});
+/* The overlay can close via Escape/Backspace/browser-Back without ever
+   calling closeGalleryDetail() — without this, a stale gState.detail would
+   make the next Escape's arrow-key handler silently overwrite whatever the
+   overlay shows next (e.g. Rules) with the old Gallery detail view. Also
+   hand the surrounding chrome back to the active Case's own visual
+   language (or the default) once the Gallery — which may have switched
+   the theme to preview its own style picker — is dismissed. */
+document.addEventListener('sp:overlayClosed', ()=>{
+  gState.detail = null;
+  applyArtStyleTheme(State.G?.artStyle ?? State.artStyle);
 });
 function detailHTML(){
   const t = gState.detail;

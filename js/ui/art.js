@@ -30,6 +30,14 @@ export function currentArtStyle(game=State.G){
   return normalizeArtStyle(game?.artStyle);
 }
 
+/* Stamps the chosen visual language onto <html> so the surrounding chrome
+   (see the art-style-reactive rules in css/style.css) can echo it — called
+   on every topbar render and whenever the Gallery's own style picker
+   changes, so it always reflects whichever art the player is looking at. */
+export function applyArtStyleTheme(style){
+  if(document.documentElement) document.documentElement.dataset.artStyle = normalizeArtStyle(style);
+}
+
 export function artPath(style, category, key){
   return `art/images/${normalizeArtStyle(style)}/${category}/${key}`;
 }

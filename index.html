@@ -47,7 +47,7 @@
       All card text herein is original. For 1–6 storytellers, about half an hour each.</div>
       <div class="hint" id="firstrun-hint" style="max-width:620px;margin:18px auto 0">
         <span>New to Supe Pines? <a href="#" onclick="showRules();return false" style="color:var(--gold)">Read &ldquo;How the Case Is Run&rdquo;</a> first — about three minutes. A full case runs roughly 20–40 minutes per storyteller.</span>
-        <span class="hint-x" onclick="dismissFirstrunHint()" title="Don't show this again">✕</span>
+        <span class="hint-x" role="button" tabindex="0" onclick="dismissFirstrunHint()" onkeydown="if((event.key==='Enter'||event.key===' ')&&event.target===this){event.preventDefault();dismissFirstrunHint()}" aria-label="Dismiss this hint" title="Don't show this again">✕</span>
       </div>
       <div class="btnrow" style="justify-content:center;margin-top:28px">
         <button class="primary" onclick="startNewCase()">Open the Case (this screen)</button>

@@ -3,6 +3,11 @@ export const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<
 export const nl2br = s => esc(s).replace(/\n/g,'<br>');
 export function shuffle(a){const b=a.slice();for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
 export const toneBadge = t => `<span class="tone ${t}">${t}</span>`;
+// Counts must not rely on color alone to say which tone they're counting
+// (design bible: "no colour-only status") — the initial + number reads
+// without a hover, unlike a bare colored pill with only a title tooltip.
+export const toneCountBadge = (t, count) =>
+  `<span class="tone count ${t}" title="${esc(t)} this act" aria-label="${esc(t)}: ${count} this act">${t[0]} ${count}</span>`;
 export const ACT_NAMES = ['','Act the First','Act the Second','Act the Third'];
 // Covers up to 12 so numbering a longer Case roster never silently breaks.
 export const ROMAN = ['','I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'];
@@ -40,11 +45,16 @@ export function progressDotsHTML(current, total, label){
   return `<div class="progress-dots">${dots}<span class="pd-label">${esc(label)}</span></div>`;
 }
 
-/* A three-node track marking which act is done/current/upcoming. */
+/* A three-node track marking which act is done/current/upcoming. Done vs.
+   current vs. upcoming must read without color (design bible: "no
+   colour-only status") — a done act swaps its numeral for a checkmark,
+   and the current act carries aria-current for assistive tech, matching
+   the pattern casePhaseRail already uses. */
 export function actTrackHTML(act){
-  return `<div class="act-track">${[1,2,3].map((n,i)=>
-    `${i>0?'<span class="at-line"></span>':''}<span class="at-node ${act>n?'done':act===n?'current':''}">${ROMAN[n]}</span>`
-  ).join('')}</div>`;
+  return `<div class="act-track">${[1,2,3].map((n,i)=>{
+    const done = act>n, current = act===n;
+    return `${i>0?'<span class="at-line"></span>':''}<span class="at-node ${done?'done':current?'current':''}" aria-current="${current?'step':'false'}" title="${ACT_NAMES[n]}${done?' — done':current?' — current':''}">${done?'✓':ROMAN[n]}</span>`;
+  }).join('')}</div>`;
 }
 /* Matches the slug algorithm documented in art/IMAGE_PROMPTS.md — keep
    the two in sync if either changes, since that doc is the human-facing

@@ -141,12 +141,18 @@ export function returnFromRules(){
 export function initOverlayDismiss(){
   // Deliberately no click-outside-to-close: the Gallery's grid doesn't fill
   // the overlay width, so a stray click in the margin beside a card used to
-  // close the whole thing — jarring. Escape and the explicit close buttons
-  // remain the ways out.
+  // close the whole thing — jarring. Escape, Backspace, and the explicit
+  // close buttons remain the ways out.
   document.addEventListener('keydown', e=>{
-    if(e.key!=='Escape') return;
-    if($('overlay').style.display==='block'){ closeOverlay(); return; }
-    // No other screen currently has a "close" concept — the overlay is
-    // the only modal-like surface in the app today.
+    if(e.key!=='Escape' && e.key!=='Backspace') return;
+    if($('overlay').style.display!=='block') return;
+    // Backspace must not hijack text entry (room codes, scene notes, etc.)
+    // or step the browser back a page while a real input has focus.
+    if(e.key==='Backspace'){
+      const tag = document.activeElement?.tagName;
+      if(tag==='INPUT' || tag==='TEXTAREA' || document.activeElement?.isContentEditable) return;
+    }
+    e.preventDefault();
+    closeOverlay();
   });
 }

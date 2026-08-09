@@ -1,4 +1,4 @@
-import { $, esc, shuffle, toneBadge, ACT_NAMES, actTrackHTML, casePhaseRail } from '../engine/utils.js';
+import { $, esc, shuffle, toneBadge, toneCountBadge, ACT_NAMES, actTrackHTML, casePhaseRail } from '../engine/utils.js';
 import { TONES, SCENES } from '../data/index.js';
 import { State } from '../engine/state.js';
 import { show, renderTopbar } from './screens.js';
@@ -36,9 +36,9 @@ function milestoneRailHTML(G){
   return `<div class="panel tight ms-rail">
     <h3 style="color:var(--gold)">The Case So Far</h3>
     <div class="ms-list">
-      ${shown.map((m,i)=>`<div class="ms-row" style="animation-delay:${i*0.05}s" onclick="viewChronicle(true)"><span class="ms-icon">${m.icon}</span><span class="ms-text">${esc(m.text)}</span></div>`).join('')}
+      ${shown.map((m,i)=>`<div class="ms-row" role="button" tabindex="0" aria-label="Open the Dossier" style="animation-delay:${i*0.05}s" onclick="viewChronicle(true)" onkeydown="if((event.key==='Enter'||event.key===' ')&&event.target===this){event.preventDefault();viewChronicle(true)}"><span class="ms-icon">${m.icon}</span><span class="ms-text">${esc(m.text)}</span></div>`).join('')}
     </div>
-    ${all.length>shown.length?`<p class="small muted" style="margin-top:6px;cursor:pointer" onclick="viewChronicle(true)">+${all.length-shown.length} earlier beat${all.length-shown.length===1?'':'s'} — open The Dossier</p>`:''}
+    ${all.length>shown.length?`<p class="small muted" role="button" tabindex="0" style="margin-top:6px;cursor:pointer" onclick="viewChronicle(true)" onkeydown="if((event.key==='Enter'||event.key===' ')&&event.target===this){event.preventDefault();viewChronicle(true)}">+${all.length-shown.length} earlier beat${all.length-shown.length===1?'':'s'} — open The Dossier</p>`:''}
   </div>`;
 }
 
@@ -237,7 +237,7 @@ export function renderCloseIntro(){
       <div class="panel spotlight">
         <p class="small" style="color:var(--gold)">${esc(close.cond)}</p>
         <p class="small muted">The tally of tones this act — from every card played and every Hero’s face — stands at:
-        ${TONES.map(t=>`<span class="tone count ${t}">${counts[t]}</span>`).join(' ')}</p>
+        ${TONES.map(t=>toneCountBadge(t, counts[t])).join(' ')}</p>
         ${elementHTML}
         <label class="fld" for="close-starter">Who begins the close?</label>
         <select id="close-starter">${G.players.map((p,i)=>`<option value="${i}">${esc(p.name)}</option>`).join('')}</select>

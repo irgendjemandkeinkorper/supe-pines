@@ -1,4 +1,5 @@
-import { $, ACT_NAMES, CASE_PHASES } from '../engine/utils.js';
+import { $, ACT_NAMES, CASE_PHASES, toneCountBadge } from '../engine/utils.js';
+import { applyArtStyleTheme } from './art.js';
 import { TONES } from '../data/index.js';
 import { actToneCounts } from '../engine/rules.js';
 import { State } from '../engine/state.js';
@@ -36,14 +37,25 @@ export function show(id){
    Gallery, "Stakeout" — the Dossier itself is a real screen, not an
    overlay). Centralized here, rather than in each caller, so history
    bookkeeping and focus-return happen exactly once. */
+/* The topbar's Rules/Dossier/Gallery/Stakeout buttons sit behind the
+   overlay's opaque background but stay in the DOM — without this, a
+   keyboard user tabbing through overlay content eventually tabs onto
+   those invisible buttons instead of looping back inside the dialog. */
+function setBackgroundInert(inert){
+  const topbar = $('topbar'), wrap = document.querySelector('.wrap');
+  if(topbar) topbar.inert = inert;
+  if(wrap) wrap.inert = inert;
+}
 export function openOverlay(){
   lastFocusBeforeOverlay = document.activeElement;
   $('overlay').style.display = 'block';
+  setBackgroundInert(true);
   pushHistory({...currentScreenState(), overlay:true});
 }
 export function closeOverlay(){
   if($('overlay').style.display !== 'block') return;
   $('overlay').style.display = 'none';
+  setBackgroundInert(false);
   lastFocusBeforeOverlay?.focus?.();
   lastFocusBeforeOverlay = null;
   if(!suppressHistory && history.state?.overlay) history.back();
@@ -77,7 +89,7 @@ export function initHistoryNav(){
     try{
       if($('overlay').style.display==='block' && !st.overlay) closeOverlay();
       if(st.screen && $(st.screen) && !$(st.screen).classList.contains('active')) show(st.screen);
-      if(st.overlay && $('overlay').style.display!=='block') $('overlay').style.display='block';
+      if(st.overlay && $('overlay').style.display!=='block'){ $('overlay').style.display='block'; setBackgroundInert(true); }
       if(e.state?.session!==historySession) history.replaceState(st, '');
     } finally { suppressHistory = false; }
   });
@@ -102,6 +114,7 @@ export function dismissFirstrunHint(){
 
 export function renderTopbar(){
   const G = State.G;
+  applyArtStyleTheme(G?.artStyle ?? State.artStyle);
   const tb = $('topbar');
   if(!G){ tb.style.display='none'; return; }
   tb.style.display='flex';
@@ -118,5 +131,5 @@ export function renderTopbar(){
     phase.textContent = active ? active.label : '';
   }
   const counts = actToneCounts();
-  $('tb-tones').innerHTML = TONES.map(t=>`<span class="tone count ${t}" title="${t} this act">${counts[t]}</span>`).join('');
+  $('tb-tones').innerHTML = TONES.map(t=>toneCountBadge(t, counts[t])).join('');
 }
