@@ -76,3 +76,8 @@ test('eligible contributors enforce starter exclusion, two-card cap, and solo ca
 test('data-driven copy is escaped before it reaches HTML', () => {
   assert.equal(esc('<script>alert("x")</script>'), '&lt;script&gt;alert(&quot;x&quot;)&lt;/script&gt;');
 });
+
+test('esc() escapes single quotes to prevent attribute breakout', () => {
+  assert.equal(esc(`O'Brien`), 'O&#39;Brien');
+  assert.equal(esc(`'onmouseover='alert(1)`), '&#39;onmouseover=&#39;alert(1)');
+});
