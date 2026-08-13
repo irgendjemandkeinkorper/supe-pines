@@ -88,10 +88,10 @@ def validate_manifest(records: Any) -> list[str]:
             errors.append(f"{label}: unsupported category {category!r}.")
         if style not in SUPPORTED_STYLES:
             errors.append(f"{label}: unsupported style {style!r}.")
-        if category == "heroes" and side not in ("front", "turned"):
-            errors.append(f"{label}: Hero side must be 'front' or 'turned'.")
-        if category != "heroes" and side is not None:
-            errors.append(f"{label}: only Hero records may have a side.")
+        if category in ("heroes", "threats") and side not in ("front", "turned"):
+            errors.append(f"{label}: {category[:-1].capitalize()} side must be 'front' or 'turned'.")
+        if category not in ("heroes", "threats") and side is not None:
+            errors.append(f"{label}: only Hero and Threat records may have a side.")
         expected_prefix = f"art/images/{style}/{category}/"
         if not isinstance(save_path, str) or not save_path.startswith(expected_prefix):
             errors.append(f"{label}: savePath must begin with {expected_prefix!r}.")

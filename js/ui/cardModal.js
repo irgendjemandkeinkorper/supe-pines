@@ -8,7 +8,7 @@ export function openCardDetail(kind, index){
   const card = kind === 'hero' ? G?.heroes?.[index] : G?.signalRow?.[index];
   if(!card) return;
   const title = kind === 'hero' ? (card.name || card.role) : card.title;
-  const content = kind === 'hero' ? heroCard(card) : signalCard(card);
+  const content = kind === 'hero' ? heroCard(card, undefined, undefined, {inModal:true}) : signalCard(card);
   document.getElementById('overlay-content').innerHTML = `
     <button class="ghost" onclick="closeCardDetail()">← Back</button>
     <div class="card-detail-modal">

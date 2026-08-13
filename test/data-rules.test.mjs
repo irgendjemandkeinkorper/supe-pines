@@ -12,7 +12,7 @@ test('current data satisfies the authored roster contract', () => {
   assert.deepEqual(result.errors, []);
   assert.equal(result.summary.cases, 8);
   assert.equal(result.summary.heroes, 15);
-  assert.equal(result.summary.villains, 8);
+  assert.equal(result.summary.villains, 16);
   assert.equal(result.summary.scenes, 144);
   assert.deepEqual(result.summary.hookedScenesByCase, {
     toll:6, casting:6, renovation:6, lastcall:6,
