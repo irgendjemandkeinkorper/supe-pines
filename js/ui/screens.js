@@ -27,6 +27,7 @@ const historySession = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 export function show(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   $(id).classList.add('active');
+  document.body?.classList.toggle('secret-reveal-active', id === 'scr-secret');
   window.scrollTo({top:0,behavior:'auto'});
   renderTopbar();
   saveGame(id);

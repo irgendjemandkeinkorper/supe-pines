@@ -121,6 +121,38 @@ export const threatArt = {
   omen:{
     front:'Omen in an empty bar at closing time, one hour of future violence reflected in their eyes, a silent script of approaching blows laid across the floor like a path they cannot leave.',
     turned:'Omen walking alone along a single unavoidable path through frozen scenes of their own future defeat, their expression emptied by the knowledge that none of the endings can change.'
+  },
+  cartographer:{
+    front:'The Cartographer walking a moonlit property line with surveying tools, buildings and street signs fading into blank paper behind her as she erases them from existence one boundary at a time.',
+    turned:'The Cartographer alone in a bare records room as every erased boundary she has ever drawn snaps back at once, walls and streets rushing back into being around her too fast to escape.'
+  },
+  understudy:{
+    front:'The Understudy mid-transformation in a cracked dressing-room mirror, half a beat cop and half a priest and half a landlord all overlapping in one face that has not settled on an identity.',
+    turned:'The Understudy alone with every mask removed, a featureless void where a face should be, hands reaching for a role that is not there.'
+  },
+  absentee:{
+    front:'The Absentee’s presence felt entirely through a building turning against its tenants — a hallway lengthening, a door refusing to open, a note sliding under a door with no one on the other side.',
+    turned:'The Absentee forced into a single visible body in a stripped, ordinary apartment, silhouettes of every building he has lost dissolving into plaster dust behind him.'
+  },
+  interval:{
+    front:'The Interval standing at the center of a city block frozen mid-motion, ten minutes of missing time visualized as a pale gap swallowing pedestrians, clocks, and a security camera all at once.',
+    turned:'The Interval alone in the gap they have made, their own body flickering backward through childhood as stolen minutes drain out of them faster than they can hold on.'
+  },
+  beacon:{
+    front:'The Beacon standing waist-deep at a flooded harbor edge, a pale signal glow radiating from his chest as distant desperate figures are pulled irresistibly toward him through the rain.',
+    turned:'The Beacon alone on the ferry wreck where the accident happened, his own silhouette wasting and translucent under the glow he cannot turn off, the water empty of the people he could not save.'
+  },
+  cure:{
+    front:'The Cure standing in a night-clinic exam room, an unstable golden regenerative haze drifting from her hands as a patient’s bandaged wound overgrows into something no longer quite human.',
+    turned:'The Cure alone at a stainless sink, gloved hands trembling above the basin, years of untouched isolation visible in a face that has not risked bare skin against another person since the outbreak.'
+  },
+  signalman:{
+    front:'The Signal Man wired into a cramped dispatch booth, cables running from an old emergency radio into his own chest as every nearby speaker in the transit yard crackles with his involuntary warning.',
+    turned:'The Signal Man alone in a dead control room built from stacked radios, his own face static-blurred across every dark screen as he keeps transmitting to no one.'
+  },
+  gardener:{
+    front:'The Gardener standing inside a collapsed greenhouse reclaimed by monstrous green growth, vines swallowing steel beams and fire escapes as he reaches to calm a plant that will not stop climbing.',
+    turned:'The Gardener half-consumed by his own uncontrollable growth, roots and vines threading through his sleeves as he tears at them with bare, bleeding hands to keep a doorway clear.'
   }
 };
 
@@ -144,7 +176,15 @@ export const signalArt = {
   'The Phone Booth with the Light On':'An obsolete phone booth glowing beneath a dead neon awning, receiver lifted inside while the surrounding street remains empty.',
   'The Same Stray Cat':'A wary one-eared alley cat sitting beneath the same fire escape where distant emergency light spills around a corner.',
   'The Second Sun in a Puddle':'A rain puddle reflecting a second bright sun beneath an overcast sky, the reflection moving independently of the clouds.',
-  'Yesterday’s Front Page':'A folded newspaper on a diner counter with photographs and columns blurred into unreadable shapes, one front-page image visibly contradicted by the scene outside the window.'
+  'Yesterday’s Front Page':'A folded newspaper on a diner counter with photographs and columns blurred into unreadable shapes, one front-page image visibly contradicted by the scene outside the window.',
+  'A Child’s Drawing of the Block':'A crayon drawing taped to a window, rows of apartment buildings each with one identical simple face sketched in every window.',
+  'A Dead Scanner Channel':'A police scanner radio on a nightstand, its display lit and tuned in, producing only flat static where chatter should be.',
+  'A Flock of Pigeons, All at Once':'A dense flock of pigeons launching off a rooftop ledge in the same instant, wingbeats blurring toward a single point beyond the frame.',
+  'A Key That Fits Nothing You Own':'A single ordinary house key resting in an open palm, worn smooth at the teeth, with no matching lock visible anywhere nearby.',
+  'A Stopwatch, Still Running':'An old mechanical stopwatch balanced on a windowsill, hands sweeping steadily forward, dust settled on everything around it except the watch itself.',
+  'A Streetlight That Will Not Stay Lit':'A streetlamp flickering mid-cycle on an empty corner, its housing casting an unstable pulse of light across wet pavement.',
+  'Police Tape, Cut Clean':'A strip of police tape strung across a doorway with a small precise slit cut through its center, edges too clean for tearing.',
+  'Two Identical License Plates':'Two identical parked cars on the same block viewed from a slight distance, matching license plates visible on both.'
 };
 
 export function validatePromptCoverage(){

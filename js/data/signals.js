@@ -18,5 +18,13 @@ export const SIGNALS = [
   {glyph:'☎', title:'The Phone Booth with the Light On', line:'The city took the phone out years ago. Tonight, someone inside lets it ring.'},
   {glyph:'🐈', title:'The Same Stray Cat', line:'Shows up wherever this is going next. Won’t say how it knows.'},
   {glyph:'☀', title:'The Second Sun in a Puddle', line:'The reflection burns brighter than the sky, and it moves when the clouds do not.'},
-  {glyph:'📰', title:'Yesterday’s Front Page', line:'Already wrong about something important.'}
+  {glyph:'📰', title:'Yesterday’s Front Page', line:'Already wrong about something important.'},
+  {glyph:'🖍', title:'A Child’s Drawing of the Block', line:'Every window has a face in it. Every face is the same one.'},
+  {glyph:'📻', title:'A Dead Scanner Channel', line:'Nothing but static where the precinct always talks. It’s been quiet for six hours.'},
+  {glyph:'🕊', title:'A Flock of Pigeons, All at Once', line:'Every bird on the block took off in the same second, headed the same direction. None of them are back yet.'},
+  {glyph:'🗝', title:'A Key That Fits Nothing You Own', line:'Found it in your pocket this morning. It turns smooth in a lock you haven’t found.'},
+  {glyph:'⏱', title:'A Stopwatch, Still Running', line:'Somebody started it and never called time. It’s three days deep now.'},
+  {glyph:'⚡', title:'A Streetlight That Will Not Stay Lit', line:'It catches for a second, gutters, tries again. Something under the housing keeps reaching for the switch.'},
+  {glyph:'🚧', title:'Police Tape, Cut Clean', line:'Not torn. Not stretched. Somebody opened a door in it with scissors and closed it behind them.'},
+  {glyph:'🚗', title:'Two Identical License Plates', line:'Same plate, same car, two different streets, same hour. The DMV has no idea which one is real.'}
 ];

@@ -89,6 +89,31 @@ body::before{
   21%,56%{ opacity:.88; }
   40%{ opacity:.96; }
 }
+/* The big room-wide effect when a Buried Secret comes to light — toggled
+   by show() in js/ui/screens.js on every screen change, so it is always
+   set exactly when #scr-secret is active and cleared the instant the
+   player leaves it, even mid-flow (see the "every render path must set
+   and clear this" note this was built against). Sits above .wrap (z-index
+   2) but below the sticky topbar (z-index 50), so it washes the play area
+   without darkening navigation controls. */
+.wrap::after{
+  content:'';
+  position:fixed; inset:0; z-index:3;
+  pointer-events:none;
+  opacity:0;
+  background:
+    radial-gradient(ellipse 70% 60% at 50% 45%, rgba(138,99,168,.38), transparent 70%),
+    radial-gradient(ellipse 120% 100% at 50% 50%, transparent 40%, rgba(10,4,16,.6) 100%);
+  transition:opacity 1.1s ease;
+}
+body.secret-reveal-active .wrap::after{ opacity:1; }
+@media (prefers-reduced-motion: no-preference){
+  body.secret-reveal-active .wrap::after{ animation:secretPulse 3.1s ease-in-out infinite; }
+}
+@keyframes secretPulse{
+  0%,100%{ opacity:.82; }
+  50%{ opacity:1; }
+}
 /* A stepped rooftop skyline, always at the foot of the world. */
 body::after{
   content:'';
@@ -512,6 +537,28 @@ label.fld{display:block;margin:12px 0 4px;color:var(--gold);font-family:'Work Sa
   background:repeating-linear-gradient(96deg,transparent 0,transparent 82px,rgba(242,169,31,.06) 83px,transparent 84px);
 }
 .scene-tracker.resolving{border-color:rgba(255,59,82,.72);box-shadow:0 14px 36px rgba(0,0,0,.48),0 0 24px rgba(255,59,82,.1)}
+/* The Case's own art, low-opacity behind the tracker — .scene-fg carries an
+   explicit z-index so it always paints above this regardless of DOM order
+   (positioned elements paint after non-positioned in-flow content, per the
+   CSS stacking spec, so both layers need z-index to sort correctly). */
+.scene-bg{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+.scene-bg-art{position:absolute;inset:0;background:none}
+.scene-bg-art img{width:100%;height:100%;object-fit:cover;opacity:.16;filter:saturate(1.25) contrast(1.05);transform:scale(1.06)}
+.scene-bg-art.missing{display:none}
+.scene-fg{position:relative;z-index:1}
+/* Dominant Tone tints the scene tracker itself — a quiet ambient wash,
+   not a loud recolor, so the card content stays the primary read. */
+.scene-tracker[data-scene-tone="Fury"]{border-color:rgba(212,67,43,.6)}
+.scene-tracker[data-scene-tone="Fury"] .scene-bg::after{background:radial-gradient(ellipse 90% 75% at 50% 100%,rgba(212,67,43,.22),transparent 70%)}
+.scene-tracker[data-scene-tone="Guilt"]{border-color:rgba(90,75,176,.6)}
+.scene-tracker[data-scene-tone="Guilt"] .scene-bg::after{background:radial-gradient(ellipse 90% 75% at 50% 100%,rgba(90,75,176,.22),transparent 70%)}
+.scene-tracker[data-scene-tone="Dread"]{border-color:rgba(31,122,130,.6)}
+.scene-tracker[data-scene-tone="Dread"] .scene-bg::after{background:radial-gradient(ellipse 90% 75% at 50% 100%,rgba(31,122,130,.22),transparent 70%)}
+.scene-bg::after{content:'';position:absolute;inset:0}
+@media (prefers-reduced-motion: no-preference){
+  .scene-bg-art img{transition:transform 8s ease-out}
+  .scene-tracker[data-scene-tone] .scene-bg-art img{transform:scale(1.1)}
+}
 .scene-tracker-head{
   position:relative;display:flex;justify-content:space-between;align-items:flex-start;gap:24px;
   padding:20px 22px 16px;border-bottom:1px solid rgba(242,169,31,.22);
@@ -689,8 +736,15 @@ label.fld{display:block;margin:12px 0 4px;color:var(--gold);font-family:'Work Sa
 .gallery-face.g-missing{background:var(--paper)}
 .card-inspect{position:absolute;z-index:5;top:7px;right:7px;width:28px;height:28px;padding:0;border-radius:50%;font-size:.82rem;line-height:1;background:rgba(8,11,18,.9);color:#ffe8b0;border:1px solid rgba(242,169,31,.8)}
 .card-inspect:hover,.card-inspect:focus-visible{transform:translateY(-1px);color:#fff5d7;border-color:#fff5d7}
+/* Belt-and-suspenders: heroCard(..., {inModal:true}) already omits this
+   button's markup entirely; this rule just guards any other nesting path. */
+.card-detail-modal .card-inspect{display:none}
 .card-detail-modal{max-width:560px;margin:0 auto;text-align:center}
 .card-detail-modal>.hero-flip,.card-detail-modal>.card{margin:12px auto 0;max-width:360px}
+.card-detail-modal .hero-art{height:auto;aspect-ratio:3/4;margin:-15px -14px 10px}
+.card-detail-modal .hero-art img{object-fit:contain;background:#0b0f18}
+.scene-lead-card .hero-art{height:220px}
+.scene-lead-card .hero-art img{object-fit:contain;background:#0b0f18}
 .gallery-background{margin-top:14px;text-align:left;border-top:1px solid rgba(242,169,31,.24);padding-top:10px}
 .gallery-background summary{cursor:pointer;color:var(--gold);font-family:'Work Sans',Arial,sans-serif;font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
 .gallery-background p{color:#c3c9d3;line-height:1.45;margin:9px 0}

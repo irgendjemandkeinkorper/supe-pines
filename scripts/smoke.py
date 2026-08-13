@@ -125,18 +125,25 @@ with sync_playwright() as playwright:
     browser = getattr(playwright, args.engine).launch(headless=True)
     page = browser.new_page(viewport={"width": 1440, "height": 1000})
     watch(page)
-    page.goto(BASE, wait_until="networkidle")
+    page.goto(BASE, wait_until="load")
     assert page.title() == "Supe Pines — A Street-Level Case File"
     assert page.locator(".screen.active").get_attribute("id") == "scr-title"
     run_dom_audit(page, "title screen")
     assert page.locator("#title-online-button").count() == 1
+
+    # Wait for the background Firebase readiness check to complete (and
+    # fail/degrade, since no real Firebase project is reachable from CI/this
+    # sandbox) before asserting on its resulting button text. This used to
+    # rely on `page.goto(..., wait_until="networkidle")` incidentally giving
+    # the background fetch enough time to finish; that's fragile across
+    # browser engines (WebKit's networkidle heuristics differ from
+    # Chromium's and could hang past the smoke-test timeout on this app's
+    # background sync traffic), so wait for the actual condition instead.
+    page.wait_for_function(
+        "() => document.getElementById('title-online-button').textContent.startsWith('Online')"
+    )
     assert page.locator("#title-online-button").inner_text().startswith("Online")
     assert page.locator("#resume-local-button").is_hidden()
-
-    # Wait for the background Firebase readiness check to complete (and fail/degrade)
-    page.wait_for_function(
-        "() => document.getElementById('title-online-button').textContent.includes('Online')"
-    )
 
     # Click Play Online to see the connection issue troubleshoot screen
     page.locator("#title-online-button").click()
@@ -191,7 +198,7 @@ with sync_playwright() as playwright:
     assert page.evaluate("Boolean(localStorage.getItem('sp:save:v1'))")
 
     # Reload recovery is opt-in from the title screen.
-    page.reload(wait_until="networkidle")
+    page.reload(wait_until="load")
     assert page.get_by_role("button", name="Resume saved Case").is_visible()
     page.get_by_role("button", name="Resume saved Case").click()
     page.wait_for_selector("#scr-hub.active")
@@ -217,7 +224,9 @@ with sync_playwright() as playwright:
     page.get_by_role("button", name="Back to Millhaven").click()
 
     # The in-progress Dossier is readable and does not throw before Act I.
-    page.get_by_role("button", name="The Dossier").click()
+    # exact=True: the milestone-rail row's aria-label ("Open the Dossier")
+    # otherwise substring-matches this same accessible name too.
+    page.get_by_role("button", name="The Dossier", exact=True).click()
     page.wait_for_selector("#scr-chronicle.active")
     run_dom_audit(page, "dossier screen")
     page.get_by_role("button", name="Return to the Case").click()
@@ -234,7 +243,7 @@ with sync_playwright() as playwright:
     page.fill("#scene-opening", "Rain stripes the roof while the scanner hisses.")
 
     # 1. Reload/Resume on Scene-Pick screen
-    page.reload(wait_until="networkidle")
+    page.reload(wait_until="load")
     assert page.get_by_role("button", name="Resume saved Case").is_visible()
     page.get_by_role("button", name="Resume saved Case").click()
     page.wait_for_selector("#scr-scene.active")
@@ -258,7 +267,7 @@ with sync_playwright() as playwright:
     page.fill("#contrib-how", "Suddenly, a shadow falls across the street.")
 
     # 2. Reload/Resume on Scene-Play screen (with pending contribution & happened text)
-    page.reload(wait_until="networkidle")
+    page.reload(wait_until="load")
     page.get_by_role("button", name="Resume saved Case").click()
     page.wait_for_selector("#scr-scene.active")
     assert page.locator("#scene-happened").input_value() == "The heroes follow the Signal to the next roof."
@@ -279,19 +288,19 @@ with sync_playwright() as playwright:
     assert resume_snapshot
     resume_page = browser.new_page(viewport={"width": 1440, "height": 1000})
     watch(resume_page, "resume ")
-    resume_page.goto(BASE, wait_until="networkidle")
+    resume_page.goto(BASE, wait_until="load")
     if resume_page.get_by_role("button", name="Resume saved Case").count() == 0:
         resume_page.evaluate(
             "(snapshot) => localStorage.setItem('sp:save:v1', snapshot)",
             resume_snapshot,
         )
-        resume_page.reload(wait_until="networkidle")
+        resume_page.reload(wait_until="load")
     resume_page.get_by_role("button", name="Resume saved Case").click()
     resume_page.wait_for_selector("#scr-resolve.active")
     resume_page.locator("#flip-0").check()
 
     # 3. Reload/Resume on Resolution screen (verifying flip checkbox state)
-    resume_page.reload(wait_until="networkidle")
+    resume_page.reload(wait_until="load")
     resume_page.get_by_role("button", name="Resume saved Case").click()
     resume_page.wait_for_selector("#scr-resolve.active")
     assert resume_page.locator("#flip-0").is_checked()
@@ -320,7 +329,7 @@ with sync_playwright() as playwright:
     resume_page.fill("#secret-answer", "The shadows knew the truth all along.")
 
     # 4. Reload/Resume on Secret reveal screen
-    resume_page.reload(wait_until="networkidle")
+    resume_page.reload(wait_until="load")
     assert resume_page.get_by_role("button", name="Resume saved Case").is_visible()
     resume_page.get_by_role("button", name="Resume saved Case").click()
     resume_page.wait_for_selector("#scr-secret.active")
@@ -339,7 +348,7 @@ with sync_playwright() as playwright:
     resume_page.wait_for_selector("#scr-hub.active")
 
     # 5. Verify online room state is never copied into localStorage.
-    resume_page.goto(BASE, wait_until="networkidle")
+    resume_page.goto(BASE, wait_until="load")
     resume_page.locator("#title-online-button").click()
     resume_page.wait_for_selector("#scr-online-entry.active")
     resume_page.evaluate("window.State.onlineRoomCode = 'XYZ123'")
@@ -601,7 +610,7 @@ with sync_playwright() as playwright:
     # Exercise the actual online entry button contract. If Firebase is
     # unavailable, provide the same minimal controls so the handler test can
     # still run without requiring external services.
-    page.goto(BASE, wait_until="networkidle")
+    page.goto(BASE, wait_until="load")
     page.locator("#title-online-button").click()
     page.wait_for_selector("#scr-online-entry.active")
     if page.locator("#oe-host-name").count() == 0:
@@ -658,7 +667,7 @@ with sync_playwright() as playwright:
 
     mobile = browser.new_page(viewport={"width": 390, "height": 844})
     watch(mobile, "mobile ")
-    mobile.goto(BASE, wait_until="networkidle")
+    mobile.goto(BASE, wait_until="load")
     mobile.get_by_role("button", name="Open the Case (this screen)").click()
     assert mobile.locator(".casecard").count() == 8
     assert mobile.evaluate("document.documentElement.scrollWidth <= window.innerWidth")

@@ -1,7 +1,20 @@
 import { esc, nl2br, toneBadge, ACT_NAMES } from '../engine/utils.js';
 import { State } from '../engine/state.js';
-import { heroArtHTML, signalArtHTML, currentArtStyle } from './art.js';
+import { heroArtHTML, signalArtHTML, caseArtHTML, currentArtStyle } from './art.js';
 import { characterSideLabel } from '../engine/gameplay.js';
+
+/* Whichever Tone shows up most across the current scene's sources — the
+   opening card, buy-in scene cards, and the lead Hero's face-up side.
+   Drives the scene tracker's ambient tint (see data-scene-tone in
+   css/style.css). Ties resolve to whichever Tone was seen first, so the
+   opening card's Tone quietly wins a deadlock. */
+function dominantTone(toneSources){
+  const counts = new Map();
+  toneSources.forEach(({tone}) => { if(tone) counts.set(tone, (counts.get(tone)||0)+1); });
+  let best = null, bestCount = 0;
+  counts.forEach((count, tone) => { if(count > bestCount){ best = tone; bestCount = count; } });
+  return best;
+}
 
 function heroFaceHTML(h, sideIdx, turned){
   const s = h.sides[sideIdx];
@@ -24,15 +37,17 @@ function heroFaceHTML(h, sideIdx, turned){
    "front"), but a small flip control lets a player peek at the other
    side at any time without affecting play — a pure local DOM/CSS
    toggle (see flipHeroCard below), not game state. */
-export function heroCard(h, selectable, idx){
+export function heroCard(h, selectable, idx, opts = {}){
   const frontIdx = h.flipped?1:0, backIdx = h.flipped?0:1;
   const selectedArchs = State.G?.current?.archIdxs || (State.G?.current?.archIdx===idx ? [idx] : []);
   const isSelected = selectable === 'pickArch' && selectedArchs.includes(idx);
   const selectAttrs = selectable
     ? `role="button" tabindex="0" aria-pressed="${isSelected?'true':'false'}" onclick="${selectable}(${idx})" onkeydown="if((event.key==='Enter'||event.key===' ')&&event.target===this){event.preventDefault();${selectable}(${idx})}" id="arch-pick-${idx}"`
     : '';
-  return `<div class="hero-flip${selectable?' selectable':''}${isSelected?' selected':''}" ${selectAttrs}>
-    <button class="card-inspect" type="button" onclick="event.stopPropagation();openCardDetail('hero',${idx ?? State.G?.heroes?.indexOf(h) ?? -1})" aria-label="Read ${esc(h.name||h.role)} card larger">↗</button>
+  const inspectBtn = opts.inModal ? '' :
+    `<button class="card-inspect" type="button" onclick="event.stopPropagation();openCardDetail('hero',${idx ?? State.G?.heroes?.indexOf(h) ?? -1})" aria-label="Read ${esc(h.name||h.role)} card larger">↗</button>`;
+  return `<div class="hero-flip${selectable?' selectable':''}${isSelected?' selected':''}${opts.inModal?' hero-flip--modal':''}" ${selectAttrs}>
+    ${inspectBtn}
     <button class="flip-btn" type="button" onclick="event.stopPropagation();flipHeroCard(this)"
       data-front-side="${frontIdx===0?'I':'II'}" data-back-side="${backIdx===0?'I':'II'}"
       aria-label="View Side ${backIdx===0?'I':'II'}" aria-pressed="false" title="View Side ${backIdx===0?'I':'II'}">
@@ -214,8 +229,11 @@ export function sceneTrackerHTML(G, opts={}){
 
   const context = [G.case?.title, G.threat?.name ? `The Threat: ${G.threat.name}` : null].filter(Boolean).map(esc).join(' · ');
   const arrived = animateSlot!==null ? cards[animateSlot] : null;
+  const tone = dominantTone(toneSources);
   return `${arrived?`<div class="scene-arrival-callout" aria-live="polite"><span>${esc(arrived.owner)}</span> ${animateSlot===0?'opens the scene with':'adds'} <strong>${esc(arrived.card.title)}</strong></div>`:''}
-  <section class="scene-tracker${resolving?' resolving':''}${arrived?' card-arrival':''}" aria-label="Current scene tracker">
+  <section class="scene-tracker${resolving?' resolving':''}${arrived?' card-arrival':''}" aria-label="Current scene tracker"${tone?` data-scene-tone="${tone}"`:''}>
+    ${G.case?`<div class="scene-bg" aria-hidden="true">${caseArtHTML(G.case, {className:'scene-bg-art'})}</div>`:''}
+    <div class="scene-fg">
     <div class="scene-tracker-head">
       <div>
         <p class="scene-tracker-kicker">${resolving?'Resolving':'Now Playing'} · ${ACT_NAMES[G.act]}</p>
@@ -255,6 +273,7 @@ export function sceneTrackerHTML(G, opts={}){
 
     <div class="scene-player-rail" aria-label="Storyteller participation">${playerRail}</div>
     ${resolving && happened?`<div class="scene-record"><span>The Dossier will remember</span><p>${nl2br(happened)}</p></div>`:''}
+    </div>
   </section>`;
 }
 /* Compact recap of one resolved journal entry — who led it, what was

@@ -90,9 +90,26 @@ The expected GitHub repository setting is:
   same rule where repository settings permit.
 
 Verification must be recorded with the date and the GitHub API response or a
-repository Settings screenshot. As of 2026-08-03, the repository API reported
-`Branch not protected`; this is an explicit release blocker until the rule is
-enabled and re-checked.
+repository Settings screenshot. As of 2026-08-12, branch protection is
+**enabled** on `main` via the GitHub API
+(`PUT /repos/:owner/:repo/branches/main/protection`), requiring:
+
+- Strict/up-to-date status checks: `verify`, `firestore-rules`.
+- Conversation resolution before merge.
+- Force pushes and branch deletion disabled.
+
+`browser-smoke-webkit` is deliberately **not** in the required list yet: both
+`verify` and `firestore-rules` had been silently red on `main` for several
+days (an un-`npm ci`'d `verify` job importing the Firebase-emulator test file,
+and an outdated pinned Java version for `firebase-tools`), which the initial
+branch-protection PR fixed along with an unrelated WebKit-only
+`Locator.click` timeout — but a second, narrower WebKit flake remains
+unresolved. See issue #58. Add `browser-smoke-webkit` back to the required
+list once that's fixed.
+
+`enforce_admins` is currently `false` and required-approving-review-count is
+`0` (no second-reviewer requirement yet) — raise both once the contributor
+base grows past a single trusted maintainer.
 
 ### 2. Firebase Console Infrastructure Checks
 If online multiplayer is in scope or has been modified, open the [Firebase Console](https://console.firebase.google.com/) and verify:
