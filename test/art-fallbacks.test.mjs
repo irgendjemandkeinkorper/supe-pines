@@ -6,7 +6,7 @@ test('Case art HTML follows the shipped title-slug asset convention', () => {
   const item = { id: 'toll', title: 'The Toll' };
   const html = caseArtHTML(item, { style: 'ink' });
 
-  assert.ok(html.includes('src="art/images/ink/cases/the-toll.png"'), 'HTML must use the Case title slug');
+  assert.ok(html.includes('src="art/images/ink/cases/the-toll.webp"'), 'HTML must use the Case title slug');
 });
 
 test('Threat art HTML generation and fallback attributes', () => {
@@ -19,7 +19,7 @@ test('Threat art HTML generation and fallback attributes', () => {
   // Verify HTML contains fallback text
   assert.ok(html.includes('The Threat — The Toll'), 'HTML must include fallback text');
   // Verify image path is correct
-  assert.ok(html.includes('src="art/images/ink/threats/toll.png"'), 'HTML must include correct image src');
+  assert.ok(html.includes('src="art/images/ink/threats/toll.webp"'), 'HTML must include correct image src');
   // Verify onerror attribute triggers gameArtImgError
   assert.ok(html.includes('onerror="gameArtImgError(this)"'), 'HTML must include correct onerror attribute');
 });
@@ -28,20 +28,20 @@ test('gameArtImgError fallback mechanism with extension fallback', () => {
   // Mock a DOM img element
   const dataset = {
     base: 'art/images/ink/threats/toll',
-    exts: 'jpeg,png,webp'
+    exts: 'png,jpg,jpeg'
   };
   const mockImg = {
     dataset,
-    src: 'art/images/ink/threats/toll.jpg'
+    src: 'art/images/ink/threats/toll.webp'
   };
 
   // Calling gameArtImgError with multiple exts should cycle to next extension
   gameArtImgError(mockImg);
-  assert.equal(mockImg.src, 'art/images/ink/threats/toll.jpeg');
-  assert.equal(mockImg.dataset.exts, 'png,webp');
+  assert.equal(mockImg.src, 'art/images/ink/threats/toll.png');
+  assert.equal(mockImg.dataset.exts, 'jpg,jpeg');
 
   // Next cycle
   gameArtImgError(mockImg);
-  assert.equal(mockImg.src, 'art/images/ink/threats/toll.png');
-  assert.equal(mockImg.dataset.exts, 'webp');
+  assert.equal(mockImg.src, 'art/images/ink/threats/toll.jpg');
+  assert.equal(mockImg.dataset.exts, 'jpeg');
 });
