@@ -9,6 +9,15 @@ let readyResolve;
 let readyReject;
 let readyTimer = null;
 export let authReady;
+const FIREBASE_REQUEST_TIMEOUT_MS = 10000;
+
+export function withTimeout(operation, timeoutMs, message){
+  let timer;
+  const timeout = new Promise((_, reject) => {
+    timer = setTimeout(() => reject(new Error(message)), timeoutMs);
+  });
+  return Promise.race([Promise.resolve(operation), timeout]).finally(() => clearTimeout(timer));
+}
 
 function resetAuthReady(){
   if(readyTimer) clearTimeout(readyTimer);
@@ -49,8 +58,17 @@ export function getUid(){ return currentUid; }
 export function ensureSignedIn(){
   if(currentUid) return Promise.resolve(currentUid);
   if(!signingIn){
-    signingIn = (auth.currentUser ? Promise.resolve() : signInAnonymously(auth))
-      .then(() => authReady)
+    const signIn = auth.currentUser ? Promise.resolve() : signInAnonymously(auth);
+    signingIn = withTimeout(
+      signIn,
+      FIREBASE_REQUEST_TIMEOUT_MS,
+      'Anonymous sign-in timed out. Check Firebase authorized domains and try again.'
+    )
+      .then(() => withTimeout(
+        authReady,
+        FIREBASE_REQUEST_TIMEOUT_MS,
+        'Anonymous sign-in timed out. Check Firebase authorized domains and try again.'
+      ))
       .catch(error => {
         signingIn = null;
         resetAuthReady();
@@ -77,7 +95,11 @@ export function verifyFirebaseReadiness() {
       // 2. Ensure Firestore is reachable and rules are published by attempting a read
       // on a specific path in the allowed 'rooms' collection.
       const testRef = doc(db, 'rooms', '_test_readiness');
-      await getDoc(testRef);
+      await withTimeout(
+        getDoc(testRef),
+        FIREBASE_REQUEST_TIMEOUT_MS,
+        'Firebase Firestore readiness check timed out. Check your network and try again.'
+      );
 
       return true;
     } catch (err) {
