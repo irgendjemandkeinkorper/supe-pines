@@ -51,6 +51,10 @@ two scene prompts per act, and matching prompt/manifest entries.
 No build step. Serve the folder over HTTP (ES modules don't load from
 `file://`) and open `index.html`:
 
+Contribution and pull-request conventions are documented in
+[`CONTRIBUTING.md`](CONTRIBUTING.md). Security reports belong in the private
+process described by [`SECURITY.md`](SECURITY.md).
+
 ```
 python3 -m http.server 8080
 # then visit http://localhost:8080/
