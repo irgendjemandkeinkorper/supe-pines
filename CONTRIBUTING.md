@@ -16,8 +16,8 @@ browser-native and run the documented checks before opening a pull request.
 5. PRs should leave `main` green; merge only after the required CI checks pass
    and the review conversation is resolved.
 
-The repository currently uses `jules` and `Delegated-to-Jules` labels for
-routed work. Do not introduce another routing label until the label cleanup
-decision in issue #52 is resolved.
+The repository's `jules` versus `Delegated-to-Jules` routing distinction is
+documented in [`.github/labels.md`](.github/labels.md); use one label according
+to that convention rather than adding another routing label.
 
 For security reports, use the private process in [`SECURITY.md`](SECURITY.md).
