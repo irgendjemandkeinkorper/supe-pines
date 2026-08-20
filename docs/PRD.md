@@ -160,12 +160,21 @@ validator, prompt check, manifest check, and relevant regression tests.
 
 For each new Case, the integration checklist is:
 
+- one primary Threat referenced by villainId, plus exactly one additional
+  Case-linked Threat (VILLAINS[].caseId);
 - one setup question for every Hero;
-- two Case-specific scene prompts per act;
-- compatible tone and Threat hooks;
+- two Case-specific scene prompts per act, for six hooked scenes total;
+- every scene hook must name a known Case and every scene tone must name a
+  known tone;
 - matching prompt and manifest entries when art is requested;
 - fallback copy when an image is absent; and
 - one focused test or validator assertion for any new rule or invariant.
+
+The data validator reports these relationships with the Case, Hero, Threat,
+and scene identifiers in each error. Prompt coverage and manifest generation
+remain separate deterministic gates, while the final dossier/debrief contract
+is represented by the required non-empty epilogue question set and the
+existing Act III regression test.
 
 ## 7. UX and accessibility contract
 

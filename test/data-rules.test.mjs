@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 
 import { ACT_CLOSES, CASES, EPILOGUE_QUESTIONS, HEROES, SCENES, SECRETS, SIGNALS, TONES, VILLAINS } from '../js/data/index.js';
 import { validateData } from '../scripts/validate-data.mjs';
+import { buildManifest, validateManifest } from '../scripts/gen-manifest.mjs';
 import { State } from '../js/engine/state.js';
 import { eligibleContributors, faceUp, matchSecret, maxContrib } from '../js/engine/rules.js';
 import { esc } from '../js/engine/utils.js';
@@ -18,6 +19,33 @@ test('current data satisfies the authored roster contract', () => {
     toll:6, casting:6, renovation:6, lastcall:6,
     afterhours:6, deadair:6, lastroute:6, openhouse:6
   });
+  assert.deepEqual(result.summary.threatsByCase, {
+    toll:2, casting:2, renovation:2, lastcall:2,
+    afterhours:2, deadair:2, lastroute:2, openhouse:2
+  });
+});
+
+test('validator catches incomplete Threat coverage and mismatched primary Threats', () => {
+  const broken = {
+    ACT_CLOSES, CASES: CASES.map(item => item.id === 'toll' ? {...item, villainId:'forge'} : item),
+    EPILOGUE_QUESTIONS, HEROES, SCENES, SECRETS, SIGNALS, TONES,
+    VILLAINS: VILLAINS.filter(item => item.id !== 'cartographer')
+  };
+  const result = validateData(broken);
+  assert.ok(result.errors.some(error => error.includes('Cases [toll]') && error.includes('does not belong')));
+  assert.ok(result.errors.some(error => error.includes('Cases [toll]') && error.includes('exactly two Threats')));
+});
+
+test('validator rejects an empty final debrief question set', () => {
+  const result = validateData({ACT_CLOSES, CASES, HEROES, SCENES, SECRETS, SIGNALS, TONES, VILLAINS, EPILOGUE_QUESTIONS: []});
+  assert.ok(result.errors.some(error => error.startsWith('Epilogue:')));
+});
+
+test('generated prompt manifest remains complete and deterministic', () => {
+  const first = buildManifest();
+  const second = buildManifest();
+  assert.deepEqual(validateManifest(first), []);
+  assert.deepEqual(first, second);
 });
 
 test('validator catches incomplete Case-specific scene coverage', () => {

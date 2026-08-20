@@ -19,7 +19,7 @@ export const ART_STYLES = [
   }
 ];
 
-const ART_EXTS = ['png','jpg','jpeg','webp'];
+const ART_EXTS = ['webp','png','jpg','jpeg'];
 
 export function normalizeArtStyle(style){
   if(style === 'burden') return 'expressionist';

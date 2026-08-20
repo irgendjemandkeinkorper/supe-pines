@@ -39,6 +39,7 @@ export function validateData(data = { ACT_CLOSES, CASES, EPILOGUE_QUESTIONS, HER
 
   const caseIds = new Set((data.CASES || []).map(item => item.id));
   const villainIds = new Set((data.VILLAINS || []).map(item => item.id));
+  const villainsByCase = Object.fromEntries([...caseIds].map(id => [id, []]));
   if(data.VILLAINS){
     duplicateValues(data.VILLAINS.map(item => item.id)).forEach(id => fail('Villains', id, 'duplicate id.'));
     duplicateValues(data.VILLAINS.map(item => item.name)).forEach(name => fail('Villains', name, 'duplicate name.'));
@@ -49,9 +50,14 @@ export function validateData(data = { ACT_CLOSES, CASES, EPILOGUE_QUESTIONS, HER
       });
       if(item?.caseId && !caseIds.has(item.caseId)) fail('Villains', label, `caseId references unknown Case "${item.caseId}".`);
     });
+    data.VILLAINS.forEach(item => {
+      if(item?.caseId && villainsByCase[item.caseId]) villainsByCase[item.caseId].push(item.id);
+    });
     data.CASES?.forEach(item => {
       if(!isText(item?.villainId)) fail('Cases', item?.id, 'villainId must be a non-empty string.');
       else if(!villainIds.has(item.villainId)) fail('Cases', item.id, `villainId references unknown Villain "${item.villainId}".`);
+      else if(!villainsByCase[item.id]?.includes(item.villainId)) fail('Cases', item.id, 'villainId "' + item.villainId + '" does not belong to Case "' + item.id + '".');
+      if(villainsByCase[item.id]?.length !== 2) fail('Cases', item.id, 'expected exactly two Threats, found ' + (villainsByCase[item.id]?.length || 0) + '.');
     });
   }
   if(!Array.isArray(data.HEROES) || data.HEROES.length === 0){
@@ -156,7 +162,7 @@ export function validateData(data = { ACT_CLOSES, CASES, EPILOGUE_QUESTIONS, HER
     });
   }
 
-  if(!Array.isArray(data.EPILOGUE_QUESTIONS) || data.EPILOGUE_QUESTIONS.some(q => !isText(q))){
+  if(!Array.isArray(data.EPILOGUE_QUESTIONS) || data.EPILOGUE_QUESTIONS.length === 0 || data.EPILOGUE_QUESTIONS.some(q => !isText(q))){
     fail('Epilogue', '', 'questions must be a non-empty array of non-empty strings.');
   }
 
@@ -172,6 +178,7 @@ export function validateData(data = { ACT_CLOSES, CASES, EPILOGUE_QUESTIONS, HER
       actCloses: [1, 2, 3].reduce((total, act) => total + (data.ACT_CLOSES?.[act]?.length || 0), 0)
       ,sceneToneCounts
       ,hookedScenesByCase: Object.fromEntries(Object.entries(hookedScenesByCase).map(([id, scenes]) => [id, scenes.length]))
+      ,threatsByCase: Object.fromEntries(Object.entries(villainsByCase).map(([id, villains]) => [id, villains.length]))
     }
   };
 }

@@ -22,23 +22,111 @@ import { copyChronicle, downloadChronicle } from './chronicle/markdown.js';
 import { bleakifyField } from './ai/bleakify.js';
 import { State } from './engine/state.js';
 import { clearSavedGame, hasSavedGame, readSave, saveGame, exportSaveJSON, importSaveJSON } from './engine/persistence.js';
-import { ensureSignedIn } from './sync/auth.js';
 import { firebaseConfigured } from './sync/config.js';
-import {
-  showOnlineEntry, onlineCreateRoom, onlineJoinRoom, leaveOnlineRoom, tryAutoRejoin,
-  onlineRefreshArtPicker,
-  onlineBeginTale, onlineSaveArchSetup, onlineFinishVictim,
-  onlineStartScene, onlineTradeOmen, onlineForfeitScene, onlineBeginClose,
-  onlineSetReadyRole, onlineVoteOmenReplacement,
-  onlinePickSceneCard, onlinePickArch, onlineBeginScene, routeAndRenderCurrent,
-  onlineStartContrib, onlinePickContribScene, onlinePickContribOmen, onlineCancelContrib,
-  onlineSetContribHow, onlineSetSceneHappened, onlineSetSecretAnswer,
-  onlineConfirmContrib, onlineEndScene, onlineApplyResolve,
-  onlineToggleSecretOmen, onlineConfirmSecret,
-  onlineAnswerForAbsent, onlineCopyRoomLink, onlineDismissScenePrimer, openOnlineHand,
-  showOnlineError, hideOnlineError, onlineRetryConnection, onlineFallbackToHotseat,
-  initFirebaseConnection, onlineVerifyAndProceed, withPendingState
-} from './ui/online.js';
+
+const ONLINE_LOAD_TIMEOUT_MS = 10000;
+let onlineModulePromise = null;
+
+function withPendingState(btn, pendingText, actionFn){
+  if(!btn) return Promise.resolve().then(actionFn);
+  if(btn.disabled) return Promise.resolve();
+  const originalText = btn.textContent || btn.value;
+  btn.disabled = true;
+  btn.textContent = pendingText;
+  return Promise.resolve().then(actionFn).finally(() => {
+    btn.disabled = false;
+    btn.textContent = originalText;
+  });
+}
+
+function loadOnlineModule(){
+  if(!onlineModulePromise){
+    const moduleLoad = import('./ui/online.js');
+    const timeout = new Promise((_, reject) => setTimeout(
+      () => reject(new Error('The online multiplayer module could not load. Check your network and try again.')),
+      ONLINE_LOAD_TIMEOUT_MS
+    ));
+    onlineModulePromise = Promise.race([moduleLoad, timeout]).catch(error => {
+      onlineModulePromise = null;
+      throw error;
+    });
+  }
+  return onlineModulePromise;
+}
+
+function renderOnlineUnavailable(error){
+  const message = error?.message || 'The online multiplayer module could not load.';
+  const entry = document.getElementById('scr-online-entry');
+  if(!entry) return;
+  entry.innerHTML = `<div class="panel" style="max-width:680px;margin:36px auto;text-align:center">
+    <div class="sc" style="color:var(--blood-bright);letter-spacing:.22em">SWITCHBOARD OFFLINE</div>
+    <h2 style="margin-top:10px">Connection Failed</h2>
+    <div class="panel tight" style="text-align:left;margin:20px auto;max-width:540px">
+      <p class="small"><strong>Details:</strong> ${String(message).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}</p>
+      <p class="small muted">The remote table could not load. Hotseat play is ready and does not require Firebase.</p>
+    </div>
+    <div class="btnrow" style="justify-content:center;margin-top:22px">
+      <button class="primary" onclick="showOnlineEntry()">Retry Connection</button>
+      <button class="primary" onclick="show('scr-hook')">Play Hotseat (Open the Case)</button>
+      <button class="ghost" onclick="show('scr-title')">Back</button>
+    </div>
+  </div>`;
+  show('scr-online-entry');
+}
+
+async function callOnline(name, args){
+  try {
+    const online = await loadOnlineModule();
+    return online[name](...args);
+  } catch(error) {
+    renderOnlineUnavailable(error);
+  }
+}
+
+function onlineBridge(name){
+  return (...args) => callOnline(name, args);
+}
+
+const showOnlineEntry = onlineBridge('showOnlineEntry');
+const onlineCreateRoom = onlineBridge('onlineCreateRoom');
+const onlineJoinRoom = onlineBridge('onlineJoinRoom');
+const leaveOnlineRoom = onlineBridge('leaveOnlineRoom');
+const tryAutoRejoin = onlineBridge('tryAutoRejoin');
+const onlineRefreshArtPicker = onlineBridge('onlineRefreshArtPicker');
+const onlineBeginTale = onlineBridge('onlineBeginTale');
+const onlineSaveArchSetup = onlineBridge('onlineSaveArchSetup');
+const onlineFinishVictim = onlineBridge('onlineFinishVictim');
+const onlineStartScene = onlineBridge('onlineStartScene');
+const onlineTradeOmen = onlineBridge('onlineTradeOmen');
+const onlineForfeitScene = onlineBridge('onlineForfeitScene');
+const onlineBeginClose = onlineBridge('onlineBeginClose');
+const onlineSetReadyRole = onlineBridge('onlineSetReadyRole');
+const onlineVoteOmenReplacement = onlineBridge('onlineVoteOmenReplacement');
+const onlinePickSceneCard = onlineBridge('onlinePickSceneCard');
+const onlinePickArch = onlineBridge('onlinePickArch');
+const onlineBeginScene = onlineBridge('onlineBeginScene');
+const routeAndRenderCurrent = onlineBridge('routeAndRenderCurrent');
+const onlineStartContrib = onlineBridge('onlineStartContrib');
+const onlinePickContribScene = onlineBridge('onlinePickContribScene');
+const onlinePickContribOmen = onlineBridge('onlinePickContribOmen');
+const onlineCancelContrib = onlineBridge('onlineCancelContrib');
+const onlineSetContribHow = onlineBridge('onlineSetContribHow');
+const onlineSetSceneHappened = onlineBridge('onlineSetSceneHappened');
+const onlineSetSecretAnswer = onlineBridge('onlineSetSecretAnswer');
+const onlineConfirmContrib = onlineBridge('onlineConfirmContrib');
+const onlineEndScene = onlineBridge('onlineEndScene');
+const onlineApplyResolve = onlineBridge('onlineApplyResolve');
+const onlineToggleSecretOmen = onlineBridge('onlineToggleSecretOmen');
+const onlineConfirmSecret = onlineBridge('onlineConfirmSecret');
+const onlineAnswerForAbsent = onlineBridge('onlineAnswerForAbsent');
+const onlineCopyRoomLink = onlineBridge('onlineCopyRoomLink');
+const onlineDismissScenePrimer = onlineBridge('onlineDismissScenePrimer');
+const openOnlineHand = onlineBridge('openOnlineHand');
+const showOnlineError = onlineBridge('showOnlineError');
+const hideOnlineError = onlineBridge('hideOnlineError');
+const onlineRetryConnection = onlineBridge('onlineRetryConnection');
+const onlineFallbackToHotseat = onlineBridge('onlineFallbackToHotseat');
+const onlineVerifyAndProceed = onlineBridge('onlineVerifyAndProceed');
 
 Object.assign(window, {
   State,
@@ -131,14 +219,16 @@ refreshResumeControl();
 applyFirstrunVisibility();
 initOverlayDismiss();
 initHistoryNav();
-if(firebaseConfigured){
-  initFirebaseConnection();
-} else {
-  const onlineButton = document.getElementById('title-online-button');
-  if(onlineButton){
-    onlineButton.classList.remove('primary');
-    onlineButton.classList.add('ghost');
-    onlineButton.textContent = 'Online (setup required)';
-    onlineButton.title = 'Remote rooms need the project Firebase configuration; hotseat play is ready.';
-  }
+const onlineButton = document.getElementById('title-online-button');
+if(onlineButton){
+  onlineButton.classList.remove('primary');
+  onlineButton.classList.add('ghost');
+  onlineButton.textContent = firebaseConfigured ? 'Online (check connection)' : 'Online (setup required)';
+  onlineButton.title = firebaseConfigured
+    ? 'Remote rooms will verify Firebase when opened; hotseat play is ready.'
+    : 'Remote rooms need the project Firebase configuration; hotseat play is ready.';
+}
+
+if(firebaseConfigured && new URLSearchParams(location.search).has('room')){
+  tryAutoRejoin();
 }

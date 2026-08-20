@@ -171,7 +171,7 @@ A neighbourhood youth centre gym prepared for an open house, folding chairs and 
 
 Save as `art/images/ink/cases/openhouse.png` and `art/images/expressionist/cases/openhouse.png`.
 
-## Signals (40 images)
+## Signals (56 images)
 
 ### 🩹 A Bandage, Already Bled Through
 
@@ -293,7 +293,55 @@ A folded newspaper on a diner counter with photographs and columns blurred into 
 
 Save as `art/images/ink/signals/yesterdays-front-page.png` and `art/images/expressionist/signals/yesterdays-front-page.png`.
 
-## Threats (32 images)
+### 🖍 A Child’s Drawing of the Block
+
+A crayon drawing taped to a window, rows of apartment buildings each with one identical simple face sketched in every window.
+
+Save as `art/images/ink/signals/a-childs-drawing-of-the-block.png` and `art/images/expressionist/signals/a-childs-drawing-of-the-block.png`.
+
+### 📻 A Dead Scanner Channel
+
+A police scanner radio on a nightstand, its display lit and tuned in, producing only flat static where chatter should be.
+
+Save as `art/images/ink/signals/a-dead-scanner-channel.png` and `art/images/expressionist/signals/a-dead-scanner-channel.png`.
+
+### 🕊 A Flock of Pigeons, All at Once
+
+A dense flock of pigeons launching off a rooftop ledge in the same instant, wingbeats blurring toward a single point beyond the frame.
+
+Save as `art/images/ink/signals/a-flock-of-pigeons-all-at-once.png` and `art/images/expressionist/signals/a-flock-of-pigeons-all-at-once.png`.
+
+### 🗝 A Key That Fits Nothing You Own
+
+A single ordinary house key resting in an open palm, worn smooth at the teeth, with no matching lock visible anywhere nearby.
+
+Save as `art/images/ink/signals/a-key-that-fits-nothing-you-own.png` and `art/images/expressionist/signals/a-key-that-fits-nothing-you-own.png`.
+
+### ⏱ A Stopwatch, Still Running
+
+An old mechanical stopwatch balanced on a windowsill, hands sweeping steadily forward, dust settled on everything around it except the watch itself.
+
+Save as `art/images/ink/signals/a-stopwatch-still-running.png` and `art/images/expressionist/signals/a-stopwatch-still-running.png`.
+
+### ⚡ A Streetlight That Will Not Stay Lit
+
+A streetlamp flickering mid-cycle on an empty corner, its housing casting an unstable pulse of light across wet pavement.
+
+Save as `art/images/ink/signals/a-streetlight-that-will-not-stay-lit.png` and `art/images/expressionist/signals/a-streetlight-that-will-not-stay-lit.png`.
+
+### 🚧 Police Tape, Cut Clean
+
+A strip of police tape strung across a doorway with a small precise slit cut through its center, edges too clean for tearing.
+
+Save as `art/images/ink/signals/police-tape-cut-clean.png` and `art/images/expressionist/signals/police-tape-cut-clean.png`.
+
+### 🚗 Two Identical License Plates
+
+Two identical parked cars on the same block viewed from a slight distance, matching license plates visible on both.
+
+Save as `art/images/ink/signals/two-identical-license-plates.png` and `art/images/expressionist/signals/two-identical-license-plates.png`.
+
+## Threats (64 images)
 
 ### The Sophist
 
@@ -359,4 +407,68 @@ Save as `art/images/ink/signals/yesterdays-front-page.png` and `art/images/expre
 - Bold Comic: `art/images/ink/threats/omen.png`, `art/images/ink/threats/omen--turned.png`
 - Church Glass: `art/images/expressionist/threats/omen.png`, `art/images/expressionist/threats/omen--turned.png`
 
-Total: 148 images across both styles.
+### The Cartographer
+
+- Side I — Threat: The Cartographer walking a moonlit property line with surveying tools, buildings and street signs fading into blank paper behind her as she erases them from existence one boundary at a time.
+- Side II — Flaw: The Cartographer alone in a bare records room as every erased boundary she has ever drawn snaps back at once, walls and streets rushing back into being around her too fast to escape.
+
+- Bold Comic: `art/images/ink/threats/cartographer.png`, `art/images/ink/threats/cartographer--turned.png`
+- Church Glass: `art/images/expressionist/threats/cartographer.png`, `art/images/expressionist/threats/cartographer--turned.png`
+
+### The Understudy
+
+- Side I — Threat: The Understudy mid-transformation in a cracked dressing-room mirror, half a beat cop and half a priest and half a landlord all overlapping in one face that has not settled on an identity.
+- Side II — Flaw: The Understudy alone with every mask removed, a featureless void where a face should be, hands reaching for a role that is not there.
+
+- Bold Comic: `art/images/ink/threats/understudy.png`, `art/images/ink/threats/understudy--turned.png`
+- Church Glass: `art/images/expressionist/threats/understudy.png`, `art/images/expressionist/threats/understudy--turned.png`
+
+### The Absentee
+
+- Side I — Threat: The Absentee’s presence felt entirely through a building turning against its tenants — a hallway lengthening, a door refusing to open, a note sliding under a door with no one on the other side.
+- Side II — Flaw: The Absentee forced into a single visible body in a stripped, ordinary apartment, silhouettes of every building he has lost dissolving into plaster dust behind him.
+
+- Bold Comic: `art/images/ink/threats/absentee.png`, `art/images/ink/threats/absentee--turned.png`
+- Church Glass: `art/images/expressionist/threats/absentee.png`, `art/images/expressionist/threats/absentee--turned.png`
+
+### The Interval
+
+- Side I — Threat: The Interval standing at the center of a city block frozen mid-motion, ten minutes of missing time visualized as a pale gap swallowing pedestrians, clocks, and a security camera all at once.
+- Side II — Flaw: The Interval alone in the gap they have made, their own body flickering backward through childhood as stolen minutes drain out of them faster than they can hold on.
+
+- Bold Comic: `art/images/ink/threats/interval.png`, `art/images/ink/threats/interval--turned.png`
+- Church Glass: `art/images/expressionist/threats/interval.png`, `art/images/expressionist/threats/interval--turned.png`
+
+### The Beacon
+
+- Side I — Threat: The Beacon standing waist-deep at a flooded harbor edge, a pale signal glow radiating from his chest as distant desperate figures are pulled irresistibly toward him through the rain.
+- Side II — Flaw: The Beacon alone on the ferry wreck where the accident happened, his own silhouette wasting and translucent under the glow he cannot turn off, the water empty of the people he could not save.
+
+- Bold Comic: `art/images/ink/threats/beacon.png`, `art/images/ink/threats/beacon--turned.png`
+- Church Glass: `art/images/expressionist/threats/beacon.png`, `art/images/expressionist/threats/beacon--turned.png`
+
+### The Cure
+
+- Side I — Threat: The Cure standing in a night-clinic exam room, an unstable golden regenerative haze drifting from her hands as a patient’s bandaged wound overgrows into something no longer quite human.
+- Side II — Flaw: The Cure alone at a stainless sink, gloved hands trembling above the basin, years of untouched isolation visible in a face that has not risked bare skin against another person since the outbreak.
+
+- Bold Comic: `art/images/ink/threats/cure.png`, `art/images/ink/threats/cure--turned.png`
+- Church Glass: `art/images/expressionist/threats/cure.png`, `art/images/expressionist/threats/cure--turned.png`
+
+### The Signal Man
+
+- Side I — Threat: The Signal Man wired into a cramped dispatch booth, cables running from an old emergency radio into his own chest as every nearby speaker in the transit yard crackles with his involuntary warning.
+- Side II — Flaw: The Signal Man alone in a dead control room built from stacked radios, his own face static-blurred across every dark screen as he keeps transmitting to no one.
+
+- Bold Comic: `art/images/ink/threats/signalman.png`, `art/images/ink/threats/signalman--turned.png`
+- Church Glass: `art/images/expressionist/threats/signalman.png`, `art/images/expressionist/threats/signalman--turned.png`
+
+### The Gardener
+
+- Side I — Threat: The Gardener standing inside a collapsed greenhouse reclaimed by monstrous green growth, vines swallowing steel beams and fire escapes as he reaches to calm a plant that will not stop climbing.
+- Side II — Flaw: The Gardener half-consumed by his own uncontrollable growth, roots and vines threading through his sleeves as he tears at them with bare, bleeding hands to keep a doorway clear.
+
+- Bold Comic: `art/images/ink/threats/gardener.png`, `art/images/ink/threats/gardener--turned.png`
+- Church Glass: `art/images/expressionist/threats/gardener.png`, `art/images/expressionist/threats/gardener--turned.png`
+
+Total: 196 images across both styles.

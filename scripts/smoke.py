@@ -148,11 +148,21 @@ with sync_playwright() as playwright:
     # Click Play Online to see the connection issue troubleshoot screen
     page.locator("#title-online-button").click()
     page.wait_for_selector("#scr-online-entry.active")
-    assert page.locator("text=SWITCHBOARD OFFLINE").count() == 1
-    assert page.locator("text=The Firebase Release Checklist").count() == 1
-    assert page.get_by_role("button", name="Retry Connection").count() == 1
-    assert page.get_by_role("button", name="Play Hotseat (Open the Case)").count() == 1
-    assert page.get_by_role("button", name="Back").count() == 1
+    page.wait_for_function("""() => {
+        const entry = document.getElementById('scr-online-entry');
+        return entry && (
+            entry.innerText.includes('SWITCHBOARD OFFLINE') ||
+            entry.querySelector('#oe-host-name') ||
+            entry.innerText.includes('Switchboard Isn’t Live Yet')
+        );
+    }""")
+    if page.locator("text=SWITCHBOARD OFFLINE").count():
+        assert page.locator("text=The Firebase Release Checklist").count() == 1
+        assert page.get_by_role("button", name="Retry Connection").count() == 1
+        assert page.get_by_role("button", name="Play Hotseat (Open the Case)").count() == 1
+        assert page.get_by_role("button", name="Back").count() == 1
+    else:
+        assert page.locator("#oe-host-name").count() == 1
 
     # Click Back to return to title screen
     page.get_by_role("button", name="Back").click()
@@ -177,7 +187,7 @@ with sync_playwright() as playwright:
     assert page.locator("input[name='local-art-style'][value='expressionist']").count() == 1
     # The radio inputs are intentionally visually hidden behind their full-card
     # labels, so click the visible style choice rather than the hidden input.
-    page.locator("label.art-style-option").filter(has_text="Church Glass").click()
+    page.locator("#pl-art-style label.art-style-option").filter(has_text="Church Glass").click()
     assert page.locator("input[name='local-art-style'][value='expressionist']").is_checked()
     page.select_option("#pl-count", "1")
     run_dom_audit(page, "players screen with solo count")
@@ -632,6 +642,8 @@ with sync_playwright() as playwright:
                 await new Promise(resolve => setTimeout(resolve, 1000));
             });
         };
+        const btn = Array.from(document.querySelectorAll("button")).find(b => b.textContent.includes("Open the Table"));
+        btn.onclick = () => window.onlineCreateRoom(btn);
     }''')
     page.fill("#oe-host-name", "Double Click Tester")
     page.evaluate('''() => {
@@ -652,6 +664,8 @@ with sync_playwright() as playwright:
                 await new Promise(resolve => setTimeout(resolve, 1000));
             });
         };
+        const btn = Array.from(document.querySelectorAll("button")).find(b => b.textContent.includes("Join the Table"));
+        btn.onclick = () => window.onlineJoinRoom(btn);
     }''')
     page.fill("#oe-join-code", "K7QRM")
     page.fill("#oe-join-name", "Double Click Joiner")

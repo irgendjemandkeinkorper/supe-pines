@@ -4,6 +4,10 @@ Supe Pines is a street-level superhero story game about people who keep a
 neighbourhood alive when institutions fail them. It is not a power fantasy,
 and it should never look like a glossy franchise dashboard.
 
+For setup, local development, and verification commands, start with the
+[README](../README.md). This document is the detailed visual-language
+reference.
+
 ## The five pillars
 
 1. **Neighbourhood scale.** A block, a bus route, a clinic, a tenant meeting,
