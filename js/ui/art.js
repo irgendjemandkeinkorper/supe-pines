@@ -69,11 +69,12 @@ export function gameArtHTML(category, key, alt, opts={}){
 
 export function heroArtHTML(hero, sideIdx, opts={}){
   const side = sideIdx===0 ? 'front' : 'turned';
-  return gameArtHTML('heroes', `${slugify(hero.role)}--${side}`, `${hero.role}, Side ${sideIdx===0?'I':'II'}`, opts);
+  const state = hero.sides?.[sideIdx]?.state || (sideIdx===0 ? 'Side I' : 'Side II');
+  return gameArtHTML('heroes', `${slugify(hero.role)}--${side}`, `${hero.role} — ${state} portrait`, opts);
 }
 
 export function signalArtHTML(signal, opts={}){
-  return gameArtHTML('signals', slugify(signal.title), signal.title, {...opts, fallback:opts.fallback||signal.glyph});
+  return gameArtHTML('signals', slugify(signal.title), `${signal.title} signal art`, {...opts, fallback:opts.fallback||signal.glyph});
 }
 
 function caseArtKey(itemOrId){
@@ -88,7 +89,7 @@ export function caseArtHTML(item, opts={}){
 }
 
 export function threatArtHTML(item, opts={}){
-  return gameArtHTML('threats', item.id, `The Threat — ${item.title}`, opts);
+  return gameArtHTML('threats', item.id, `${item.name || item.title}, the Threat`, opts);
 }
 
 export function artStylePickerHTML(name, selected=null, sampleCase='toll'){

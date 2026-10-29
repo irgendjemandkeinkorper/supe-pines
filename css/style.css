@@ -344,6 +344,10 @@ label.fld{display:block;margin:12px 0 4px;color:var(--gold);font-family:'Work Sa
 .art-style-error{color:var(--blood-bright);min-height:1.1em}
 .hero-flip.selectable:hover .hero{border-color:var(--gold);box-shadow:0 0 10px rgba(242,169,31,.2)}
 .hero-flip.selected .hero{border-color:var(--blood-bright);box-shadow:0 0 0 1px var(--blood-bright)}
+/* Selection is never colour-only: a text cue rides along with the border. */
+.card.selected::before,.hero-flip.selected .hero::before{content:'✓ Selected';position:absolute;z-index:6;top:-11px;left:10px;padding:1px 8px;border-radius:2px;background:var(--blood-bright);color:#fff;font:700 .68rem/1.5 'Work Sans',sans-serif;letter-spacing:.06em;text-transform:uppercase;pointer-events:none}
+.hero-flip.selected .hero{position:relative}
+.ready-role-row button.selected::before{content:'✓ '}
 .hero-flip-inner{
   position:relative;min-height:400px;
   transform-style:preserve-3d;
