@@ -35,8 +35,23 @@ class QuietHandler(SimpleHTTPRequestHandler):
         pass
 
 
+# WebKit surfaces the Firebase SDK's blocked Firestore WebChannel XHRs
+# (no real project is reachable from CI) as page errors; Chromium only logs
+# them. They come from the SDK's own transport, not app code, so ignore
+# exactly that shape and keep every other page error fatal.
+EXTERNAL_NETWORK_NOISE = ("firestore.googleapis.com/google.firestore.v1.Firestore/", "due to access control checks")
+
+
+def record_page_error(prefix, error):
+    text = str(error)
+    if all(marker in text for marker in EXTERNAL_NETWORK_NOISE):
+        print(f"{prefix}ignored external network error: {text[:120]}")
+        return
+    errors.append(f"{prefix}pageerror: {text}")
+
+
 def watch(page, prefix=""):
-    page.on("pageerror", lambda error: errors.append(f"{prefix}pageerror: {error}"))
+    page.on("pageerror", lambda error: record_page_error(prefix, error))
     page.on("console", lambda msg: print(f"{prefix}BROWSER: {msg.text}"))
 
 
