@@ -27,7 +27,8 @@ export function renderChronicle(interim){
   const entriesByAct = [1,2,3].map(act=>G.journal.filter(e=>e.act===act));
   const entryHTML = (e,gi,ri)=>{
     const delay = `style="animation-delay:${Math.min(ri,10)*0.04}s"`;
-    const strike = `<button class="ghost" style="float:right;font-size:.7rem" onclick="toggleStrike(${gi},${interim?'true':'false'})">${e.struck?'restore':'☒ strike'}</button>`;
+    const what = e.type==='note' ? 'this note' : e.type==='secret' ? `${e.playerName}'s Buried Secret` : (e.cardTitle || 'this scene');
+    const strike = `<button class="ghost" style="float:right;font-size:.7rem" aria-pressed="${e.struck?'true':'false'}" aria-label="${e.struck?'Restore':'Strike'} ${esc(what)}" onclick="toggleStrike(${gi},${interim?'true':'false'})">${e.struck?'restore':'☒ strike'}</button>`;
     if(e.type==='note') return `<div class="chron-entry${e.struck?' struck':''}" ${delay}>${strike}<span class="small muted">${esc(e.text)}</span></div>`;
     if(e.type==='secret') return `
       <div class="chron-entry secret${e.struck?' struck':''}" ${delay}>${strike}
