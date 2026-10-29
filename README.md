@@ -97,11 +97,17 @@ between ES module scoping and the inline `onclick="fn(...)"` attributes in
 | Obsession / Guilt / Dread | Fury / Guilt / Dread |
 | Chronicle / "The Record" | "The Dossier" (display label only — `js/chronicle/` internals unchanged) |
 
-A handful of internal function/variable names (e.g. `archIdx`, `renderArchSetup`,
-`chooseCase`) intentionally still carry the old naming underneath current UI
-copy — renamed data/state fields and all player-facing text is what actually
-matters for coherence; renaming every internal identifier to match added risk
-without benefit and was deliberately skipped.
+Internal function names now use Supe Pines terms (`renderHeroSetup`,
+`pickHero`, `renderThreatSetup`, `toggleSecretSignal`, `replaceSignalByVote`,
+`renderCases`, and their `online*`/`live*` counterparts). A few old names
+remain on purpose:
+
+| Still named | Where | Why it stays |
+|---|---|---|
+| `archIdx`, `archIdxs`, `archName`, `archRole`, `omenVotes`, scene `hook` | game state, journal entries, Firestore room docs | Persisted in local saves and live rooms; renaming would break resume and in-flight games without a migration. |
+| `#scr-archsetup`, `#scr-victim`, `#scr-hook`, `#arch-pick-*`, `#victim-name` | DOM ids | Stable selectors for the browser smoke suite and history state. |
+| `js/chronicle/`, `renderChronicle`, `viewChronicle` | Dossier internals | "The Dossier" is the display label; the module boundary predates it and renaming it buys nothing. |
+| `Bleakify` button / `js/ai/bleakify.js` | scene notes helper | Its visible label needs a product decision on a new name before renaming. |
 
 ## Firebase setup (for remote multiplayer)
 

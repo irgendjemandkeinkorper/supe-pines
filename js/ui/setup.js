@@ -10,7 +10,7 @@ import { saveGame } from '../engine/persistence.js';
 import { artStylePickerHTML, caseArtHTML, normalizeArtStyle } from './art.js';
 
 /* ---------------- setup: cases ---------------- */
-export function renderHooks(){
+export function renderCases(){
   const phaseRail = $('case-phase-rail');
   if(phaseRail) phaseRail.innerHTML = casePhaseRail('case', 'Choose the premise that sounds alive to your table.');
   const hintEl = $('case-firsttime-hint');
@@ -77,8 +77,8 @@ export function confirmPlayers(){
 }
 
 /* ---------------- setup: heroes ---------------- */
-export function beginArchSetup(){ State.G.archIdx=0; renderArchSetup(); show('scr-archsetup'); }
-export function renderArchSetup(){
+export function beginHeroSetup(){ State.G.archIdx=0; renderHeroSetup(); show('scr-archsetup'); }
+export function renderHeroSetup(){
   const G = State.G;
   const i = G.archIdx, a = G.heroes[i];
   const answerer = G.players[i % G.players.length];
@@ -105,12 +105,12 @@ export function renderArchSetup(){
         <label class="fld" for="arch-answer">The answer</label>
         <textarea id="arch-answer" placeholder="What is established…"></textarea>
         <div class="btnrow">
-          <button class="primary" onclick="saveArchSetup()">${i<5?'Next Question':'To the Threat'}</button>
+          <button class="primary" onclick="saveHeroSetup()">${i<5?'Next Question':'To the Threat'}</button>
         </div>
       </div>
     </div>`;
 }
-export function saveArchSetup(){
+export function saveHeroSetup(){
   const G = State.G;
   const a = G.heroes[G.archIdx];
   a.name = ($('arch-name').value||'').trim() || a.role;
@@ -118,12 +118,12 @@ export function saveArchSetup(){
   a.answeredBy = G.players[G.archIdx % G.players.length].name;
   G.threat.facts.push({role:a.role, who:a.name, q:a.setup[G.case.id], a:a.setupA});
   G.archIdx++;
-  if(G.archIdx<6){ renderArchSetup(); saveGame('scr-archsetup'); window.scrollTo(0,0); }
-  else renderVictim();
+  if(G.archIdx<6){ renderHeroSetup(); saveGame('scr-archsetup'); window.scrollTo(0,0); }
+  else renderThreatSetup();
 }
 
 /* ---------------- setup: the threat ---------------- */
-export function renderVictim(){
+export function renderThreatSetup(){
   const G = State.G;
   const profile = G.threat.profile;
   $('scr-victim').innerHTML = `
@@ -146,13 +146,13 @@ export function renderVictim(){
         <label class="fld" for="victim-name">Name the Threat at your table</label>
         <input type="text" id="victim-name" placeholder="${esc(profile?.name || 'The Unnamed Threat')}">
         <div class="btnrow">
-          <button class="primary" onclick="finishVictim()">Deal the Cards</button>
+          <button class="primary" onclick="finishThreatSetup()">Deal the Cards</button>
         </div>
       </div>
     </div>`;
   show('scr-victim');
 }
-export function finishVictim(){
+export function finishThreatSetup(){
   const G = State.G;
   G.threat.name = ($('victim-name').value||'').trim() || G.threat.profile?.name || 'The Unnamed Threat';
   // signals & secrets are dealt once, at the start

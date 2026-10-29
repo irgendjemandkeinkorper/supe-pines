@@ -26,7 +26,7 @@ export function renderOnlineSecret(room){
         <p style="font-size:1.15rem;color:var(--secret-lilac-pale);margin-top:8px">“${esc(secret.q)}”</p>
       </div>
       <h3 style="color:var(--secret-lilac);margin-top:16px">Choose three signals <span class="small">(${sel.length} of ${Math.min(3,room.signalRow.length)})</span></h3>
-      <div class="cardgrid compact">${room.signalRow.map((o,i)=>signalCard(o,'onlineToggleSecretOmen',i)).join('')}</div>
+      <div class="cardgrid compact">${room.signalRow.map((o,i)=>signalCard(o,'onlineToggleSecretSignal',i)).join('')}</div>
       <div class="panel spotlight">
         <label class="fld u-secret" for="secret-answer">The vignette</label>
         <textarea id="secret-answer" style="min-height:120px" oninput="onlineSetSecretAnswer(this.value)">${esc(session.draft.secretAnswer||'')}</textarea>
@@ -35,7 +35,7 @@ export function renderOnlineSecret(room){
     </div>`;
   document.querySelectorAll('[id^="omen-pick-"]').forEach((el,idx)=>el.classList.toggle('selected', sel.includes(idx)));
 }
-export function onlineToggleSecretOmen(i){
+export function onlineToggleSecretSignal(i){
   const room = State.G, need = Math.min(3, room.signalRow.length);
   const sel = session.draft.secretSel || (session.draft.secretSel=[]);
   const at = sel.indexOf(i);

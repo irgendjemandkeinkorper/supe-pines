@@ -31,7 +31,7 @@ export function renderScenePick(){
     <div class="cardgrid">${p.hand.map((sc,i)=>sceneCardHTML(sc,'pickSceneCard',i)).join('')}</div>
     <h3 class="u-gold">Choose up to two lead Heroes</h3>
     <div class="pgrid u-grid-cards u-mt-8">
-      ${G.heroes.map((a,i)=>heroCard(a,'pickArch',i)).join('')}
+      ${G.heroes.map((a,i)=>heroCard(a,'pickHero',i)).join('')}
     </div>
     <div class="panel">
       <label class="fld" for="scene-opening">What the camera sees as the scene opens</label>
@@ -55,7 +55,7 @@ export function pickSceneCard(i){
   checkBegin();
   saveGame('scr-scene');
 }
-export function pickArch(i){
+export function pickHero(i){
   const selected = State.G.current.archIdxs || (State.G.current.archIdx===null ? [] : [State.G.current.archIdx]);
   const at = selected.indexOf(i);
   if(at >= 0) selected.splice(at,1);
@@ -97,7 +97,7 @@ export function renderScenePlay(animateSlot=null){
         addingHTML = `
           <p class="small u-gold">${esc(ap.name)} — choose a scene card from your hand, or a signal from the row:</p>
           ${ap.hand.length?`<div class="cardgrid">${ap.hand.map((sc,i)=>sceneCardHTML(sc,'pickContribScene',i)).join('')}</div>`:''}
-          ${G.signalRow.length?`<div class="cardgrid compact">${G.signalRow.map((o,i)=>signalCard(o,'pickContribOmen',i)).join('')}</div>`:''}
+          ${G.signalRow.length?`<div class="cardgrid compact">${G.signalRow.map((o,i)=>signalCard(o,'pickContribSignal',i)).join('')}</div>`:''}
           <button class="ghost" onclick="cancelContrib()">Never mind</button>`;
       } else {
         const pk = c.adding.pick;
@@ -140,7 +140,7 @@ export function renderScenePlay(animateSlot=null){
 }
 export function pickContrib(pi){ State.G.current.adding = {pi, pick:null, how:''}; renderScenePlay(); }
 export function pickContribScene(i){ State.G.current.adding.pick={kind:'scene', idx:i}; renderScenePlay(); }
-export function pickContribOmen(i){ State.G.current.adding.pick={kind:'omen', idx:i}; renderScenePlay(); }
+export function pickContribSignal(i){ State.G.current.adding.pick={kind:'omen', idx:i}; renderScenePlay(); }
 export function confirmContrib(){
   const G = State.G;
   const c = G.current, ad = c.adding, ap = G.players[ad.pi];

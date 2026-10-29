@@ -28,7 +28,7 @@ export function renderOnlineScenePick(){
     <div class="cardgrid">${session.myPrivate.hand.map((sc,i)=>sceneCardHTML(sc,'onlinePickSceneCard',i)).join('')}</div>
     <h3 class="u-gold">Choose up to two lead Heroes</h3>
     <div class="pgrid u-grid-cards u-mt-8">
-      ${room.heroes.map((a,i)=>heroCard(a,'onlinePickArch',i)).join('')}
+      ${room.heroes.map((a,i)=>heroCard(a,'onlinePickHero',i)).join('')}
     </div>
     <div class="panel">
       <label class="fld" for="scene-opening">What the camera sees as the scene opens</label>
@@ -47,7 +47,7 @@ export function onlinePickSceneCard(i){
   $('scene-pick-'+i).classList.add('selected');
   onlineCheckBegin();
 }
-export function onlinePickArch(i){
+export function onlinePickHero(i){
   const at = session.draft.archIdxs.indexOf(i);
   if(at>=0) session.draft.archIdxs.splice(at,1);
   else if(session.draft.archIdxs.length<2) session.draft.archIdxs.push(i);
@@ -85,7 +85,7 @@ export function renderOnlineScene(room){
       addingHTML = `
         <p class="small u-gold">Choose a scene card from your hand, or a signal from the row:</p>
         ${session.myPrivate.hand.length?`<div class="cardgrid">${session.myPrivate.hand.map((sc,i)=>sceneCardHTML(sc,'onlinePickContribScene',i)).join('')}</div>`:''}
-        ${room.signalRow.length?`<div class="cardgrid compact">${room.signalRow.map((o,i)=>signalCard(o,'onlinePickContribOmen',i)).join('')}</div>`:''}
+        ${room.signalRow.length?`<div class="cardgrid compact">${room.signalRow.map((o,i)=>signalCard(o,'onlinePickContribSignal',i)).join('')}</div>`:''}
         <button class="ghost" onclick="onlineCancelContrib()">Never mind</button>`;
     } else {
       const pk = session.draft.adding.pick;
@@ -124,7 +124,7 @@ export function renderOnlineScene(room){
 export function renderOnlineSceneRefresh(){ renderOnlineScene(State.G); }
 export function onlineStartContrib(){ session.draft.adding = {pick:null, how:''}; renderOnlineSceneRefresh(); }
 export function onlinePickContribScene(i){ session.draft.adding.pick={kind:'scene', idx:i}; renderOnlineSceneRefresh(); }
-export function onlinePickContribOmen(i){ session.draft.adding.pick={kind:'omen', idx:i}; renderOnlineSceneRefresh(); }
+export function onlinePickContribSignal(i){ session.draft.adding.pick={kind:'omen', idx:i}; renderOnlineSceneRefresh(); }
 export function onlineCancelContrib(){ session.draft.adding = null; renderOnlineSceneRefresh(); }
 export function onlineSetContribHow(v){ if(session.draft.adding) session.draft.adding.how = v; }
 export function onlineSetSceneHappened(v){ session.draft.happened = v; }

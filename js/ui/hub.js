@@ -7,7 +7,7 @@ import { actToneCounts } from '../engine/rules.js';
 import { renderScenePlay } from './scene.js';
 import { viewChronicle } from './renderChronicle.js';
 import { saveGame } from '../engine/persistence.js';
-import { replaceOmenByVote } from '../engine/gameplay.js';
+import { replaceSignalByVote } from '../engine/gameplay.js';
 
 /* ---------------- milestone rail ----------------
    A compact, newest-first digest of the story's key beats — act
@@ -70,14 +70,14 @@ export function setReadyRole(pi, role){
   saveGame('scr-hub');
 }
 
-export function voteOmenReplacement(signalIndex, playerIndex){
+export function voteSignalReplacement(signalIndex, playerIndex){
   const G = State.G;
   if(!G?.signalRow?.[signalIndex] || !G.players[playerIndex]) return;
   if(!G.omenVotes) G.omenVotes = {};
   const voters = new Set(G.omenVotes[signalIndex] || []);
   voters.add(playerIndex);
   G.omenVotes[signalIndex] = [...voters];
-  if(replaceOmenByVote(G, signalIndex, G.omenVotes[signalIndex], G.players.length)){
+  if(replaceSignalByVote(G, signalIndex, G.omenVotes[signalIndex], G.players.length)){
     G.signalDeck = shuffle(G.signalDeck);
     G.omenVotes = {};
   }
@@ -155,7 +155,7 @@ export function renderHub(){
       <summary>The Signal Row <span class="small muted">(${G.signalRow.length})</span></summary>
       <div class="disclose-body">
         <p class="small muted">Read them literally, metaphorically, or obliquely — as you see fit. They accrue meaning as they recur.</p>
-        <div class="cardgrid compact">${G.signalRow.map((o,i)=>`<div class="omen-row-card">${signalCard(o, null, i)}<p class="small muted">Vote to replace this Omen — unanimous consent draws a fresh one.</p><div class="btnrow">${G.players.map((p,pi)=>`<button class="ghost" onclick="voteOmenReplacement(${i},${pi})">${esc(p.name)} votes</button>`).join('')}</div></div>`).join('')}</div>
+        <div class="cardgrid compact">${G.signalRow.map((o,i)=>`<div class="omen-row-card">${signalCard(o, null, i)}<p class="small muted">Vote to replace this Omen — unanimous consent draws a fresh one.</p><div class="btnrow">${G.players.map((p,pi)=>`<button class="ghost" onclick="voteSignalReplacement(${i},${pi})">${esc(p.name)} votes</button>`).join('')}</div></div>`).join('')}</div>
       </div>
     </details>
 

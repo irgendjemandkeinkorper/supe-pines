@@ -40,7 +40,7 @@ function heroFaceHTML(h, sideIdx, turned){
 export function heroCard(h, selectable, idx, opts = {}){
   const frontIdx = h.flipped?1:0, backIdx = h.flipped?0:1;
   const selectedArchs = State.G?.current?.archIdxs || (State.G?.current?.archIdx===idx ? [idx] : []);
-  const isSelected = selectable === 'pickArch' && selectedArchs.includes(idx);
+  const isSelected = selectable === 'pickHero' && selectedArchs.includes(idx);
   const selectAttrs = selectable
     ? `role="button" tabindex="0" aria-pressed="${isSelected?'true':'false'}" onclick="${selectable}(${idx})" onkeydown="if((event.key==='Enter'||event.key===' ')&&event.target===this){event.preventDefault();${selectable}(${idx})}" id="arch-pick-${idx}"`
     : '';
@@ -116,7 +116,7 @@ export function sceneAnatomyDiagramHTML(){
 }
 export function signalCard(o, selectable, idx){
   let isSelected = false;
-  if (selectable === 'toggleSecretOmen' && State.G?.pendingSecret?.secretSel?.includes(idx)) {
+  if (selectable === 'toggleSecretSignal' && State.G?.pendingSecret?.secretSel?.includes(idx)) {
     isSelected = true;
   }
   const selectAttrs = selectable

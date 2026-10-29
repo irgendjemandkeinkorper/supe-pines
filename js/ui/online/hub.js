@@ -5,7 +5,7 @@ import { State } from '../../engine/state.js';
 import { show } from '../screens.js';
 import { heroCard, signalCard, sceneCardHTML, journalEntrySummaryHTML } from '../cards.js';
 import { actToneCounts } from '../../engine/rules.js';
-import { liveBeginClose, liveTradeSignal, liveForfeitScene, liveSetReadyRole, liveVoteOmenReplacement } from '../../sync/liveActions.js';
+import { liveBeginClose, liveTradeSignal, liveForfeitScene, liveSetReadyRole, liveVoteSignalReplacement } from '../../sync/liveActions.js';
 import { session } from './session.js';
 import { mySeatIndex } from './session.js';
 import { fail, withPendingState } from './errors.js';
@@ -41,7 +41,7 @@ export function onlineMyHandHTML(room,mySeat){
       <p class="hand-section-label">Scene cards · ${session.myPrivate.hand.length}</p>
       <div class="cardgrid hand-cardgrid">${session.myPrivate.hand.map(c=>sceneCardHTML(c)).join('') || '<span class="small muted">No scene cards in hand.</span>'}</div>
       ${me.signals.length?`<p class="hand-section-label">Held Signals · ${me.signals.length}</p><div class="cardgrid hand-cardgrid">${me.signals.map((o,oi)=>`
-        <div class="held-card">${signalCard(o)}${room.sceneDeck.length?`<button class="ghost" onclick="onlineTradeOmen(${oi}, this)">Trade for a scene card</button>`:''}</div>`).join('')}</div>`:''}
+        <div class="held-card">${signalCard(o)}${room.sceneDeck.length?`<button class="ghost" onclick="onlineTradeSignal(${oi}, this)">Trade for a scene card</button>`:''}</div>`).join('')}</div>`:''}
       ${session.myPrivate.secrets.map(s=>`<details class="secretbox"><summary>Buried Secret ${s.used?'— revealed':'(yours alone to read)'}</summary>
         <div class="small u-mt-6">${s.combo.map(toneBadge).join(' ')}<br><span class="u-secret">${esc(s.q)}</span>
         ${s.used?'':'<br><span class="muted">Unlocks when a scene’s tones contain this combination.</span>'}</div></details>`).join('')}
@@ -90,7 +90,7 @@ export function renderOnlineHub(room){
     <details class="disclose" open>
       <summary>The Signal Row <span class="small muted">(${room.signalRow.length})</span></summary>
       <div class="disclose-body">
-        <div class="cardgrid compact">${room.signalRow.map((o,i)=>`<div class="card-vote-wrap">${signalCard(o,null,i)}<button class="ghost" onclick="onlineVoteOmenReplacement(${i}, this)">Vote to replace <span class="small muted">(${(room.omenVotes?.[String(i)]||[]).length}/${room.players.length})</span></button></div>`).join('')}</div>
+        <div class="cardgrid compact">${room.signalRow.map((o,i)=>`<div class="card-vote-wrap">${signalCard(o,null,i)}<button class="ghost" onclick="onlineVoteSignalReplacement(${i}, this)">Vote to replace <span class="small muted">(${(room.omenVotes?.[String(i)]||[]).length}/${room.players.length})</span></button></div>`).join('')}</div>
       </div>
     </details>
     <details class="disclose">
@@ -131,14 +131,14 @@ export function onlineStartScene(){
   renderOnlineScenePick();
   show('scr-scene');
 }
-export async function onlineTradeOmen(signalIdx, btn){
+export async function onlineTradeSignal(signalIdx, btn){
   try{ await withPendingState(btn, "Trading...", () => liveTradeSignal(State.onlineRoomCode, signalIdx)); } catch(err){ fail(err); }
 }
 export async function onlineSetReadyRole(role, btn){
   try{ await withPendingState(btn, "Saving...", () => liveSetReadyRole(State.onlineRoomCode, role)); } catch(err){ fail(err); }
 }
-export async function onlineVoteOmenReplacement(signalIndex, btn){
-  try{ await withPendingState(btn, "Voting...", () => liveVoteOmenReplacement(State.onlineRoomCode, signalIndex)); } catch(err){ fail(err); }
+export async function onlineVoteSignalReplacement(signalIndex, btn){
+  try{ await withPendingState(btn, "Voting...", () => liveVoteSignalReplacement(State.onlineRoomCode, signalIndex)); } catch(err){ fail(err); }
 }
 export async function onlineForfeitScene(seat, btn){
   try{ await withPendingState(btn, "Forfeiting...", () => liveForfeitScene(State.onlineRoomCode, seat)); } catch(err){ fail(err); }

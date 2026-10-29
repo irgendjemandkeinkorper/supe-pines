@@ -58,7 +58,7 @@ export async function onlineBeginTale(btn){
 }
 
 /* ---------------- hero setup ---------------- */
-export function renderOnlineArchSetup(room){
+export function renderOnlineHeroSetup(room){
   const i = room.archIdx, a = room.heroes[i];
   const answerer = room.players[i % room.players.length];
   const isMe = mySeatIndex(room) === (i % room.players.length);
@@ -83,7 +83,7 @@ export function renderOnlineArchSetup(room){
           <input type="text" id="arch-name" placeholder="e.g. The Nightwatch">
           <label class="fld" for="arch-answer">The answer</label>
           <textarea id="arch-answer" placeholder="What is established…"></textarea>
-          <div class="btnrow"><button class="primary" onclick="onlineSaveArchSetup(this)">${i<5?'Next Question':'To the Threat'}</button></div>
+          <div class="btnrow"><button class="primary" onclick="onlineSaveHeroSetup(this)">${i<5?'Next Question':'To the Threat'}</button></div>
         ` : `
           <p class="small muted center">Waiting on ${esc(answerer.name)} to answer…</p>
           <p class="center"><button class="ghost" onclick="onlineAnswerForAbsent()">Answer for them, if they’re away</button></p>
@@ -91,8 +91,8 @@ export function renderOnlineArchSetup(room){
       </div>
     </div>`;
 }
-export function onlineAnswerForAbsent(){ session.draft.answeringForAbsent = true; renderOnlineArchSetup(State.G); }
-export async function onlineSaveArchSetup(btn){
+export function onlineAnswerForAbsent(){ session.draft.answeringForAbsent = true; renderOnlineHeroSetup(State.G); }
+export async function onlineSaveHeroSetup(btn){
   try{
     const name = $('arch-name').value, answer = $('arch-answer').value;
     await withPendingState(btn, "Saving...", () => liveSaveHeroSetup(State.onlineRoomCode, name, answer));
@@ -100,7 +100,7 @@ export async function onlineSaveArchSetup(btn){
 }
 
 /* ---------------- the threat ---------------- */
-export function renderOnlineVictim(room){
+export function renderOnlineThreatSetup(room){
   const profile = room.threat?.profile || villainForCase(room.case?.id);
   $('scr-victim').innerHTML = `
     <h2 class="center">The Threat</h2>
@@ -120,10 +120,10 @@ export function renderOnlineVictim(room){
         </div>
         <label class="fld" for="victim-name">Name the Threat at your table</label>
         <input type="text" id="victim-name" placeholder="${esc(profile?.name || 'The Unnamed Threat')}">
-        <div class="btnrow"><button class="primary" onclick="onlineFinishVictim(this)">Deal the Cards</button></div>
+        <div class="btnrow"><button class="primary" onclick="onlineFinishThreatSetup(this)">Deal the Cards</button></div>
       </div>
     </div>`;
 }
-export async function onlineFinishVictim(btn){
+export async function onlineFinishThreatSetup(btn){
   try{ await withPendingState(btn, "Dealing Cards...", () => liveFinishThreat(State.onlineRoomCode, $('victim-name').value)); } catch(err){ fail(err); }
 }

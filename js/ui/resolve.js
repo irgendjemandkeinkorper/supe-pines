@@ -124,7 +124,7 @@ export function renderSecretUnlock(unlock, tones){
         <p style="font-size:1.15rem;color:var(--secret-lilac-pale);margin-top:8px">“${esc(unlock.secret.q)}”</p>
       </div>
       <h3 style="color:var(--secret-lilac);margin-top:16px">Choose three signals to answer with <span class="small" id="secret-count">(${selLen} of ${need})</span></h3>
-      <div class="cardgrid compact">${G.signalRow.map((o,i)=>signalCard(o,'toggleSecretOmen',i)).join('')}</div>
+      <div class="cardgrid compact">${G.signalRow.map((o,i)=>signalCard(o,'toggleSecretSignal',i)).join('')}</div>
       <div class="panel spotlight">
         <label class="fld u-secret" for="secret-answer">The vignette</label>
         <p class="small muted u-mb-6">Use the three signals — literally, metaphorically, obliquely — to show us the answer.</p>
@@ -137,7 +137,7 @@ export function renderSecretUnlock(unlock, tones){
     </div>`;
   saveGame('scr-secret');
 }
-export function toggleSecretOmen(i){
+export function toggleSecretSignal(i){
   const G = State.G;
   const need = Math.min(3, G.signalRow.length);
   const sel = G.pendingSecret ? (G.pendingSecret.secretSel || (G.pendingSecret.secretSel = [])) : State.secretSel;
