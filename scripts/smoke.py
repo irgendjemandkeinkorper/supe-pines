@@ -171,6 +171,87 @@ def assert_controls_named(page, stage_name):
     assert not problems, f"{stage_name}: unnamed or hidden controls: {problems}"
 
 
+LAYOUT_PROBE = """() => {
+    const vw = window.innerWidth;
+    const out = [];
+    if (document.documentElement.scrollWidth > vw + 1) out.push(`page scrolls horizontally: ${document.documentElement.scrollWidth} > ${vw}`);
+    const roots = [document.querySelector('.screen.active'), document.getElementById('topbar')];
+    for (const root of roots.filter(Boolean)) {
+        for (const el of root.querySelectorAll('button, [role="button"], input, select, textarea')) {
+            if (!el.offsetParent || el.closest('.sr-only')) continue;
+            const r = el.getBoundingClientRect();
+            if (r.width === 0) continue;
+            const label = (el.getAttribute('aria-label') || el.textContent || el.id || el.tagName).trim().slice(0, 40);
+            if (r.left < -1 || r.right > vw + 1) out.push(`clipped: ${label} (${Math.round(r.left)}..${Math.round(r.right)} of ${vw})`);
+            if (Math.min(r.width, r.height) < 24 && el.type !== 'radio' && el.type !== 'checkbox') out.push(`small target: ${label} ${Math.round(r.width)}x${Math.round(r.height)}`);
+        }
+    }
+    return out;
+}"""
+
+
+def check_layout(page, stage):
+    problems = page.evaluate(LAYOUT_PROBE)
+    assert not problems, f"{stage} @ {page.viewport_size['width']}px: {problems}"
+
+
+def check_core_flow_layout(browser, width, reduced_motion="no-preference"):
+    """Core flow at one width (#68). 320 CSS px is also the WCAG reflow
+    equivalent of a 1280px window at 400% zoom, so that run doubles as the
+    zoom check. With reduced motion, nothing on screen may be mid-animation
+    and selection must still read as text."""
+    context = browser.new_context(viewport={"width": width, "height": 800}, has_touch=width < 700, reduced_motion=reduced_motion)
+    p = context.new_page()
+    watch(p, f"{width}px ")
+    p.goto(BASE, wait_until="load")
+    stage = lambda name: (check_layout(p, name), run_dom_audit(p, f"{name} @ {width}px"))
+    stage("title")
+    p.get_by_role("button", name="Open the Case (this screen)").click()
+    stage("case picker")
+    p.locator(".casecard").first.click()
+    p.select_option("#pl-count", "2")
+    p.fill("#pl-name-0", "Ada")
+    p.fill("#pl-name-1", "Bo")
+    stage("players")
+    p.get_by_role("button", name="Suit Up").click()
+    p.get_by_role("button", name="So It Begins").click()
+    for index in range(6):
+        if index == 0:
+            stage("hero setup")
+        p.fill("#arch-name", f"Hero {index + 1}")
+        p.fill("#arch-answer", f"Fact {index + 1}")
+        p.locator("#scr-archsetup button.primary").click()
+    stage("threat")
+    p.fill("#victim-name", "Layout Threat")
+    p.get_by_role("button", name="Deal the Cards").click()
+    p.wait_for_selector("#scr-hub.active")
+    stage("hub")
+    p.get_by_role("button", name="Begin a scene").first.click()
+    if p.get_by_role("button", name="Got it — begin").count():
+        p.get_by_role("button", name="Got it — begin").click()
+    p.locator("[id^='scene-pick-']").first.click()
+    stage("scene pick")
+    if reduced_motion == "reduce":
+        # Colour/border fades are fine; anything that moves, scales, or fades
+        # content in and out is motion.
+        running = p.evaluate("""document.getAnimations()
+            .filter(a => a.playState === 'running' && a.effect?.getComputedTiming().duration > 0.01)
+            .map(a => ({name: a.animationName || a.transitionProperty, el: a.effect.target?.className || ''}))
+            .filter(a => /^(transform|opacity|filter|translate|scale|rotate|top|left|right|bottom|margin.*)$|^[a-zA-Z]+(In|Deal|Pulse|Callout)$/.test(a.name))""")
+        assert not running, f"reduced motion still animating: {running}"
+        cue = p.evaluate("getComputedStyle(document.querySelector('.card.selected'), '::before').content")
+        assert "Selected" in cue, f"selected card lacks a text cue under reduced motion: {cue}"
+    p.locator("#arch-pick-0").click()
+    p.fill("#scene-opening", "Narrow screen opening.")
+    p.get_by_role("button", name="Begin the Scene").click()
+    p.wait_for_selector("#scr-scene.active")
+    stage("scene play")
+    p.get_by_role("button", name="The Dossier", exact=True).click()
+    p.wait_for_selector("#scr-chronicle.active")
+    stage("dossier")
+    context.close()
+
+
 def focus_in_overlay(page):
     return page.evaluate("document.getElementById('overlay').contains(document.activeElement)")
 
@@ -796,6 +877,10 @@ with sync_playwright() as playwright:
     assert page.locator("button:has-text('Joining...')").get_attribute("disabled") is not None
     page.wait_for_timeout(1050)
     assert page.evaluate("window.joinRoomCalls") == 1
+
+    for width in (320, 375, 1280):
+        check_core_flow_layout(browser, width)
+    check_core_flow_layout(browser, 375, reduced_motion="reduce")
 
     mobile_context = browser.new_context(viewport={"width": 390, "height": 844}, has_touch=True)
     mobile = mobile_context.new_page()

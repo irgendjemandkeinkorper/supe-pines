@@ -171,6 +171,15 @@ python3 -m playwright install webkit
 python3 scripts/smoke.py --engine webkit
 ```
 
+The smoke suite also replays the core flow (title → Case → players → Hero
+setup → Threat → hub → scene → Dossier) at 320px, 375px, and 1280px, and at
+375px with `prefers-reduced-motion: reduce`. Each screen must have no
+horizontal page scroll, no clipped controls, and no action target under 24px.
+The 320px run is the zoom check: WCAG reflow treats 320 CSS px as a 1280px
+window at 400% zoom. For a manual check, open the site at 1280px wide, zoom
+to 400%, and walk the same flow. With reduced motion, nothing may move or
+fade, and the selected card must still show its `✓ Selected` label.
+
 GitHub Actions runs the same data checks and Chromium smoke test on pull
 requests and `main`, plus a WebKit smoke lane. The production site remains a
 dependency-free static GitHub Pages build. For isolated Firestore rules tests,

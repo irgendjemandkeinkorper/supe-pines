@@ -229,7 +229,7 @@ label.fld{display:block;margin:12px 0 4px;color:var(--gold);font-family:'Work Sa
   padding:8px 12px;margin:10px 0;font-size:.85rem;color:#e6d8ae;
   display:flex;gap:8px;align-items:flex-start;text-align:left;
 }
-.hint .hint-x{cursor:pointer;margin-left:auto;color:var(--gold-soft);flex:none}
+.hint .hint-x{cursor:pointer;margin-left:auto;color:var(--gold-soft);flex:none;display:inline-flex;align-items:center;justify-content:center;min-width:28px;min-height:28px}
 .hint .hint-x:hover{color:var(--gold)}
 
 /* ---------- progress dots (hero setup) ---------- */
@@ -766,6 +766,9 @@ label.fld{display:block;margin:12px 0 4px;color:var(--gold);font-family:'Work Sa
 
 @media (prefers-reduced-motion: reduce){
   .gallery-face{transition:none}
+  /* Selection and hover still read via border, shadow, and the ✓ cue. */
+  .card.selectable{transition:box-shadow .15s ease}
+  .card.selectable:hover,.card-inspect:hover,.card-inspect:focus-visible{transform:none}
   .scene-slot.dealt-in,.scene-slot.dealt-in .scene-table-card,.scene-slot.dealt-in .scene-manifest,.scene-arrival-callout,.hand-focus{animation:none}
   .scene-arrival-callout{opacity:0}
 }
