@@ -65,7 +65,7 @@ function renderOnlineMissingConfig() {
 
       <div class="panel tight" style="text-align:left;background:rgba(255,255,255,0.02);border-color:rgba(255,255,255,0.1);margin:20px auto;max-width:540px;">
         <h4 style="color:var(--gold);margin-top:0">Required Firebase Setup Steps:</h4>
-        <ol class="small" style="padding-left:18px;line-height:1.5;color:#cfc2a2">
+        <ol class="small" style="padding-left:18px;line-height:1.5;color:var(--text-parchment)">
           <li><strong>Firebase Config:</strong> Register a Web app in the Firebase console, and copy the config object into <code style="color:var(--blood-bright)">js/sync/config.js</code>.</li>
           <li><strong>Anonymous Auth:</strong> Enable Anonymous sign-in under Build → Authentication → Sign-in method.</li>
           <li><strong>Firestore Database:</strong> Create a Firestore database in <strong>Production Mode</strong>.</li>
@@ -74,7 +74,7 @@ function renderOnlineMissingConfig() {
         </ol>
       </div>
 
-      <p class="small" style="max-width:540px;margin:14px auto 0;color:#d9cca9">If you’re hosting tonight, choose <strong>Open the Case</strong>. Nothing in the local game depends on Firebase.</p>
+      <p class="small" style="max-width:540px;margin:14px auto 0;color:var(--text-parchment-muted)">If you’re hosting tonight, choose <strong>Open the Case</strong>. Nothing in the local game depends on Firebase.</p>
       <div class="btnrow" style="justify-content:center;margin-top:22px">
         <button class="primary" onclick="show('scr-hook')">Open the Case</button>
         <button class="ghost" onclick="show('scr-title')">Back</button>
@@ -135,16 +135,16 @@ function renderOnlineVerificationFailed(error) {
       <h2 style="margin-top:10px">${esc(categoryTitle)}</h2>
 
       <div class="panel tight" style="text-align:left;background:rgba(217, 83, 79, 0.05);border-color:var(--blood);margin:20px auto;max-width:540px;">
-        <p class="small" style="margin-top:0"><strong>Details:</strong> <span style="color:#f2dede">${esc(msg)}</span></p>
-        <p class="small" style="margin-bottom:0;color:#cfc2a2"><strong>Diagnostic:</strong> ${diagnostic}</p>
+        <p class="small" style="margin-top:0"><strong>Details:</strong> <span style="color:var(--text-blush-pale)">${esc(msg)}</span></p>
+        <p class="small" style="margin-bottom:0;color:var(--text-parchment)"><strong>Diagnostic:</strong> ${diagnostic}</p>
       </div>
 
       <div class="panel tight" style="text-align:left;background:rgba(255,255,255,0.02);border-color:rgba(255,255,255,0.1);margin:20px auto;max-width:540px;">
         <h4 style="color:var(--gold);margin-top:0">How to Fix This:</h4>
-        <p class="small" style="line-height:1.5;color:#cfc2a2;margin-bottom:0">${actionRequired}</p>
+        <p class="small" style="line-height:1.5;color:var(--text-parchment);margin-bottom:0">${actionRequired}</p>
         <hr class="rule" style="border-color:rgba(255,255,255,0.1);margin:12px 0">
         <h4 style="color:var(--gold);margin-top:0">The Firebase Release Checklist:</h4>
-        <ol class="small" style="padding-left:18px;line-height:1.5;color:#cfc2a2;margin-bottom:0">
+        <ol class="small" style="padding-left:18px;line-height:1.5;color:var(--text-parchment);margin-bottom:0">
           <li><strong>Firebase Config:</strong> Web app config populated in <code>js/sync/config.js</code>.</li>
           <li><strong>Anonymous Auth:</strong> Enabled in Build → Authentication → Sign-in method.</li>
           <li><strong>Firestore Database:</strong> Created in <strong>Production Mode</strong> (not test mode).</li>
@@ -153,7 +153,7 @@ function renderOnlineVerificationFailed(error) {
         </ol>
       </div>
 
-      <p class="small" style="max-width:540px;margin:14px auto 0;color:#d9cca9">You can still play tonight using Hotseat mode (all storytellers sharing one screen).</p>
+      <p class="small" style="max-width:540px;margin:14px auto 0;color:var(--text-parchment-muted)">You can still play tonight using Hotseat mode (all storytellers sharing one screen).</p>
 
       <div class="btnrow" style="justify-content:center;margin-top:22px">
         <button class="primary" onclick="onlineVerifyAndProceed()">Retry Connection</button>
@@ -627,7 +627,7 @@ function renderOnlineLobby(room){
       <p class="small" style="color:var(--gold)">Visual language: ${esc(ART_STYLES.find(style=>style.id===normalizeArtStyle(room.artStyle))?.label || 'Bold Comic')}</p>
       <p class="center" style="margin:14px 0">
         <span class="sc" style="color:var(--gold);font-size:.85rem;letter-spacing:.15em">ROOM CODE</span><br>
-        <span style="font-size:2.2rem;letter-spacing:.3em;color:#eddfba">${esc(State.onlineRoomCode)}</span>
+        <span style="font-size:2.2rem;letter-spacing:.3em;color:var(--text-parchment-bright)">${esc(State.onlineRoomCode)}</span>
       </p>
       <p class="center"><button class="ghost" id="btn-copy-link" onclick="onlineCopyRoomLink()">Copy invite link</button></p>
       <p class="small muted center">Share the code or link — everyone else joins from “Play Online.”</p>
@@ -761,7 +761,7 @@ function onlineMyHandHTML(room,mySeat){
       ${me.signals.length?`<p class="hand-section-label">Held Signals · ${me.signals.length}</p><div class="cardgrid hand-cardgrid">${me.signals.map((o,oi)=>`
         <div class="held-card">${signalCard(o)}${room.sceneDeck.length?`<button class="ghost" onclick="onlineTradeOmen(${oi}, this)">Trade for a scene card</button>`:''}</div>`).join('')}</div>`:''}
       ${myPrivate.secrets.map(s=>`<details class="secretbox"><summary>Buried Secret ${s.used?'— revealed':'(yours alone to read)'}</summary>
-        <div class="small" style="margin-top:6px">${s.combo.map(toneBadge).join(' ')}<br><span style="color:#c9b3de">${esc(s.q)}</span>
+        <div class="small" style="margin-top:6px">${s.combo.map(toneBadge).join(' ')}<br><span style="color:var(--secret-lilac)">${esc(s.q)}</span>
         ${s.used?'':'<br><span class="muted">Unlocks when a scene’s tones contain this combination.</span>'}</div></details>`).join('')}
     </div>
   </details>`;
@@ -793,8 +793,8 @@ function renderOnlineHub(room){
     ${room.journal.length ? `<h3 style="color:var(--gold)">Last Scene</h3>${journalEntrySummaryHTML(room.journal[room.journal.length-1], {compact:true})}` : ''}
     <div class="panel tight">
       <h3 style="color:var(--blood-bright)">The Act Close — foreseen</h3>
-      <p><span class="sc" style="color:#eddfba">${esc(close.title)}.</span> <span class="muted small">${esc(close.cond)}</span></p>
-      <p class="small" style="color:#cfc2a2">${esc(close.prompt)}</p>
+      <p><span class="sc" style="color:var(--text-parchment-bright)">${esc(close.title)}.</span> <span class="muted small">${esc(close.cond)}</span></p>
+      <p class="small" style="color:var(--text-parchment)">${esc(close.prompt)}</p>
       <p class="small muted">${TONES.map(t=>`${toneBadge(t)} <span>${esc(close.elements[t])}</span>`).join('<br>')}</p>
     </div>
     <details class="disclose" open>
@@ -1052,9 +1052,9 @@ function renderOnlineResolveInline(room){
         return `<div class="panel tight" style="display:flex;gap:12px;align-items:flex-start">
           <input type="checkbox" id="online-flip-${i}" style="width:auto;margin-top:6px;transform:scale(1.3)">
           <label for="online-flip-${i}" style="cursor:pointer">
-            <span class="sc" style="color:#eddfba">${esc(a.name||a.role)}</span>
-            ${i===c.archIdx?'<span class="pill" style="border-color:var(--blood-bright);color:#e8c9c9">led this scene</span>':''}
-            <br><span class="small" style="color:#b3a687">${esc(s.cond)}</span> ${toneBadge(s.tone)}
+            <span class="sc" style="color:var(--text-parchment-bright)">${esc(a.name||a.role)}</span>
+            ${i===c.archIdx?'<span class="pill" style="border-color:var(--blood-bright);color:var(--text-blush)">led this scene</span>':''}
+            <br><span class="small" style="color:var(--text-parchment-dim)">${esc(s.cond)}</span> ${toneBadge(s.tone)}
           </label>
         </div>`;
       }).join('')}
@@ -1081,19 +1081,19 @@ function renderOnlineSecret(room){
   const sel = draft.secretSel || (draft.secretSel = []);
   $('scr-secret').innerHTML = `
     <div class="center" style="margin-top:20px">
-      <h2 style="color:#c9b3de;margin-top:6px">A Buried Secret Comes to Light</h2>
+      <h2 style="color:var(--secret-lilac);margin-top:6px">A Buried Secret Comes to Light</h2>
       <p class="muted">${esc(p.name)}’s secret is unlocked.</p>
     </div>
-    <div class="ornament" style="color:#8a63a8">✧</div>
+    <div class="ornament" style="color:var(--secret-violet)">✧</div>
     <div style="max-width:720px;margin:0 auto">
       <div class="secretbox" style="padding:16px">
         <div>${secret.combo.map(toneBadge).join(' ')}</div>
-        <p style="font-size:1.15rem;color:#e0d4ec;margin-top:8px">“${esc(secret.q)}”</p>
+        <p style="font-size:1.15rem;color:var(--secret-lilac-pale);margin-top:8px">“${esc(secret.q)}”</p>
       </div>
-      <h3 style="color:#c9b3de;margin-top:16px">Choose three signals <span class="small">(${sel.length} of ${Math.min(3,room.signalRow.length)})</span></h3>
+      <h3 style="color:var(--secret-lilac);margin-top:16px">Choose three signals <span class="small">(${sel.length} of ${Math.min(3,room.signalRow.length)})</span></h3>
       <div class="cardgrid compact">${room.signalRow.map((o,i)=>signalCard(o,'onlineToggleSecretOmen',i)).join('')}</div>
       <div class="panel spotlight">
-        <label class="fld" style="color:#c9b3de" for="secret-answer">The vignette</label>
+        <label class="fld" style="color:var(--secret-lilac)" for="secret-answer">The vignette</label>
         <textarea id="secret-answer" style="min-height:120px" oninput="onlineSetSecretAnswer(this.value)">${esc(draft.secretAnswer||'')}</textarea>
         <div class="btnrow"><button class="ghost" onclick="bleakifyField('secret-answer','secret reveal vignette',this)">Bleakify</button><button class="primary" ${sel.length!==Math.min(3,room.signalRow.length)?'disabled':''} onclick="onlineConfirmSecret(this)">So It Is Revealed</button></div>
       </div>

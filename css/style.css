@@ -18,6 +18,17 @@
   --tone-guilt:#5a4bb0;
   --tone-dread:#1f7a82;
   --fog:rgba(140,200,220,.05);
+  /* Text and Buried-Secret accents used by JS-rendered templates (#50). */
+  --text-parchment:#cfc2a2;
+  --text-parchment-bright:#eddfba;
+  --text-parchment-soft:#e3d7b8;
+  --text-parchment-muted:#d9cca9;
+  --text-parchment-dim:#b3a687;
+  --text-blush:#e8c9c9;
+  --text-blush-pale:#f2dede;
+  --secret-lilac:#c9b3de;
+  --secret-lilac-pale:#e0d4ec;
+  --secret-violet:#8a63a8;
   --space-1:4px;
   --space-2:8px;
   --space-3:12px;

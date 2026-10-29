@@ -22,7 +22,7 @@ export function renderHooks(){
       <h3>${esc(h.title)}</h3>
       <div class="h-epi">${esc(h.epigraph)}</div>
       <hr class="rule">
-      <div class="small" style="color:#cfc2a2">${esc(h.threatLine)}</div>
+      <div class="small" style="color:var(--text-parchment)">${esc(h.threatLine)}</div>
     </div>`).join('');
 }
 export function chooseCase(i){

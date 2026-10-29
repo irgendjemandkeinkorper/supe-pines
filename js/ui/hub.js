@@ -137,8 +137,8 @@ export function renderHub(){
 
     <div class="panel tight">
       <h3 style="color:var(--blood-bright)">The Act Close — foreseen</h3>
-      <p><span class="sc" style="color:#eddfba">${esc(close.title)}.</span> <span class="muted small">${esc(close.cond)}</span></p>
-      <p class="small" style="color:#cfc2a2">${esc(close.prompt)}</p>
+      <p><span class="sc" style="color:var(--text-parchment-bright)">${esc(close.title)}.</span> <span class="muted small">${esc(close.cond)}</span></p>
+      <p class="small" style="color:var(--text-parchment)">${esc(close.prompt)}</p>
       <p class="small muted">${TONES.map(t=>`${toneBadge(t)} <span>${esc(close.elements[t])}</span>`).join('<br>')}</p>
     </div>
 

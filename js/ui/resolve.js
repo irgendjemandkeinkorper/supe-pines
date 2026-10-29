@@ -31,9 +31,9 @@ export function renderResolve(){
         return `<div class="panel tight" style="display:flex;gap:12px;align-items:flex-start">
           <input type="checkbox" id="flip-${i}" onchange="toggleResolveFlip(${i})" ${isChecked ? 'checked' : ''} style="width:auto;margin-top:6px;transform:scale(1.3)">
           <label for="flip-${i}" style="cursor:pointer">
-            <span class="sc" style="color:#eddfba">${esc(a.name||a.role)}</span>
-            ${i===c.archIdx?'<span class="pill" style="border-color:var(--blood-bright);color:#e8c9c9">led this scene</span>':''}
-            <br><span class="small" style="color:#b3a687">${esc(s.cond)}</span> ${toneBadge(s.tone)}
+            <span class="sc" style="color:var(--text-parchment-bright)">${esc(a.name||a.role)}</span>
+            ${i===c.archIdx?'<span class="pill" style="border-color:var(--blood-bright);color:var(--text-blush)">led this scene</span>':''}
+            <br><span class="small" style="color:var(--text-parchment-dim)">${esc(s.cond)}</span> ${toneBadge(s.tone)}
           </label>
         </div>`;
       }).join('')}
@@ -113,20 +113,20 @@ export function renderSecretUnlock(unlock, tones){
 
   $('scr-secret').innerHTML = `
     <div class="center" style="margin-top:20px">
-      <div class="sc" style="color:#c9b3de;letter-spacing:.35em;font-size:.85rem">THE TONES ALIGN — ${tones.map(t=>t.toUpperCase()).join(', ')}</div>
-      <h2 style="color:#c9b3de;margin-top:6px">A Buried Secret Comes to Light</h2>
+      <div class="sc" style="color:var(--secret-lilac);letter-spacing:.35em;font-size:.85rem">THE TONES ALIGN — ${tones.map(t=>t.toUpperCase()).join(', ')}</div>
+      <h2 style="color:var(--secret-lilac);margin-top:6px">A Buried Secret Comes to Light</h2>
       <p class="muted">${esc(p.name)}’s secret is unlocked. This is a bonus scene: theirs alone. No cards may be played into it.</p>
     </div>
-    <div class="ornament" style="color:#8a63a8">✧</div>
+    <div class="ornament" style="color:var(--secret-violet)">✧</div>
     <div style="max-width:720px;margin:0 auto">
       <div class="secretbox" style="padding:16px">
         <div>${unlock.secret.combo.map(toneBadge).join(' ')}</div>
-        <p style="font-size:1.15rem;color:#e0d4ec;margin-top:8px">“${esc(unlock.secret.q)}”</p>
+        <p style="font-size:1.15rem;color:var(--secret-lilac-pale);margin-top:8px">“${esc(unlock.secret.q)}”</p>
       </div>
-      <h3 style="color:#c9b3de;margin-top:16px">Choose three signals to answer with <span class="small" id="secret-count">(${selLen} of ${need})</span></h3>
+      <h3 style="color:var(--secret-lilac);margin-top:16px">Choose three signals to answer with <span class="small" id="secret-count">(${selLen} of ${need})</span></h3>
       <div class="cardgrid compact">${G.signalRow.map((o,i)=>signalCard(o,'toggleSecretOmen',i)).join('')}</div>
       <div class="panel spotlight">
-        <label class="fld" style="color:#c9b3de" for="secret-answer">The vignette</label>
+        <label class="fld" style="color:var(--secret-lilac)" for="secret-answer">The vignette</label>
         <p class="small muted" style="margin-bottom:6px">Use the three signals — literally, metaphorically, obliquely — to show us the answer.</p>
         <textarea id="secret-answer" style="min-height:120px" oninput="setSecretAnswer(this.value)" placeholder="Show us…">${esc(unlock.answer)}</textarea>
         <div class="btnrow">

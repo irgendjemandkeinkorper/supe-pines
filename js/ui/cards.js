@@ -99,7 +99,7 @@ export function sceneAnatomyDiagramHTML(){
       <div class="td-num">3</div>
       <div class="td-label">Narrate</div>
       <div class="td-visual">
-        <p class="small" style="font-style:italic;color:#cfc2a2">“Sirens two blocks over, closing fast…”</p>
+        <p class="small" style="font-style:italic;color:var(--text-parchment)">“Sirens two blocks over, closing fast…”</p>
       </div>
       <div class="td-caption">Play it out aloud, together, until the starter ends it.</div>
     </div>
@@ -286,9 +286,9 @@ export function journalEntrySummaryHTML(entry, opts){
     return `<div class="panel tight"><span class="small muted">${esc(entry.text)}</span></div>`;
   }
   if(entry.type==='secret'){
-    return `<div class="panel tight" style="border-color:#8a63a8">
-      <h3 style="color:#c9b3de">${compact?'Just revealed — ':''}A Buried Secret: ${esc(entry.playerName)}</h3>
-      <p class="small" style="color:#e0d4ec">“${esc(entry.question)}”</p>
+    return `<div class="panel tight" style="border-color:var(--secret-violet)">
+      <h3 style="color:var(--secret-lilac)">${compact?'Just revealed — ':''}A Buried Secret: ${esc(entry.playerName)}</h3>
+      <p class="small" style="color:var(--secret-lilac-pale)">“${esc(entry.question)}”</p>
       <p class="small muted">Shown through: ${entry.signals.map(o=>`${o.glyph} ${esc(o.title)}`).join(' · ')}</p>
     </div>`;
   }
@@ -319,7 +319,7 @@ export function playerPanel(p,i){
     ${p.secrets.map(s=>`
       <details class="secretbox"><summary>Buried Secret ${s.used?'— revealed':'(theirs alone to read)'}</summary>
         <div class="small" style="margin-top:6px">${s.combo.map(toneBadge).join(' ')}<br>
-        <span style="color:#c9b3de">${esc(s.q)}</span>
+        <span style="color:var(--secret-lilac)">${esc(s.q)}</span>
         ${s.used?'':'<br><span class="muted">Unlocks when a scene’s tones contain this combination.</span>'}</div>
       </details>`).join('')}
   </div>`;

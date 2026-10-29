@@ -32,7 +32,7 @@ export function renderChronicle(interim){
     if(e.type==='note') return `<div class="chron-entry${e.struck?' struck':''}" ${delay}>${strike}<span class="small muted">${esc(e.text)}</span></div>`;
     if(e.type==='secret') return `
       <div class="chron-entry secret${e.struck?' struck':''}" ${delay}>${strike}
-        <div class="ce-head"><span class="ce-title" style="color:#c9b3de">A Buried Secret Revealed</span>
+        <div class="ce-head"><span class="ce-title" style="color:var(--secret-lilac)">A Buried Secret Revealed</span>
           <span class="ce-meta">${esc(e.playerName)} · ${e.combo.map(toneBadge).join(' ')}</span></div>
         <p class="ce-q">“${esc(e.question)}”</p>
         <p class="small muted">Answered through the signals: ${e.signals.map(o=>`${o.glyph} ${esc(o.title)}`).join(' · ')}</p>
@@ -48,7 +48,7 @@ export function renderChronicle(interim){
         ${e.element?`<p class="small" style="color:var(--blood-bright)">Commanded to include: ${esc(e.element)}</p>`:''}
         ${e.opening?`<blockquote>${nl2br(e.opening)}</blockquote>`:''}
         ${e.contributions.map(x=>`<p class="small"><span style="color:var(--gold)">${x.kind==='omen'?(x.glyph+' '):''}${esc(x.title)}</span> <span class="muted">(${esc(x.playerName)})</span>${x.how?` — <span>${esc(x.how)}</span>`:''}</p>`).join('')}
-        ${e.happened?`<p style="color:#e3d7b8">${nl2br(e.happened)}</p>`:''}
+        ${e.happened?`<p style="color:var(--text-parchment-soft)">${nl2br(e.happened)}</p>`:''}
         ${e.flips.length?`<p class="small muted">${e.flips.map(esc).join('; ')}.</p>`:''}
       </div>`;
   };
@@ -70,14 +70,14 @@ export function renderChronicle(interim){
     </div>
     <div class="panel tight">
       <h3 style="color:var(--gold)">The Roster</h3>
-      ${G.heroes.map(a=>`<p class="small" style="margin:4px 0"><span class="sc" style="color:#eddfba">${esc(a.name||a.role)}</span> — ${esc(a.role)}${a.flipped?' <span style="color:var(--blood-bright)">(turned)</span>':''} ${toneBadge(faceUp(a).tone)}</p>`).join('')}
+      ${G.heroes.map(a=>`<p class="small" style="margin:4px 0"><span class="sc" style="color:var(--text-parchment-bright)">${esc(a.name||a.role)}</span> — ${esc(a.role)}${a.flipped?' <span style="color:var(--blood-bright)">(turned)</span>':''} ${toneBadge(faceUp(a).tone)}</p>`).join('')}
     </div>
     ${acts || '<p class="center muted" style="margin-top:20px">Nothing is yet written. The file is still thin.</p>'}
     ${over?`
       <div class="ornament">❦ ✦ ❦</div>
       <div class="panel">
         <h3 style="color:var(--gold)">Debrief Questions</h3>
-        ${EPILOGUE_QUESTIONS.map(q=>`<p class="small" style="color:#cfc2a2;margin:8px 0">— ${esc(q)}</p>`).join('')}
+        ${EPILOGUE_QUESTIONS.map(q=>`<p class="small" style="color:var(--text-parchment);margin:8px 0">— ${esc(q)}</p>`).join('')}
       </div>`:''}
     <div class="btnrow" style="justify-content:center;margin-top:20px">
       ${interim?`<button class="primary" onclick="returnFromChronicle()">Return to the Case</button>`:''}

@@ -125,7 +125,7 @@ function renderIdlePanel(){
       ${unlocked.map(u=>`<button class="idle-obj idle-${u.id}" onclick="idleClick('${u.id}')" aria-label="${u.label}" title="${u.label}">${u.glyph}</button>`).join('')}
     </div>
     <p class="center" style="margin-top:10px" role="status" aria-live="polite" aria-atomic="true"><span class="idle-count" id="idle-count">${count}</span> <span class="small muted">counted</span></p>
-    <p class="small" id="idle-milestone" role="status" aria-live="polite" aria-atomic="true" style="min-height:1.4em;color:#cfc2a2;text-align:center">${currentMilestoneText(count)}</p>
+    <p class="small" id="idle-milestone" role="status" aria-live="polite" aria-atomic="true" style="min-height:1.4em;color:var(--text-parchment);text-align:center">${currentMilestoneText(count)}</p>
     <p class="small muted center" style="margin-top:2px;font-size:.72rem">+1 every ${PASSIVE_INTERVAL_MS / 1000}s while open</p>
     <div class="btnrow" style="justify-content:center"><button class="primary" onclick="closeOverlay()">Back to Millhaven</button></div>`;
   if(returning) overlayContent.querySelector('.primary')?.focus();
