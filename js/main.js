@@ -21,6 +21,7 @@ import { viewChronicle, returnFromChronicle, toggleStrike, showRules,
 import { copyChronicle, downloadChronicle } from './chronicle/markdown.js';
 import { bleakifyField } from './ai/bleakify.js';
 import { State } from './engine/state.js';
+import { stateBlockHTML } from './ui/states.js';
 import { clearSavedGame, readSave, readSaveStatus, saveGame, exportSaveJSON, importSaveJSON } from './engine/persistence.js';
 import { firebaseConfigured } from './sync/config.js';
 
@@ -58,19 +59,18 @@ function renderOnlineUnavailable(error){
   const message = error?.message || 'The online multiplayer module could not load.';
   const entry = document.getElementById('scr-online-entry');
   if(!entry) return;
-  entry.innerHTML = `<div class="panel" style="max-width:680px;margin:36px auto;text-align:center">
-    <div class="sc" style="color:var(--blood-bright);letter-spacing:.22em">SWITCHBOARD OFFLINE</div>
-    <h2 style="margin-top:10px">Connection Failed</h2>
-    <div class="panel tight" style="text-align:left;margin:20px auto;max-width:540px">
-      <p class="small"><strong>Details:</strong> ${String(message).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}</p>
-      <p class="small muted">The remote table could not load. Hotseat play is ready and does not require Firebase.</p>
-    </div>
-    <div class="btnrow" style="justify-content:center;margin-top:22px">
-      <button class="primary" onclick="showOnlineEntry()">Retry Connection</button>
-      <button class="primary" onclick="show('scr-hook')">Play Hotseat (Open the Case)</button>
-      <button class="ghost" onclick="show('scr-title')">Back</button>
-    </div>
-  </div>`;
+  entry.innerHTML = `<div class="panel u-panel-centered">${stateBlockHTML({
+    kind:'error',
+    eyebrow:'Switchboard offline',
+    title:'Connection Failed',
+    body:`Details: ${message}`,
+    next:'The remote table could not load. Hotseat play is ready and does not require Firebase.',
+    actions:[
+      {label:'Retry Connection', onclick:'showOnlineEntry()', variant:'primary'},
+      {label:'Play Hotseat (Open the Case)', onclick:"show('scr-hook')", variant:'primary'},
+      {label:'Back', onclick:"show('scr-title')"}
+    ]
+  })}</div>`;
   show('scr-online-entry');
 }
 

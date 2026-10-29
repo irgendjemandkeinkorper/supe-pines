@@ -6,6 +6,7 @@ import { subscribeRoom, unsubscribeRoom, subscribeMyPrivate, unsubscribeMyPrivat
 import { getUid } from '../../sync/auth.js';
 import { afterSceneFlow } from '../hub.js';
 import { renderScenePlay } from '../scene.js';
+import { stateBlockHTML } from '../states.js';
 import { session } from './session.js';
 import { mySeatIndex } from './session.js';
 import { leaveOnlineRoom, onlineCreateRoom, onlineJoinRoom } from './entry.js';
@@ -28,65 +29,54 @@ export function showOnlineError(err, type, options = {}) {
   let title = 'Error';
   let cause = msg;
   let nextAction = 'Verify your inputs and try again.';
-  let buttonsHTML = '';
+  let actions = [];
 
   if (type === 'create') {
     title = 'Failed to Create Room';
     cause = `Could not open a new case on the server. ${msg}`;
     nextAction = 'Try opening the table again, or check your internet connection.';
-    buttonsHTML = `
-      <button class="primary" onclick="onlineCreateRoom()">Try Again</button>
-      <button class="ghost" onclick="hideOnlineError()">Dismiss</button>
-    `;
+    actions = [
+      {label:'Try Again', onclick:'onlineCreateRoom()', variant:'primary'},
+      {label:'Dismiss', onclick:'hideOnlineError()', variant:'ghost'}
+    ];
   } else if (type === 'join') {
     title = 'Failed to Join Case';
     cause = `Could not join the case. ${msg}`;
     nextAction = 'Double-check the room code, or ask the host to confirm if the lobby is still open.';
-    buttonsHTML = `
-      <button class="primary" onclick="onlineJoinRoom()">Try Again</button>
-      <button class="ghost" onclick="hideOnlineError()">Dismiss</button>
-    `;
+    actions = [
+      {label:'Try Again', onclick:'onlineJoinRoom()', variant:'primary'},
+      {label:'Dismiss', onclick:'hideOnlineError()', variant:'ghost'}
+    ];
   } else if (type === 'auth') {
     title = 'Authentication Failure';
     cause = `We couldn't securely sign you into the switchboard: ${msg}`;
     nextAction = 'Please reload the page to re-authenticate and try again.';
-    buttonsHTML = `
-      <button class="primary" onclick="location.reload()">Reload Page</button>
-      <button class="ghost" onclick="hideOnlineError()">Dismiss</button>
-    `;
+    actions = [
+      {label:'Reload Page', onclick:'location.reload()', variant:'primary'},
+      {label:'Dismiss', onclick:'hideOnlineError()', variant:'ghost'}
+    ];
   } else if (type === 'subscription' || type === 'connection') {
     title = 'Connection Lost';
     cause = `The connection to the remote table was lost. (${msg})`;
     nextAction = 'You can retry connecting to the table, leave the table, or continue playing right now in Hotseat mode on this screen.';
-    buttonsHTML = `
-      <button class="primary" onclick="onlineRetryConnection()">Retry Connection</button>
-      <button class="blood" onclick="onlineFallbackToHotseat()">Continue in Hotseat</button>
-      <button class="ghost" onclick="leaveOnlineRoom(); hideOnlineError();">Leave Room</button>
-    `;
+    actions = [
+      {label:'Retry Connection', onclick:'onlineRetryConnection()', variant:'primary'},
+      {label:'Continue in Hotseat', onclick:'onlineFallbackToHotseat()', variant:'blood'},
+      {label:'Leave Room', onclick:'leaveOnlineRoom(); hideOnlineError();', variant:'ghost'}
+    ];
   } else {
     title = 'Action Failed';
     cause = `The action could not be completed. ${msg}`;
     nextAction = 'Check your selection and try playing the action again.';
-    buttonsHTML = `
-      <button class="ghost" onclick="hideOnlineError()">Dismiss</button>
-    `;
+    actions = [
+      {label:'Dismiss', onclick:'hideOnlineError()', variant:'ghost'}
+    ];
   }
 
-  container.innerHTML = `
-    <div class="panel spotlight" style="border-color: var(--blood-bright); border-width: 2px; margin: 0;">
-      <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-        <div>
-          <span class="sc" style="color: var(--blood-bright); letter-spacing: .15em; font-size: 0.95rem;">${esc(title)}</span>
-          <p style="margin-top: 6px; color: var(--paper); font-size: 1rem;">${esc(cause)}</p>
-          <p style="margin-top: 8px; color: var(--gold); font-size: 0.85rem;"><strong>Next Action:</strong> ${esc(nextAction)}</p>
-        </div>
-        <button class="ghost" onclick="hideOnlineError()" style="border: none; background: none; box-shadow: none; padding: 0; color: var(--gold-soft); cursor: pointer; font-size: 1.4rem; line-height: 1;" aria-label="Dismiss error">✕</button>
-      </div>
-      <div class="btnrow" style="margin-top: 14px;">
-        ${buttonsHTML}
-      </div>
-    </div>
-  `;
+  container.innerHTML = `<div class="panel spotlight ui-state-panel">
+      <button class="ghost ui-state-dismiss" type="button" onclick="hideOnlineError()" aria-label="Dismiss error">✕</button>
+      ${stateBlockHTML({kind:'error', compact:true, live:false, eyebrow:title, body:cause, next:nextAction, actions})}
+    </div>`;
 
   container.style.display = 'block';
   container.focus();

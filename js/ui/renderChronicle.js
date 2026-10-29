@@ -7,6 +7,7 @@ import { liveToggleStrike } from '../sync/liveActions.js';
 import { sceneAnatomyDiagramHTML } from './cards.js';
 import { fail } from './online/errors.js';
 import { markIntroSeen } from '../engine/firstrun.js';
+import { stateBlockHTML } from './states.js';
 
 /* ---------------- the dossier ---------------- */
 export function viewChronicle(interim){
@@ -72,7 +73,7 @@ export function renderChronicle(interim){
       <h3 class="u-gold">The Roster</h3>
       ${G.heroes.map(a=>`<p class="small" style="margin:4px 0"><span class="sc u-parchment-bright">${esc(a.name||a.role)}</span> — ${esc(a.role)}${a.flipped?' <span class="u-blood">(turned)</span>':''} ${toneBadge(faceUp(a).tone)}</p>`).join('')}
     </div>
-    ${acts || '<p class="center muted u-mt-20">Nothing is yet written. The file is still thin.</p>'}
+    ${acts || stateBlockHTML({kind:'empty', compact:true, title:'Nothing is yet written', body:'The file is still thin. Every scene you play lands here.'})}
     ${over?`
       <div class="ornament">❦ ✦ ❦</div>
       <div class="panel">

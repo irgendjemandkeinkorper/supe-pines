@@ -326,8 +326,17 @@ with sync_playwright() as playwright:
         assert page.get_by_role("button", name="Retry Connection").count() == 1
         assert page.get_by_role("button", name="Play Hotseat (Open the Case)").count() == 1
         assert page.get_by_role("button", name="Back").count() == 1
+        assert page.locator("#scr-online-entry [data-ui-state='error'][role='alert']").count() == 1
     else:
         assert page.locator("#oe-host-name").count() == 1
+    # UI states (#41), online flow: loading -> error, each with a way out.
+    page.evaluate("import('./js/ui/online/index.js').then(m => m.renderOnlineVerificationLoading())")
+    page.wait_for_selector("#scr-online-entry [data-ui-state='loading'][aria-busy='true']")
+    assert page.locator("#scr-online-entry").get_by_role("button", name="Cancel").count() == 1
+    page.evaluate("import('./js/ui/online/index.js').then(m => m.renderOnlineVerificationFailed(new Error('network timeout')))")
+    page.wait_for_selector("#scr-online-entry [data-ui-state='error']")
+    assert "Network Offline" in page.locator("#scr-online-entry").inner_text()
+    assert page.get_by_role("button", name="Retry Connection").count() == 1
 
     # Click Back to return to title screen
     page.get_by_role("button", name="Back").click()
@@ -437,6 +446,8 @@ with sync_playwright() as playwright:
     page.wait_for_selector("#scr-chronicle.active")
     assert_screen_focus(page, "scr-chronicle")
     run_dom_audit(page, "dossier screen")
+    # UI states (#41), Dossier: empty before any scene is played.
+    assert page.locator("#scr-chronicle [data-ui-state='empty']").count() == 1
     page.get_by_role("button", name="Return to the Case").click()
 
     # Play Scene 1 of Act I and verify the tracker/resolution surfaces.
@@ -753,6 +764,7 @@ with sync_playwright() as playwright:
     page.wait_for_selector("#scr-chronicle.active")
     check_no_raw_undefined_or_null(page)
     assert "THE CASE IS CLOSED" in page.locator("#scr-chronicle").inner_text().upper()
+    assert page.locator("#scr-chronicle [data-ui-state='empty']").count() == 0, "filled Dossier still shows the empty state"
     assert "THE MILLHAVEN DOSSIER" in page.locator("#scr-chronicle").inner_text().upper()
     assert "DEBRIEF QUESTIONS" in page.locator("#scr-chronicle").inner_text().upper()
 
@@ -886,9 +898,15 @@ with sync_playwright() as playwright:
     mobile = mobile_context.new_page()
     watch(mobile, "mobile ")
     mobile.goto(BASE, wait_until="load")
+    # UI states (#41), setup and Gallery: when art fails to load, the
+    # fallback still names the card.
+    mobile.route("**/art/images/**/cases/**", lambda route: route.fulfill(status=404, body=""))
+    mobile.route("**/art/images/**/heroes/**", lambda route: route.fulfill(status=404, body=""))
     # Touch: card actions are visible and tappable without hover (#40).
     mobile.locator("#scr-title").get_by_role("button", name="The Gallery").tap()
     mobile.wait_for_selector("#overlay", state="visible")
+    mobile.wait_for_selector(".gtile-media.g-missing, .gallery-face.g-missing")
+    assert mobile.locator(".gtile").first.locator(".gf-title").first.inner_text().strip() != ""
     flip = mobile.locator(".gallery-flip-control").first
     assert flip.is_visible() and float(flip.evaluate("el => getComputedStyle(el).opacity")) > 0.5
     flip.tap()
@@ -899,6 +917,8 @@ with sync_playwright() as playwright:
     mobile.wait_for_selector("#overlay", state="hidden")
     mobile.get_by_role("button", name="Open the Case (this screen)").tap()
     assert mobile.locator(".casecard").count() == 8
+    mobile.wait_for_selector(".casecard-art.missing")
+    assert mobile.locator(".casecard-art.missing .game-art-fallback").first.inner_text().strip() != ""
     assert mobile.evaluate("document.documentElement.scrollWidth <= window.innerWidth")
     mobile_context.close()
     browser.close()
