@@ -96,6 +96,9 @@ test('a matching Buried Secret can be claimed and revealed only by its owner', a
   const code = await playingRoom();
   const secret = {...SECRETS[0], used:false};
   fake.store.set(`rooms/${code}/private/${GUEST}`, {...priv(code, GUEST), secrets:[secret]});
+  // Pin the host to a secret that cannot match, so the deal's shuffle can't flake this.
+  const other = SECRETS.find(s => !s.combo.some(tone => secret.combo.includes(tone)));
+  fake.store.set(`rooms/${code}/private/${HOST}`, {...priv(code, HOST), secrets:[{...other, used:false}]});
   patchRoom(code, {current:null, journal:[{type:'scene', act:1, tones:secret.combo.slice()}]});
 
   fake.__signInAs(HOST);
