@@ -131,6 +131,20 @@ def play_one_scene(page, arch_idx):
 
 
 
+def assert_screen_focus(page, screen_id):
+    """After a screen change, focus lands inside the new screen, never in a
+    hidden one (#67)."""
+    page.wait_for_function(
+        """id => {
+            const el = document.activeElement;
+            return el && el !== document.body && el.closest('.screen')?.id === id;
+        }""",
+        arg=screen_id,
+        timeout=5_000,
+    )
+    assert page.evaluate("!document.activeElement.closest('.screen:not(.active)')")
+
+
 def focus_in_overlay(page):
     return page.evaluate("document.getElementById('overlay').contains(document.activeElement)")
 
@@ -212,8 +226,14 @@ with sync_playwright() as playwright:
     page.get_by_role("button", name="Back").click()
     page.wait_for_selector("#scr-title.active")
 
-    page.get_by_role("button", name="Open the Case (this screen)").click()
+    # Keyboard-only start: Enter on the title button lands focus on the
+    # Case picker heading, and the live status region exists.
+    page.get_by_role("button", name="Open the Case (this screen)").focus()
+    page.keyboard.press("Enter")
     page.wait_for_selector("#scr-hook.active")
+    assert_screen_focus(page, "scr-hook")
+    assert page.evaluate("document.activeElement.textContent.trim()") == "Choose the Case"
+    assert page.locator("#sr-status[role='status'][aria-live='polite']").count() == 1
     run_dom_audit(page, "case select screen")
     assert page.locator(".casecard").count() == 8
     assert page.locator(".case-phase-rail").count() == 1
@@ -226,6 +246,7 @@ with sync_playwright() as playwright:
     )
 
     page.locator(".casecard").first.click()
+    assert_screen_focus(page, "scr-players")
     run_dom_audit(page, "players screen")
     assert page.locator("input[name='local-art-style'][value='ink']").count() == 1
     assert page.locator("input[name='local-art-style'][value='expressionist']").count() == 1
@@ -274,6 +295,14 @@ with sync_playwright() as playwright:
     page.keyboard.press("Escape")
     page.wait_for_selector("#overlay", state="hidden")
     check_overlay_keyboard(page, lambda: page.evaluate("import('./js/chronicle/markdown.js').then(m => m.fallbackCopy('# Dossier'))"), "Copy the Dossier")
+    # History-driven close (browser Back) also returns focus to the opener (#67).
+    rules_button = page.locator("#topbar").get_by_role("button", name="The Rules")
+    rules_button.focus()
+    rules_button.press("Enter")
+    page.wait_for_selector("#overlay", state="visible")
+    page.go_back()
+    page.wait_for_selector("#overlay", state="hidden")
+    assert rules_button.evaluate("el => el === document.activeElement"), "Back did not return focus to the Rules button"
 
     # Gallery: Hero faces remain separate and both visual languages are exposed.
     page.get_by_role("button", name="The Gallery").click()
@@ -299,6 +328,7 @@ with sync_playwright() as playwright:
     # otherwise substring-matches this same accessible name too.
     page.get_by_role("button", name="The Dossier", exact=True).click()
     page.wait_for_selector("#scr-chronicle.active")
+    assert_screen_focus(page, "scr-chronicle")
     run_dom_audit(page, "dossier screen")
     page.get_by_role("button", name="Return to the Case").click()
 
@@ -306,6 +336,7 @@ with sync_playwright() as playwright:
     page.get_by_role("button", name="Begin a scene").click()
     if page.get_by_role("button", name="Got it — begin").count():
         page.get_by_role("button", name="Got it — begin").click()
+    assert_screen_focus(page, "scr-scene")
     run_dom_audit(page, "scene pick screen")
     check_no_raw_undefined_or_null(page)
 
