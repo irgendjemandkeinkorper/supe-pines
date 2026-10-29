@@ -9,6 +9,21 @@ function localStorageAvailable(){
   catch(e){ return false; }
 }
 
+// Tracks the ok -> failing transition so a full or blocked storage area
+// raises one notice per failure streak instead of one per autosave.
+let saveFailing = false;
+
+function notifySaveFailure(error){
+  if(saveFailing) return;
+  saveFailing = true;
+  const reason = error?.name === 'QuotaExceededError' ? 'quota' : 'unavailable';
+  if(typeof window !== 'undefined' && typeof window.dispatchEvent === 'function' && typeof CustomEvent === 'function'){
+    window.dispatchEvent(new CustomEvent('sp:save-failed', {detail:{reason}}));
+  }
+}
+
+export function isSaveFailing(){ return saveFailing; }
+
 export function saveGame(screen = null){
   if(!State.G || State.onlineRoomCode || !localStorageAvailable()) return false;
   const activeScreen = screen || document.querySelector('.screen.active')?.id || 'scr-hub';
@@ -21,20 +36,32 @@ export function saveGame(screen = null){
   };
   try {
     localStorage.setItem(SAVE_KEY, JSON.stringify(snapshot));
+    saveFailing = false;
     return true;
-  } catch(e){ return false; }
+  } catch(e){
+    notifySaveFailure(e);
+    return false;
+  }
 }
 
-export function readSave(){
-  if(!localStorageAvailable()) return null;
+/* Distinguishes "nothing saved" from "a save exists but can't be used", so
+   the title screen can tell players their progress was not silently lost. */
+export function readSaveStatus(){
+  if(!localStorageAvailable()) return {status:'none', snapshot:null};
+  let raw;
+  try { raw = localStorage.getItem(SAVE_KEY); }
+  catch(e){ return {status:'unreadable', snapshot:null}; }
+  if(!raw) return {status:'none', snapshot:null};
   try {
-    const raw = localStorage.getItem(SAVE_KEY);
-    if(!raw) return null;
     const snapshot = JSON.parse(raw);
-    if(snapshot?.version !== SAVE_VERSION || snapshot.mode !== 'local' || !snapshot.game?.case || !Array.isArray(snapshot.game.players)) return null;
-    return snapshot;
-  } catch(e){ return null; }
+    if(snapshot?.version !== SAVE_VERSION || snapshot.mode !== 'local' || !snapshot.game?.case || !Array.isArray(snapshot.game.players)) {
+      return {status:'corrupt', snapshot:null};
+    }
+    return {status:'ok', snapshot};
+  } catch(e){ return {status:'corrupt', snapshot:null}; }
 }
+
+export function readSave(){ return readSaveStatus().snapshot; }
 
 export function hasSavedGame(){ return !!readSave(); }
 
