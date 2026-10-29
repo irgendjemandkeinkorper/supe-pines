@@ -22,7 +22,7 @@ export function renderHooks(){
       <h3>${esc(h.title)}</h3>
       <div class="h-epi">${esc(h.epigraph)}</div>
       <hr class="rule">
-      <div class="small" style="color:var(--text-parchment)">${esc(h.threatLine)}</div>
+      <div class="small u-parchment">${esc(h.threatLine)}</div>
     </div>`).join('');
 }
 export function chooseCase(i){
@@ -87,16 +87,16 @@ export function renderArchSetup(){
     <p class="center muted sc" style="letter-spacing:.2em">PROFILING THE THREAT</p>
     ${progressDotsHTML(i, 6, `Question ${ROMAN[i+1]} of VI`)}
     <div class="ornament">❦</div>
-    <div style="max-width:640px;margin:0 auto">
+    <div class="u-col-640">
       <div class="card">
         <div class="c-kicker">Hero</div>
         <div class="c-title" style="font-size:1.5rem">${a.role}</div>
         <div class="c-prompt">${a.flavor}</div>
-        <div class="small" style="margin-top:8px"><strong>Power:</strong> ${esc(a.power)}</div>
+        <div class="small u-mt-8"><strong>Power:</strong> ${esc(a.power)}</div>
         <div class="small" style="margin-top:4px"><strong>Flaw:</strong> ${esc(a.flaw)}</div>
         <hr class="rule" style="border-color:rgba(60,45,25,.3)">
         <div style="font-size:1.05rem">“${a.setup[G.case.id]}”</div>
-        <div class="small" style="margin-top:8px;color:var(--blood)">${toneBadge(a.sides[0].tone)} <span style="color:var(--ink-soft)">— ${esc(a.sides[0].state)}: ${esc(a.sides[0].title)}. ${esc(a.sides[0].cond)} This is the roleplay trigger for Side II.</span></div>
+        <div class="small u-mt-8 u-blood-dark">${toneBadge(a.sides[0].tone)} <span class="u-ink-soft">— ${esc(a.sides[0].state)}: ${esc(a.sides[0].title)}. ${esc(a.sides[0].cond)} This is the roleplay trigger for Side II.</span></div>
       </div>
       <div class="panel">
         <p class="small muted">${esc(answerer.name)} answers — in character, or plainly. The answer becomes a fact about the Threat and about this Hero.</p>
@@ -131,9 +131,9 @@ export function renderVictim(){
     <h2 class="center">The Threat</h2>
     <p class="center muted" style="max-width:640px;margin:6px auto">${G.case.threatLine}</p>
     <div class="ornament">❦</div>
-    <div style="max-width:680px;margin:0 auto">
+    <div class="u-col-680">
       <div class="panel tight">
-        ${G.threat.facts.map(f=>`<p class="small" style="margin:6px 0"><span style="color:var(--gold)">${esc(f.role)}:</span> <span>${esc(f.a)}</span></p>`).join('')}
+        ${G.threat.facts.map(f=>`<p class="small" style="margin:6px 0"><span class="u-gold">${esc(f.role)}:</span> <span>${esc(f.a)}</span></p>`).join('')}
       </div>
       <div class="panel">
         <div class="threat-profile">

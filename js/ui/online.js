@@ -58,24 +58,24 @@ export async function initFirebaseConnection() {
 
 function renderOnlineMissingConfig() {
   $('scr-online-entry').innerHTML = `
-    <div class="panel" style="max-width:680px;margin:36px auto;text-align:center">
+    <div class="panel u-panel-centered">
       <div class="sc" style="color:var(--blood-bright);letter-spacing:.22em">REMOTE TABLES</div>
-      <h2 style="margin-top:10px">The Switchboard Isn’t Live Yet</h2>
+      <h2 class="u-mt-10">The Switchboard Isn’t Live Yet</h2>
       <p class="muted" style="max-width:540px;margin:12px auto 0">This public build is ready for hotseat play on one shared screen. Separate-screen rooms need a dedicated Firebase project before they can safely open.</p>
 
       <div class="panel tight" style="text-align:left;background:rgba(255,255,255,0.02);border-color:rgba(255,255,255,0.1);margin:20px auto;max-width:540px;">
-        <h4 style="color:var(--gold);margin-top:0">Required Firebase Setup Steps:</h4>
+        <h4 class="u-gold u-mt-0">Required Firebase Setup Steps:</h4>
         <ol class="small" style="padding-left:18px;line-height:1.5;color:var(--text-parchment)">
-          <li><strong>Firebase Config:</strong> Register a Web app in the Firebase console, and copy the config object into <code style="color:var(--blood-bright)">js/sync/config.js</code>.</li>
+          <li><strong>Firebase Config:</strong> Register a Web app in the Firebase console, and copy the config object into <code class="u-blood">js/sync/config.js</code>.</li>
           <li><strong>Anonymous Auth:</strong> Enable Anonymous sign-in under Build → Authentication → Sign-in method.</li>
           <li><strong>Firestore Database:</strong> Create a Firestore database in <strong>Production Mode</strong>.</li>
-          <li><strong>Firestore Rules:</strong> Publish the rules from <code style="color:var(--blood-bright)">firestore.rules</code> in the Firestore Rules tab.</li>
+          <li><strong>Firestore Rules:</strong> Publish the rules from <code class="u-blood">firestore.rules</code> in the Firestore Rules tab.</li>
           <li><strong>Authorized Domains:</strong> Add your deployment domain (e.g. your-username.github.io) under Authentication → Settings → Authorized domains.</li>
         </ol>
       </div>
 
       <p class="small" style="max-width:540px;margin:14px auto 0;color:var(--text-parchment-muted)">If you’re hosting tonight, choose <strong>Open the Case</strong>. Nothing in the local game depends on Firebase.</p>
-      <div class="btnrow" style="justify-content:center;margin-top:22px">
+      <div class="btnrow u-justify-center u-mt-22">
         <button class="primary" onclick="show('scr-hook')">Open the Case</button>
         <button class="ghost" onclick="show('scr-title')">Back</button>
       </div>
@@ -90,14 +90,14 @@ function renderOnlineVerificationLoading() {
       100% { transform: rotate(360deg); }
     }
     </style>
-    <div class="panel" style="max-width:680px;margin:36px auto;text-align:center">
+    <div class="panel u-panel-centered">
       <div class="sc" style="color:var(--gold);letter-spacing:.22em">VERIFYING SWITCHBOARD</div>
-      <h2 style="margin-top:10px">Testing Connection to Millhaven...</h2>
+      <h2 class="u-mt-10">Testing Connection to Millhaven...</h2>
       <p class="muted" style="max-width:540px;margin:12px auto 0">Verifying Anonymous Authentication and Firestore database availability.</p>
       <div style="margin:24px 0;">
         <div class="spinner" style="border: 4px solid rgba(255, 255, 255, 0.1); border-left-color: var(--gold); border-radius: 50%; width: 36px; height: 36px; animation: spin 1s linear infinite; margin: 0 auto;"></div>
       </div>
-      <div class="btnrow" style="justify-content:center;margin-top:22px">
+      <div class="btnrow u-justify-center u-mt-22">
         <button class="ghost" onclick="leaveOnlineRoom()">Cancel</button>
       </div>
     </div>`;
@@ -130,9 +130,9 @@ function renderOnlineVerificationFailed(error) {
   }
 
   $('scr-online-entry').innerHTML = `
-    <div class="panel" style="max-width:680px;margin:36px auto;text-align:center">
+    <div class="panel u-panel-centered">
       <div class="sc" style="color:var(--blood-bright);letter-spacing:.22em">SWITCHBOARD OFFLINE</div>
-      <h2 style="margin-top:10px">${esc(categoryTitle)}</h2>
+      <h2 class="u-mt-10">${esc(categoryTitle)}</h2>
 
       <div class="panel tight" style="text-align:left;background:rgba(217, 83, 79, 0.05);border-color:var(--blood);margin:20px auto;max-width:540px;">
         <p class="small" style="margin-top:0"><strong>Details:</strong> <span style="color:var(--text-blush-pale)">${esc(msg)}</span></p>
@@ -140,10 +140,10 @@ function renderOnlineVerificationFailed(error) {
       </div>
 
       <div class="panel tight" style="text-align:left;background:rgba(255,255,255,0.02);border-color:rgba(255,255,255,0.1);margin:20px auto;max-width:540px;">
-        <h4 style="color:var(--gold);margin-top:0">How to Fix This:</h4>
+        <h4 class="u-gold u-mt-0">How to Fix This:</h4>
         <p class="small" style="line-height:1.5;color:var(--text-parchment);margin-bottom:0">${actionRequired}</p>
         <hr class="rule" style="border-color:rgba(255,255,255,0.1);margin:12px 0">
-        <h4 style="color:var(--gold);margin-top:0">The Firebase Release Checklist:</h4>
+        <h4 class="u-gold u-mt-0">The Firebase Release Checklist:</h4>
         <ol class="small" style="padding-left:18px;line-height:1.5;color:var(--text-parchment);margin-bottom:0">
           <li><strong>Firebase Config:</strong> Web app config populated in <code>js/sync/config.js</code>.</li>
           <li><strong>Anonymous Auth:</strong> Enabled in Build → Authentication → Sign-in method.</li>
@@ -155,7 +155,7 @@ function renderOnlineVerificationFailed(error) {
 
       <p class="small" style="max-width:540px;margin:14px auto 0;color:var(--text-parchment-muted)">You can still play tonight using Hotseat mode (all storytellers sharing one screen).</p>
 
-      <div class="btnrow" style="justify-content:center;margin-top:22px">
+      <div class="btnrow u-justify-center u-mt-22">
         <button class="primary" onclick="onlineVerifyAndProceed()">Retry Connection</button>
         <button class="primary" onclick="show('scr-hook')">Play Hotseat (Open the Case)</button>
         <button class="ghost" onclick="leaveOnlineRoom()">Back</button>
@@ -170,7 +170,7 @@ function renderOnlineEntryForm() {
     <div class="ornament">❦</div>
     <div class="pgrid" style="grid-template-columns:repeat(auto-fit,minmax(320px,1fr));max-width:900px;margin:0 auto">
       <div class="panel">
-        <h3 style="color:var(--gold)">Open a New Case</h3>
+        <h3 class="u-gold">Open a New Case</h3>
         <label class="fld" for="oe-case">Choose the Case</label>
         <select id="oe-case" onchange="onlineRefreshArtPicker()">${CASES.map((h,i)=>`<option value="${i}">${esc(h.title)}</option>`).join('')}</select>
         <div id="oe-art-style-picker">${artStylePickerHTML('oe-art-style', null, CASES[0].id)}</div>
@@ -181,7 +181,7 @@ function renderOnlineEntryForm() {
         </div>
       </div>
       <div class="panel">
-        <h3 style="color:var(--gold)">Join a Case in Progress</h3>
+        <h3 class="u-gold">Join a Case in Progress</h3>
         <label class="fld" for="oe-join-code">Room code</label>
         <input type="text" id="oe-join-code" placeholder="e.g. K7QRM" style="text-transform:uppercase">
         <label class="fld" for="oe-join-name">Your name</label>
@@ -191,7 +191,7 @@ function renderOnlineEntryForm() {
         </div>
       </div>
     </div>
-    <div class="btnrow" style="justify-content:center;margin-top:20px">
+    <div class="btnrow u-justify-center u-mt-20">
       <button class="ghost" onclick="leaveOnlineRoom()">Back</button>
     </div>`;
 }
@@ -621,10 +621,10 @@ function renderOnlineLobby(room){
   $('scr-online-lobby').innerHTML = `
     <h2 class="center">The Team Gathers</h2>
     <div class="ornament">❦</div>
-    <div class="panel" style="max-width:640px;margin:0 auto">
-      <p class="small" style="color:var(--gold)">${esc(room.case.title)}</p>
+    <div class="panel u-col-640">
+      <p class="small u-gold">${esc(room.case.title)}</p>
       <p class="small muted">${esc(room.case.epigraph)}</p>
-      <p class="small" style="color:var(--gold)">Visual language: ${esc(ART_STYLES.find(style=>style.id===normalizeArtStyle(room.artStyle))?.label || 'Bold Comic')}</p>
+      <p class="small u-gold">Visual language: ${esc(ART_STYLES.find(style=>style.id===normalizeArtStyle(room.artStyle))?.label || 'Bold Comic')}</p>
       <p class="center" style="margin:14px 0">
         <span class="sc" style="color:var(--gold);font-size:.85rem;letter-spacing:.15em">ROOM CODE</span><br>
         <span style="font-size:2.2rem;letter-spacing:.3em;color:var(--text-parchment-bright)">${esc(State.onlineRoomCode)}</span>
@@ -668,14 +668,14 @@ function renderOnlineArchSetup(room){
     <p class="center muted sc" style="letter-spacing:.2em">PROFILING THE THREAT</p>
     ${progressDotsHTML(i, HEROES_PER_GAME, `Question ${ROMAN[i+1]} of VI`)}
     <div class="ornament">❦</div>
-    <div style="max-width:640px;margin:0 auto">
+    <div class="u-col-640">
       <div class="card">
         <div class="c-kicker">Hero</div>
         <div class="c-title" style="font-size:1.5rem">${a.role}</div>
         <div class="c-prompt">${a.flavor}</div>
         <hr class="rule" style="border-color:rgba(60,45,25,.3)">
         <div style="font-size:1.05rem">“${a.setup[room.case.id]}”</div>
-        <div class="small" style="margin-top:8px;color:var(--blood)">${toneBadge(a.sides[0].tone)} <span style="color:var(--ink-soft)">— ${esc(a.sides[0].cond)} flip this card.</span></div>
+        <div class="small u-mt-8 u-blood-dark">${toneBadge(a.sides[0].tone)} <span class="u-ink-soft">— ${esc(a.sides[0].cond)} flip this card.</span></div>
       </div>
       <div class="panel">
         ${showForm ? `
@@ -707,9 +707,9 @@ function renderOnlineVictim(room){
     <h2 class="center">The Threat</h2>
     <p class="center muted" style="max-width:640px;margin:6px auto">${room.case.threatLine}</p>
     <div class="ornament">❦</div>
-    <div style="max-width:680px;margin:0 auto">
+    <div class="u-col-680">
       <div class="panel tight">
-        ${room.threat.facts.map(f=>`<p class="small" style="margin:6px 0"><span style="color:var(--gold)">${esc(f.role)}:</span> <span>${esc(f.a)}</span></p>`).join('')}
+        ${room.threat.facts.map(f=>`<p class="small" style="margin:6px 0"><span class="u-gold">${esc(f.role)}:</span> <span>${esc(f.a)}</span></p>`).join('')}
       </div>
       <div class="panel">
         <div class="threat-profile">
@@ -761,7 +761,7 @@ function onlineMyHandHTML(room,mySeat){
       ${me.signals.length?`<p class="hand-section-label">Held Signals · ${me.signals.length}</p><div class="cardgrid hand-cardgrid">${me.signals.map((o,oi)=>`
         <div class="held-card">${signalCard(o)}${room.sceneDeck.length?`<button class="ghost" onclick="onlineTradeOmen(${oi}, this)">Trade for a scene card</button>`:''}</div>`).join('')}</div>`:''}
       ${myPrivate.secrets.map(s=>`<details class="secretbox"><summary>Buried Secret ${s.used?'— revealed':'(yours alone to read)'}</summary>
-        <div class="small" style="margin-top:6px">${s.combo.map(toneBadge).join(' ')}<br><span style="color:var(--secret-lilac)">${esc(s.q)}</span>
+        <div class="small u-mt-6">${s.combo.map(toneBadge).join(' ')}<br><span class="u-secret">${esc(s.q)}</span>
         ${s.used?'':'<br><span class="muted">Unlocks when a scene’s tones contain this combination.</span>'}</div></details>`).join('')}
     </div>
   </details>`;
@@ -775,7 +775,7 @@ function renderOnlineHub(room){
   const banner = room.pendingSecret ? `<div class="notice">A Buried Secret is being revealed at the table right now…</div>` : '';
   const iCanLead = me && me.scenesLeft>0 && me.handCount>0;
   $('scr-hub').innerHTML = `
-    <h2 class="center" style="margin-top:8px">${ACT_NAMES[room.act]}</h2>
+    <h2 class="center u-mt-8">${ACT_NAMES[room.act]}</h2>
     <p class="center"><span class="pill">Room code: <strong>${esc(State.onlineRoomCode||'')}</strong></span></p>
     <p class="center muted">${esc(room.case.title)} · The Threat: ${esc(room.threat.name)}</p>
     ${actTrackHTML(room.act)}
@@ -790,17 +790,17 @@ function renderOnlineHub(room){
       <div class="turn-seats">${room.players.map((p,i)=>onlineTurnSeatHTML(room,p,i,mySeat)).join('')}</div>
     </div>
     ${onlineMyHandHTML(room,mySeat)}
-    ${room.journal.length ? `<h3 style="color:var(--gold)">Last Scene</h3>${journalEntrySummaryHTML(room.journal[room.journal.length-1], {compact:true})}` : ''}
+    ${room.journal.length ? `<h3 class="u-gold">Last Scene</h3>${journalEntrySummaryHTML(room.journal[room.journal.length-1], {compact:true})}` : ''}
     <div class="panel tight">
-      <h3 style="color:var(--blood-bright)">The Act Close — foreseen</h3>
-      <p><span class="sc" style="color:var(--text-parchment-bright)">${esc(close.title)}.</span> <span class="muted small">${esc(close.cond)}</span></p>
-      <p class="small" style="color:var(--text-parchment)">${esc(close.prompt)}</p>
+      <h3 class="u-blood">The Act Close — foreseen</h3>
+      <p><span class="sc u-parchment-bright">${esc(close.title)}.</span> <span class="muted small">${esc(close.cond)}</span></p>
+      <p class="small u-parchment">${esc(close.prompt)}</p>
       <p class="small muted">${TONES.map(t=>`${toneBadge(t)} <span>${esc(close.elements[t])}</span>`).join('<br>')}</p>
     </div>
     <details class="disclose" open>
       <summary>The Heroes <span class="small muted">(${room.heroes.length})</span></summary>
       <div class="disclose-body">
-        <div class="pgrid" style="grid-template-columns:repeat(auto-fill,minmax(280px,1fr));margin-top:8px">
+        <div class="pgrid u-grid-cards u-mt-8">
           ${room.heroes.map(a=>heroCard(a)).join('')}
         </div>
       </div>
@@ -814,7 +814,7 @@ function renderOnlineHub(room){
     <details class="disclose">
       <summary>The Storytellers <span class="small muted">${room.players.length} in play · Scene deck ${room.sceneDeck.length} · Signal deck ${room.signalDeck.length}</span></summary>
       <div class="disclose-body">
-        <div class="pgrid" style="margin-top:8px">
+        <div class="pgrid u-mt-8">
           ${room.players.map((p,i)=>onlinePlayerPanel(p,i===mySeat)).join('')}
         </div>
       </div>
@@ -870,20 +870,20 @@ function renderOnlineCloseIntro(room){
   const tied = TONES.filter(t=>counts[t]===max);
   const chosenTone = tied[0];
   $('scr-close').innerHTML = `
-    <h2 class="center" style="color:var(--blood-bright)">${ACT_NAMES[room.act]} draws to a close</h2>
+    <h2 class="center u-blood">${ACT_NAMES[room.act]} draws to a close</h2>
     ${actTrackHTML(room.act)}
     <div class="ornament">✦</div>
-    <div style="max-width:720px;margin:0 auto">
+    <div class="u-col-720">
       <div class="card">
         <div class="c-kicker">Act Close</div>
         <div class="c-title" style="font-size:1.4rem">${esc(close.title)}</div>
         <div class="c-prompt">${esc(close.prompt)}</div>
       </div>
       <div class="panel spotlight">
-        <p class="small" style="color:var(--gold)">${esc(close.cond)}</p>
+        <p class="small u-gold">${esc(close.cond)}</p>
         <p class="small muted">Tones this act: ${TONES.map(t=>toneCountBadge(t, counts[t])).join(' ')}</p>
         ${tied.length===1
-          ? `<p><strong style="color:var(--blood-bright)">Dominant tone: ${toneBadge(tied[0])}</strong> — must <span>${esc(close.elements[tied[0]])}</span></p>`
+          ? `<p><strong class="u-blood">Dominant tone: ${toneBadge(tied[0])}</strong> — must <span>${esc(close.elements[tied[0]])}</span></p>`
           : `<label class="fld" for="close-el">The tones are tied — choose the element</label>
              <select id="close-el">${tied.map(t=>`<option value="${t}">${t} — ${esc(close.elements[t])}</option>`).join('')}</select>`}
         <label class="fld" for="close-starter">Who begins the close?</label>
@@ -913,7 +913,7 @@ function renderOnlineScenePick(){
   const room = State.G;
   const primerHTML = !hasSeenIntro() ? `
     <div class="panel spotlight">
-      <h3 style="color:var(--gold)">Before your first scene</h3>
+      <h3 class="u-gold">Before your first scene</h3>
       ${sceneAnatomyDiagramHTML()}
       <div class="btnrow"><button class="primary" onclick="onlineDismissScenePrimer()">Got it — begin</button></div>
     </div>` : '';
@@ -921,10 +921,10 @@ function renderOnlineScenePick(){
     ${primerHTML}
     <h2 class="center">You begin a scene</h2>
     <div class="ornament">❦</div>
-    <h3 style="color:var(--gold)">Choose a scene card from your hand</h3>
+    <h3 class="u-gold">Choose a scene card from your hand</h3>
     <div class="cardgrid">${myPrivate.hand.map((sc,i)=>sceneCardHTML(sc,'onlinePickSceneCard',i)).join('')}</div>
-    <h3 style="color:var(--gold)">Choose up to two lead Heroes</h3>
-    <div class="pgrid" style="grid-template-columns:repeat(auto-fill,minmax(280px,1fr));margin-top:8px">
+    <h3 class="u-gold">Choose up to two lead Heroes</h3>
+    <div class="pgrid u-grid-cards u-mt-8">
       ${room.heroes.map((a,i)=>heroCard(a,'onlinePickArch',i)).join('')}
     </div>
     <div class="panel">
@@ -980,7 +980,7 @@ function renderOnlineScene(room){
       addingHTML = `<div class="btnrow"><button class="ghost" onclick="onlineStartContrib()">Play a card into this scene</button></div>`;
     } else if(!draft.adding.pick){
       addingHTML = `
-        <p class="small" style="color:var(--gold)">Choose a scene card from your hand, or a signal from the row:</p>
+        <p class="small u-gold">Choose a scene card from your hand, or a signal from the row:</p>
         ${myPrivate.hand.length?`<div class="cardgrid">${myPrivate.hand.map((sc,i)=>sceneCardHTML(sc,'onlinePickContribScene',i)).join('')}</div>`:''}
         ${room.signalRow.length?`<div class="cardgrid compact">${room.signalRow.map((o,i)=>signalCard(o,'onlinePickContribOmen',i)).join('')}</div>`:''}
         <button class="ghost" onclick="onlineCancelContrib()">Never mind</button>`;
@@ -1002,7 +1002,7 @@ function renderOnlineScene(room){
   const endSceneHTML = iAmStarter ? (!draft.resolving ? `
     <div class="panel spotlight">
       <label class="fld" for="scene-happened">The record of what happens</label>
-      <p class="small muted" style="margin-bottom:6px">Play the scene aloud. Note what the Dossier should remember: who appeared, what was said, and what was discovered.</p>
+      <p class="small muted u-mb-6">Play the scene aloud. Note what the Dossier should remember: who appeared, what was said, and what was discovered.</p>
       <textarea id="scene-happened" style="min-height:130px" oninput="onlineSetSceneHappened(this.value)" placeholder="What the Dossier will remember of this scene…">${esc(draft.happened||'')}</textarea>
       <div class="btnrow"><button class="ghost" onclick="bleakifyField('scene-happened','record of what happened',this)">Bleakify</button><button class="blood" onclick="onlineEndScene()">The scene ends</button></div>
     </div>` : renderOnlineResolveInline(room)) : '';
@@ -1045,14 +1045,14 @@ function renderOnlineResolveInline(room){
   const c = room.current;
   return `
     <div class="panel spotlight">
-      <h3 style="color:var(--gold)">Consult each Hero’s face-up condition</h3>
+      <h3 class="u-gold">Consult each Hero’s face-up condition</h3>
       <p class="small muted">If it was met in this scene, check it to turn the card.</p>
       ${room.heroes.map((a,i)=>{
         const s = faceUp(a);
         return `<div class="panel tight" style="display:flex;gap:12px;align-items:flex-start">
           <input type="checkbox" id="online-flip-${i}" style="width:auto;margin-top:6px;transform:scale(1.3)">
-          <label for="online-flip-${i}" style="cursor:pointer">
-            <span class="sc" style="color:var(--text-parchment-bright)">${esc(a.name||a.role)}</span>
+          <label class="u-pointer" for="online-flip-${i}">
+            <span class="sc u-parchment-bright">${esc(a.name||a.role)}</span>
             ${i===c.archIdx?'<span class="pill" style="border-color:var(--blood-bright);color:var(--text-blush)">led this scene</span>':''}
             <br><span class="small" style="color:var(--text-parchment-dim)">${esc(s.cond)}</span> ${toneBadge(s.tone)}
           </label>
@@ -1080,12 +1080,12 @@ function renderOnlineSecret(room){
   const secret = myPrivate.secrets[u.secretIndex];
   const sel = draft.secretSel || (draft.secretSel = []);
   $('scr-secret').innerHTML = `
-    <div class="center" style="margin-top:20px">
+    <div class="center u-mt-20">
       <h2 style="color:var(--secret-lilac);margin-top:6px">A Buried Secret Comes to Light</h2>
       <p class="muted">${esc(p.name)}’s secret is unlocked.</p>
     </div>
     <div class="ornament" style="color:var(--secret-violet)">✧</div>
-    <div style="max-width:720px;margin:0 auto">
+    <div class="u-col-720">
       <div class="secretbox" style="padding:16px">
         <div>${secret.combo.map(toneBadge).join(' ')}</div>
         <p style="font-size:1.15rem;color:var(--secret-lilac-pale);margin-top:8px">“${esc(secret.q)}”</p>
@@ -1093,7 +1093,7 @@ function renderOnlineSecret(room){
       <h3 style="color:var(--secret-lilac);margin-top:16px">Choose three signals <span class="small">(${sel.length} of ${Math.min(3,room.signalRow.length)})</span></h3>
       <div class="cardgrid compact">${room.signalRow.map((o,i)=>signalCard(o,'onlineToggleSecretOmen',i)).join('')}</div>
       <div class="panel spotlight">
-        <label class="fld" style="color:var(--secret-lilac)" for="secret-answer">The vignette</label>
+        <label class="fld u-secret" for="secret-answer">The vignette</label>
         <textarea id="secret-answer" style="min-height:120px" oninput="onlineSetSecretAnswer(this.value)">${esc(draft.secretAnswer||'')}</textarea>
         <div class="btnrow"><button class="ghost" onclick="bleakifyField('secret-answer','secret reveal vignette',this)">Bleakify</button><button class="primary" ${sel.length!==Math.min(3,room.signalRow.length)?'disabled':''} onclick="onlineConfirmSecret(this)">So It Is Revealed</button></div>
       </div>

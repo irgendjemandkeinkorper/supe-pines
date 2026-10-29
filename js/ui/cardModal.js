@@ -12,7 +12,7 @@ export function openCardDetail(kind, index){
   document.getElementById('overlay-content').innerHTML = `
     <button class="ghost" onclick="closeCardDetail()">← Back</button>
     <div class="card-detail-modal">
-      <h2 style="color:var(--gold)">${esc(title)}</h2>
+      <h2 class="u-gold">${esc(title)}</h2>
       ${content}
       <div class="btnrow" style="justify-content:center;margin-top:16px">
         <button class="primary" onclick="closeCardDetail()">Return to the game</button>

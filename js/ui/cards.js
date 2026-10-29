@@ -141,7 +141,7 @@ export function sceneCardHTML(c, selectable, idx){
     <div class="c-kicker">Scene · ${ACT_NAMES[G.act]}</div>
     <div class="c-title">${esc(c.title)}</div>
     <div class="c-prompt">${esc(c.prompt)}</div>
-    <div style="margin-top:8px">${toneBadge(c.tone)}</div>
+    <div class="u-mt-8">${toneBadge(c.tone)}</div>
   </div>`;
 }
 
@@ -287,20 +287,20 @@ export function journalEntrySummaryHTML(entry, opts){
   }
   if(entry.type==='secret'){
     return `<div class="panel tight" style="border-color:var(--secret-violet)">
-      <h3 style="color:var(--secret-lilac)">${compact?'Just revealed — ':''}A Buried Secret: ${esc(entry.playerName)}</h3>
+      <h3 class="u-secret">${compact?'Just revealed — ':''}A Buried Secret: ${esc(entry.playerName)}</h3>
       <p class="small" style="color:var(--secret-lilac-pale)">“${esc(entry.question)}”</p>
       <p class="small muted">Shown through: ${entry.signals.map(o=>`${o.glyph} ${esc(o.title)}`).join(' · ')}</p>
     </div>`;
   }
   const contribHTML = entry.contributions.length
-    ? entry.contributions.map(x=>`<p class="small" style="margin:3px 0"><span style="color:var(--gold)">${x.kind==='omen'?(x.glyph+' '):''}${esc(x.title)}</span> <span class="muted">(${esc(x.playerName)})</span>${(!compact && x.how)?` — ${nl2br(x.how)}`:''}</p>`).join('')
+    ? entry.contributions.map(x=>`<p class="small" style="margin:3px 0"><span class="u-gold">${x.kind==='omen'?(x.glyph+' '):''}${esc(x.title)}</span> <span class="muted">(${esc(x.playerName)})</span>${(!compact && x.how)?` — ${nl2br(x.how)}`:''}</p>`).join('')
     : '<p class="small muted">No one else played into this scene.</p>';
   return `<div class="panel tight">
-    <h3 style="color:var(--gold)">${entry.type==='close'?'Act Close — ':''}${esc(entry.cardTitle)}</h3>
+    <h3 class="u-gold">${entry.type==='close'?'Act Close — ':''}${esc(entry.cardTitle)}</h3>
     <p class="small">Led by <strong>${esc(entry.playerName)}</strong> as ${esc(entry.archName)} (${esc(entry.archRole)})</p>
     <p class="small" style="color:var(--gold);margin-top:6px">Cards &amp; characters played</p>
     ${contribHTML}
-    <p class="small muted" style="margin-top:6px">Tones: ${entry.tones.map(toneBadge).join(' ')}</p>
+    <p class="small muted u-mt-6">Tones: ${entry.tones.map(toneBadge).join(' ')}</p>
     ${entry.flips.length?`<p class="small muted">${entry.flips.map(esc).join('; ')}.</p>`:''}
   </div>`;
 }
@@ -318,8 +318,8 @@ export function playerPanel(p,i){
       ${G.sceneDeck.length?`<button class="ghost" onclick="tradeSignal(${i},${oi})">Trade for a scene card</button>`:'<span class="small muted">Scene deck empty</span>'}</div>`).join('')}</div>`:''}
     ${p.secrets.map(s=>`
       <details class="secretbox"><summary>Buried Secret ${s.used?'— revealed':'(theirs alone to read)'}</summary>
-        <div class="small" style="margin-top:6px">${s.combo.map(toneBadge).join(' ')}<br>
-        <span style="color:var(--secret-lilac)">${esc(s.q)}</span>
+        <div class="small u-mt-6">${s.combo.map(toneBadge).join(' ')}<br>
+        <span class="u-secret">${esc(s.q)}</span>
         ${s.used?'':'<br><span class="muted">Unlocks when a scene’s tones contain this combination.</span>'}</div>
       </details>`).join('')}
   </div>`;
