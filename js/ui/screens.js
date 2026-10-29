@@ -47,10 +47,33 @@ function setBackgroundInert(inert){
   if(topbar) topbar.inert = inert;
   if(wrap) wrap.inert = inert;
 }
-export function openOverlay(){
-  lastFocusBeforeOverlay = document.activeElement;
+const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), summary, [tabindex]:not([tabindex="-1"])';
+function overlayFocusables(){
+  return [...$('overlay').querySelectorAll(FOCUSABLE)].filter(el => el.offsetParent !== null || el === document.activeElement);
+}
+
+/* Every overlay state gets a stable accessible name (Rules, The Gallery,
+   Gallery detail: …) so screen readers announce what opened. */
+export function setOverlayLabel(label){
+  $('overlay').setAttribute('aria-label', label || 'Supe Pines');
+}
+
+/* Moves focus into the dialog unless a caller already placed it there.
+   Also used after a re-render (e.g. Gallery detail) wipes the focused node. */
+export function focusOverlayStart(){
+  const overlay = $('overlay');
+  if(overlay.contains(document.activeElement) && document.activeElement !== overlay) return;
+  const first = overlayFocusables()[0];
+  if(first) first.focus();
+  else { overlay.tabIndex = -1; overlay.focus(); }
+}
+
+export function openOverlay(label){
+  if($('overlay').style.display !== 'block') lastFocusBeforeOverlay = document.activeElement;
+  setOverlayLabel(label);
   $('overlay').style.display = 'block';
   setBackgroundInert(true);
+  focusOverlayStart();
   pushHistory({...currentScreenState(), overlay:true});
 }
 export function closeOverlay(){
@@ -95,9 +118,19 @@ export function initHistoryNav(){
     } finally { suppressHistory = false; }
   });
   window.addEventListener('keydown', event=>{
-    if(event.key==='Escape' && $('overlay').style.display==='block'){
+    if($('overlay').style.display!=='block') return;
+    if(event.key==='Escape'){
       event.preventDefault();
       closeOverlay();
+    } else if(event.key==='Tab'){
+      // inert keeps the page out of reach; this keeps Tab from escaping
+      // to the browser chrome and loops it inside the dialog instead.
+      const items = overlayFocusables();
+      if(!items.length){ event.preventDefault(); return; }
+      const first = items[0], last = items[items.length-1];
+      const inside = $('overlay').contains(document.activeElement);
+      if(event.shiftKey && (!inside || document.activeElement===first)){ event.preventDefault(); last.focus(); }
+      else if(!event.shiftKey && (!inside || document.activeElement===last)){ event.preventDefault(); first.focus(); }
     }
   });
 }

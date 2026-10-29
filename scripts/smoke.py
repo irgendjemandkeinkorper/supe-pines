@@ -115,6 +115,35 @@ def play_one_scene(page, arch_idx):
     page.get_by_role("button", name="Count the Tones").click()
 
 
+
+def focus_in_overlay(page):
+    return page.evaluate("document.getElementById('overlay').contains(document.activeElement)")
+
+
+def check_overlay_keyboard(page, open_overlay, expected_label, opener=None):
+    """Overlay is a named modal dialog: focus enters, Tab/Shift+Tab stay
+    inside, Escape closes it and returns focus to the opener (#13)."""
+    if opener is not None:
+        opener.focus()
+        opener.press("Enter")
+    else:
+        open_overlay()
+    page.wait_for_selector("#overlay", state="visible")
+    label = page.locator("#overlay").get_attribute("aria-label")
+    assert label == expected_label, f"overlay label {label!r} != {expected_label!r}"
+    assert page.locator("#overlay").get_attribute("role") == "dialog"
+    assert focus_in_overlay(page), f"{expected_label}: focus did not move into the overlay"
+    count = page.evaluate("document.querySelectorAll('#overlay button, #overlay a[href], #overlay textarea, #overlay [tabindex=\"0\"]').length")
+    for key in ["Tab"] * (count + 2) + ["Shift+Tab"] * (count + 2):
+        page.keyboard.press(key)
+        assert focus_in_overlay(page), f"{expected_label}: {key} escaped the dialog"
+    assert page.evaluate("document.querySelector('.wrap').inert && document.getElementById('topbar').inert")
+    page.keyboard.press("Escape")
+    page.wait_for_selector("#overlay", state="hidden")
+    if opener is not None:
+        assert opener.evaluate("el => el === document.activeElement"), f"{expected_label}: focus not returned to opener"
+
+
 if BASE is None:
     server = ThreadingHTTPServer(("127.0.0.1", 0), partial(QuietHandler, directory=str(ROOT)))
     Thread(target=server.serve_forever, daemon=True).start()
@@ -213,6 +242,23 @@ with sync_playwright() as playwright:
     page.get_by_role("button", name="Resume saved Case").click()
     page.wait_for_selector("#scr-hub.active")
     run_dom_audit(page, "resumed act hub screen")
+
+    # Every overlay entry point is a keyboard-safe, named dialog (#13).
+    check_overlay_keyboard(page, None, "How the Case Is Run", page.locator("#topbar").get_by_role("button", name="The Rules"))
+    check_overlay_keyboard(page, None, "The Gallery", page.locator("#topbar").get_by_role("button", name="The Gallery"))
+    check_overlay_keyboard(page, None, "Stakeout", page.locator("#topbar").get_by_role("button", name="Stakeout"))
+    inspect = page.locator("#scr-hub .card-inspect").first
+    card_name = inspect.get_attribute("aria-label").removeprefix("Read ").removesuffix(" card larger")
+    check_overlay_keyboard(page, None, f"Card detail: {card_name}", inspect)
+    page.locator("#topbar").get_by_role("button", name="The Gallery").click()
+    page.locator(".gtile").first.focus()
+    page.keyboard.press("Enter")
+    detail_label = page.locator("#overlay").get_attribute("aria-label")
+    assert detail_label.startswith("Gallery detail: "), detail_label
+    assert focus_in_overlay(page), "gallery detail re-render dropped focus out of the dialog"
+    page.keyboard.press("Escape")
+    page.wait_for_selector("#overlay", state="hidden")
+    check_overlay_keyboard(page, lambda: page.evaluate("import('./js/chronicle/markdown.js').then(m => m.fallbackCopy('# Dossier'))"), "Copy the Dossier")
 
     # Gallery: Hero faces remain separate and both visual languages are exposed.
     page.get_by_role("button", name="The Gallery").click()
