@@ -5,7 +5,7 @@ import { show, openOverlay, closeOverlay, dismissFirstrunHint } from './screens.
 import { faceUp } from '../engine/rules.js';
 import { liveToggleStrike } from '../sync/liveActions.js';
 import { sceneAnatomyDiagramHTML } from './cards.js';
-import { fail } from './online.js';
+import { fail } from './online/errors.js';
 import { markIntroSeen } from '../engine/firstrun.js';
 
 /* ---------------- the dossier ---------------- */

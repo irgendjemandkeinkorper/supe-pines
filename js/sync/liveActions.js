@@ -58,7 +58,7 @@ export async function liveSaveHeroSetup(code, name, answer){
     // never owned by one player, and without this, a disconnected player
     // stuck as "current answerer" would deadlock the whole game — archIdx
     // can only ever be advanced by this function. Any seated player may
-    // answer on their behalf; the UI (js/ui/online.js) still shows the
+    // answer on their behalf; the UI (js/ui/online/) still shows the
     // input to the assigned answerer by default and only reveals it to
     // others via an explicit "answer for them" action, so this doesn't
     // change normal-flow turn-taking.
@@ -219,7 +219,7 @@ function countTonesAndResolve(room, flips){
   }
   if(c.type==='close') room.closeDone = true;
   room.current = null;
-  // No secret-matching here — see file header. The client (js/ui/online.js)
+  // No secret-matching here — see file header. The client (js/ui/online/)
   // reactively checks the new journal entry against its own private
   // secrets and, on a match, calls liveClaimSecret. If nothing is claimed,
   // every client's delayed liveAdvanceAfterClose() call handles cascading

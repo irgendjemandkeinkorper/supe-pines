@@ -41,7 +41,7 @@ function withPendingState(btn, pendingText, actionFn){
 
 function loadOnlineModule(){
   if(!onlineModulePromise){
-    const moduleLoad = import('./ui/online.js');
+    const moduleLoad = import('./ui/online/index.js');
     const timeout = new Promise((_, reject) => setTimeout(
       () => reject(new Error('The online multiplayer module could not load. Check your network and try again.')),
       ONLINE_LOAD_TIMEOUT_MS
