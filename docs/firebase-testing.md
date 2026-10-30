@@ -51,3 +51,22 @@ that Anonymous Auth, authorized domains, TTL, deployed rules, or two-client
 production synchronization are configured. Those remain manual release gates
 tracked in [`CHANGELOG.md`](../CHANGELOG.md) and
 [`docs/release-checklist.md`](release-checklist.md).
+
+## Sync-layer unit tests (no emulator)
+
+`test/live-sync.test.mjs` covers `js/sync/liveRoom.js` and
+`js/sync/liveActions.js` directly: room create/join/reconnect, dealing,
+scene start/contribute/resolve, scene forfeiture, Buried Secret claim and
+reveal, and the idempotent act-close advance.
+
+Mocking approach: `test/loader.mjs` is a Node module-resolution hook that
+redirects every pinned `https://www.gstatic.com/firebasejs/...` import to
+`test/fakes/firebase.mjs`, an in-memory Firestore/Auth stand-in. Its
+transactions buffer writes and apply them only when the callback resolves,
+and it rejects reads of another uid's `rooms/{code}/private/{uid}` doc, so
+the tests also prove the sync layer never depends on reading another
+player's private data. Tests switch the acting player with `__signInAs(uid)`.
+
+These run in the normal `node --test test/*.test.mjs` pass with no network,
+credentials, or Java. CI cost: about 0.15s. They complement, not replace, the
+emulator suite above, which is the source of truth for `firestore.rules`.

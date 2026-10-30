@@ -1,6 +1,6 @@
 import { $, esc, slugify } from '../engine/utils.js';
 import { HEROES, CASES, SIGNALS, VILLAINS } from '../data/index.js';
-import { openOverlay } from './screens.js';
+import { openOverlay, setOverlayLabel, focusOverlayStart } from './screens.js';
 import { State } from '../engine/state.js';
 import { ART_STYLES, normalizeArtStyle, applyArtStyleTheme } from './art.js';
 import { VILLAIN_BACKGROUNDS } from '../data/characterBackgrounds.js';
@@ -124,9 +124,15 @@ export function showGallery(){
   gState.detail = null;
   applyArtStyleTheme(gState.style);
   renderGallery();
-  openOverlay();
+  openOverlay('The Gallery');
 }
 function renderGallery(){
+  renderGalleryContent();
+  // Re-rendering replaces the focused control; keep keyboard focus in the dialog.
+  if($('overlay').style.display === 'block') focusOverlayStart();
+}
+function renderGalleryContent(){
+  setOverlayLabel(gState.detail ? `Gallery detail: ${gState.detail.title}` : 'The Gallery');
   if(gState.detail){ $('overlay-content').innerHTML = detailHTML(); return; }
   const active = CATS.find(c=>c.id===gState.cat);
   const tiles = active.build(gState.style);

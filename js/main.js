@@ -21,7 +21,7 @@ import { viewChronicle, returnFromChronicle, toggleStrike, showRules,
 import { copyChronicle, downloadChronicle } from './chronicle/markdown.js';
 import { bleakifyField } from './ai/bleakify.js';
 import { State } from './engine/state.js';
-import { clearSavedGame, hasSavedGame, readSave, saveGame, exportSaveJSON, importSaveJSON } from './engine/persistence.js';
+import { clearSavedGame, readSave, readSaveStatus, saveGame, exportSaveJSON, importSaveJSON } from './engine/persistence.js';
 import { firebaseConfigured } from './sync/config.js';
 
 const ONLINE_LOAD_TIMEOUT_MS = 10000;
@@ -155,9 +155,31 @@ Object.assign(window, {
   onlineVerifyAndProceed, withPendingState
 });
 
+const SAVE_WARNINGS = {
+  quota:'Autosave failed: this browser\'s storage is full. Progress since the last save will be lost on reload — use Export JSON save in the hub to keep a copy.',
+  unavailable:'Autosave failed: this browser is blocking local storage. Progress will be lost on reload — use Export JSON save in the hub to keep a copy.',
+  corrupt:'A saved Case was found but could not be read. Starting a new Case will replace it.',
+  unreadable:'A saved Case may exist, but this browser is blocking local storage, so it cannot be resumed.'
+};
+
+export function showSaveWarning(reason){
+  const box = document.getElementById('save-warning');
+  const text = document.getElementById('save-warning-text');
+  if(!box || !text) return;
+  text.textContent = SAVE_WARNINGS[reason] || SAVE_WARNINGS.unavailable;
+  box.hidden = false;
+}
+
+export function dismissSaveWarning(){
+  const box = document.getElementById('save-warning');
+  if(box) box.hidden = true;
+}
+
 export function refreshResumeControl(){
+  const { status } = readSaveStatus();
   const button = document.getElementById('resume-local-button');
-  if(button) button.hidden = !hasSavedGame();
+  if(button) button.hidden = status !== 'ok';
+  if(status === 'corrupt' || status === 'unreadable') showSaveWarning(status);
 }
 
 export function resumeLocalGame(){
@@ -189,13 +211,15 @@ export function resumeLocalGame(){
 
 export function startNewCase(){
   clearSavedGame();
+  dismissSaveWarning();
   State.G = null;
   State.pendingCase = null;
   refreshResumeControl();
   show('scr-hook');
 }
 
-Object.assign(window, { State, resumeLocalGame, refreshResumeControl, startNewCase, saveGame });
+Object.assign(window, { State, resumeLocalGame, refreshResumeControl, startNewCase, saveGame, dismissSaveWarning });
+window.addEventListener('sp:save-failed', event => showSaveWarning(event.detail?.reason));
 
 export function downloadGameSave(){
   const raw = exportSaveJSON();

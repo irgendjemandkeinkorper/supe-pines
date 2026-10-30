@@ -104,7 +104,7 @@ function currentMilestoneText(count){
 /* ---- public API ---- */
 export function showIdleClicker(){
   renderIdlePanel();
-  openOverlay();
+  openOverlay('Stakeout');
   startPassiveAccrual();
   const firstButton = document.querySelector('#overlay-content .idle-obj') || document.querySelector('#overlay-content .primary');
   firstButton?.focus();

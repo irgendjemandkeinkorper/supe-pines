@@ -126,7 +126,7 @@ export function showRules(){
       <p><strong style="color:var(--blood-bright)">The Strike.</strong> Anyone may strike anything from the story at any moment — no questions asked, no reasons owed. Use the ☒ in the Dossier, or simply say so aloud. The stricken thing never was. Care for the people at your table above all else.</p>
     </div>
     <div class="btnrow"><button class="primary" onclick="returnFromRules()">Return to the game</button></div>`;
-  openOverlay();
+  openOverlay('How the Case Is Run');
   $('overlay-content').querySelector('button')?.focus();
 }
 

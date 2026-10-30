@@ -451,6 +451,9 @@ label.fld{display:block;margin:12px 0 4px;color:var(--gold);font-family:'Work Sa
 .flexrow{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .btnrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
 .notice{border:1px dashed rgba(242,169,31,.5);padding:10px 14px;color:#dfe6ec;margin:12px 0;font-size:.95rem;line-height:1.5}
+/* Local save failures: non-blocking, dismissible, distinct from the no-save state. */
+.save-warning{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.save-warning[hidden]{display:none}
 .secretbox{border:1px solid #8a63a8;background:rgba(28,20,36,.6);padding:10px 12px;border-radius:3px;margin-top:8px}
 .secretbox summary{cursor:pointer;color:#c9b3de;font-family:'Bangers',sans-serif;font-size:.95rem}
 .pill{display:inline-block;border:1px solid rgba(242,169,31,.4);padding:1px 10px;font-size:.78rem;border-radius:10px;color:#c3c9d3}

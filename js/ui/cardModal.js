@@ -18,7 +18,7 @@ export function openCardDetail(kind, index){
         <button class="primary" onclick="closeCardDetail()">Return to the game</button>
       </div>
     </div>`;
-  openOverlay();
+  openOverlay(`Card detail: ${title}`);
   document.querySelector('.card-detail-modal button, .card-detail-modal .flip-btn')?.focus();
 }
 
