@@ -44,11 +44,40 @@ The emulator UI is available at `http://127.0.0.1:4000`. Stop the process with
 Ctrl-C; emulator data is local and disposable. Never point these tests at a
 production project or add a production credential to CI.
 
+## Run the two-client online smoke test
+
+`scripts/online_smoke.py` opens two isolated browser contexts, a host and a
+guest, against the Auth and Firestore emulators:
+
+```bash
+npx firebase emulators:exec --only auth,firestore "python scripts/online_smoke.py"
+```
+
+It covers:
+
+1. A failed readiness check (emulators blocked) shows the error state, and
+   **Retry Connection** recovers.
+2. The host opens a room and the guest joins with the code. Both see the
+   same lobby.
+3. The guest reloads from the `?room=` URL and keeps the same seat.
+4. Both clients follow lobby → Hero setup → Threat → hub.
+5. Each player can read only their own private hand and Secret document.
+   The shared room document holds no hands or Secrets.
+6. A scene the host begins appears live on the guest's screen.
+
+The game itself always uses the production config. The test replaces
+`js/sync/firebase-init.js` inside the browser only (Playwright routing) with
+a copy that connects to the emulators under `demo-supe-pines`, so no
+production code path, project, or credential is involved. The emulator
+discards every room when it exits. Add `--headed` to watch both windows.
+CI runs this as the **Online two-client (emulator)** job.
+
 ## Production boundary
 
 The emulator validates the checked-in rules contract only. It does not prove
-that Anonymous Auth, authorized domains, TTL, deployed rules, or two-client
-production synchronization are configured. Those remain manual release gates
+that Anonymous Auth, authorized domains, TTL, or deployed rules are
+configured in production. Two-client sync is covered against the emulator
+only. Those remain manual release gates
 tracked in [`CHANGELOG.md`](../CHANGELOG.md) and
 [`docs/release-checklist.md`](release-checklist.md).
 
