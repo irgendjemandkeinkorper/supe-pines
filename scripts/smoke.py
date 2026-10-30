@@ -35,8 +35,23 @@ class QuietHandler(SimpleHTTPRequestHandler):
         pass
 
 
+# WebKit surfaces the Firebase SDK's blocked Firestore WebChannel XHRs
+# (no real project is reachable from CI) as page errors; Chromium only logs
+# them. They come from the SDK's own transport, not app code, so ignore
+# exactly that shape and keep every other page error fatal.
+EXTERNAL_NETWORK_NOISE = ("firestore.googleapis.com/google.firestore.v1.Firestore/", "due to access control checks")
+
+
+def record_page_error(prefix, error):
+    text = str(error)
+    if all(marker in text for marker in EXTERNAL_NETWORK_NOISE):
+        print(f"{prefix}ignored external network error: {text[:120]}")
+        return
+    errors.append(f"{prefix}pageerror: {text}")
+
+
 def watch(page, prefix=""):
-    page.on("pageerror", lambda error: errors.append(f"{prefix}pageerror: {error}"))
+    page.on("pageerror", lambda error: record_page_error(prefix, error))
     page.on("console", lambda msg: print(f"{prefix}BROWSER: {msg.text}"))
 
 
@@ -85,6 +100,9 @@ def run_dom_audit(page, stage_name):
     }''')
     if errs:
         raise AssertionError(f"DOM Audit failed at stage '{stage_name}':\\n" + "\\n".join(errs))
+    assert_controls_named(page, stage_name)
+
+
 def check_no_raw_undefined_or_null(page):
     text = page.locator("body").inner_text()
     assert not re.search(r'\bundefined\b', text, re.I), f"Found raw 'undefined' text on page! text:\n{text}"
@@ -113,6 +131,153 @@ def play_one_scene(page, arch_idx):
 
     # Click Count the Tones (without turning hero)
     page.get_by_role("button", name="Count the Tones").click()
+
+
+
+def assert_screen_focus(page, screen_id):
+    """After a screen change, focus lands inside the new screen, never in a
+    hidden one (#67)."""
+    page.wait_for_function(
+        """id => {
+            const el = document.activeElement;
+            return el && el !== document.body && el.closest('.screen')?.id === id;
+        }""",
+        arg=screen_id,
+        timeout=5_000,
+    )
+    assert page.evaluate("!document.activeElement.closest('.screen:not(.active)')")
+
+
+def assert_controls_named(page, stage_name):
+    """Every visible button / role=button has an accessible name and is not
+    hidden behind opacity until hover (#40)."""
+    problems = page.evaluate("""() => {
+        const roots = [document.querySelector('.screen.active'), document.getElementById('topbar')];
+        const overlay = document.getElementById('overlay');
+        if (overlay && overlay.style.display === 'block') roots.push(overlay);
+        const out = [];
+        for (const root of roots.filter(Boolean)) {
+            for (const el of root.querySelectorAll('button, [role="button"]')) {
+                if (!el.offsetParent) continue;
+                const name = (el.getAttribute('aria-label') || el.textContent || el.title || '').trim();
+                if (!name) out.push(el.outerHTML.slice(0, 100));
+                const opacity = parseFloat(getComputedStyle(el).opacity);
+                const entering = el.getAnimations().some(a => a.playState === 'running');
+                if (opacity < 0.3 && !el.disabled && !entering) out.push('near-invisible: ' + el.outerHTML.slice(0, 100));
+            }
+        }
+        return out;
+    }""")
+    assert not problems, f"{stage_name}: unnamed or hidden controls: {problems}"
+
+
+LAYOUT_PROBE = """() => {
+    const vw = window.innerWidth;
+    const out = [];
+    if (document.documentElement.scrollWidth > vw + 1) out.push(`page scrolls horizontally: ${document.documentElement.scrollWidth} > ${vw}`);
+    const roots = [document.querySelector('.screen.active'), document.getElementById('topbar')];
+    for (const root of roots.filter(Boolean)) {
+        for (const el of root.querySelectorAll('button, [role="button"], input, select, textarea')) {
+            if (!el.offsetParent || el.closest('.sr-only')) continue;
+            const r = el.getBoundingClientRect();
+            if (r.width === 0) continue;
+            const label = (el.getAttribute('aria-label') || el.textContent || el.id || el.tagName).trim().slice(0, 40);
+            if (r.left < -1 || r.right > vw + 1) out.push(`clipped: ${label} (${Math.round(r.left)}..${Math.round(r.right)} of ${vw})`);
+            if (Math.min(r.width, r.height) < 24 && el.type !== 'radio' && el.type !== 'checkbox') out.push(`small target: ${label} ${Math.round(r.width)}x${Math.round(r.height)}`);
+        }
+    }
+    return out;
+}"""
+
+
+def check_layout(page, stage):
+    problems = page.evaluate(LAYOUT_PROBE)
+    assert not problems, f"{stage} @ {page.viewport_size['width']}px: {problems}"
+
+
+def check_core_flow_layout(browser, width, reduced_motion="no-preference"):
+    """Core flow at one width (#68). 320 CSS px is also the WCAG reflow
+    equivalent of a 1280px window at 400% zoom, so that run doubles as the
+    zoom check. With reduced motion, nothing on screen may be mid-animation
+    and selection must still read as text."""
+    context = browser.new_context(viewport={"width": width, "height": 800}, has_touch=width < 700, reduced_motion=reduced_motion)
+    p = context.new_page()
+    watch(p, f"{width}px ")
+    p.goto(BASE, wait_until="load")
+    stage = lambda name: (check_layout(p, name), run_dom_audit(p, f"{name} @ {width}px"))
+    stage("title")
+    p.get_by_role("button", name="Open the Case (this screen)").click()
+    stage("case picker")
+    p.locator(".casecard").first.click()
+    p.select_option("#pl-count", "2")
+    p.fill("#pl-name-0", "Ada")
+    p.fill("#pl-name-1", "Bo")
+    stage("players")
+    p.get_by_role("button", name="Suit Up").click()
+    p.get_by_role("button", name="So It Begins").click()
+    for index in range(6):
+        if index == 0:
+            stage("hero setup")
+        p.fill("#arch-name", f"Hero {index + 1}")
+        p.fill("#arch-answer", f"Fact {index + 1}")
+        p.locator("#scr-archsetup button.primary").click()
+    stage("threat")
+    p.fill("#victim-name", "Layout Threat")
+    p.get_by_role("button", name="Deal the Cards").click()
+    p.wait_for_selector("#scr-hub.active")
+    stage("hub")
+    p.get_by_role("button", name="Begin a scene").first.click()
+    if p.get_by_role("button", name="Got it — begin").count():
+        p.get_by_role("button", name="Got it — begin").click()
+    p.locator("[id^='scene-pick-']").first.click()
+    stage("scene pick")
+    if reduced_motion == "reduce":
+        # Colour/border fades are fine; anything that moves, scales, or fades
+        # content in and out is motion.
+        running = p.evaluate("""document.getAnimations()
+            .filter(a => a.playState === 'running' && a.effect?.getComputedTiming().duration > 0.01)
+            .map(a => ({name: a.animationName || a.transitionProperty, el: a.effect.target?.className || ''}))
+            .filter(a => /^(transform|opacity|filter|translate|scale|rotate|top|left|right|bottom|margin.*)$|^[a-zA-Z]+(In|Deal|Pulse|Callout)$/.test(a.name))""")
+        assert not running, f"reduced motion still animating: {running}"
+        cue = p.evaluate("getComputedStyle(document.querySelector('.card.selected'), '::before').content")
+        assert "Selected" in cue, f"selected card lacks a text cue under reduced motion: {cue}"
+    p.locator("#arch-pick-0").click()
+    p.fill("#scene-opening", "Narrow screen opening.")
+    p.get_by_role("button", name="Begin the Scene").click()
+    p.wait_for_selector("#scr-scene.active")
+    stage("scene play")
+    p.get_by_role("button", name="The Dossier", exact=True).click()
+    p.wait_for_selector("#scr-chronicle.active")
+    stage("dossier")
+    context.close()
+
+
+def focus_in_overlay(page):
+    return page.evaluate("document.getElementById('overlay').contains(document.activeElement)")
+
+
+def check_overlay_keyboard(page, open_overlay, expected_label, opener=None):
+    """Overlay is a named modal dialog: focus enters, Tab/Shift+Tab stay
+    inside, Escape closes it and returns focus to the opener (#13)."""
+    if opener is not None:
+        opener.focus()
+        opener.press("Enter")
+    else:
+        open_overlay()
+    page.wait_for_selector("#overlay", state="visible")
+    label = page.locator("#overlay").get_attribute("aria-label")
+    assert label == expected_label, f"overlay label {label!r} != {expected_label!r}"
+    assert page.locator("#overlay").get_attribute("role") == "dialog"
+    assert focus_in_overlay(page), f"{expected_label}: focus did not move into the overlay"
+    count = page.evaluate("document.querySelectorAll('#overlay button, #overlay a[href], #overlay textarea, #overlay [tabindex=\"0\"]').length")
+    for key in ["Tab"] * (count + 2) + ["Shift+Tab"] * (count + 2):
+        page.keyboard.press(key)
+        assert focus_in_overlay(page), f"{expected_label}: {key} escaped the dialog"
+    assert page.evaluate("document.querySelector('.wrap').inert && document.getElementById('topbar').inert")
+    page.keyboard.press("Escape")
+    page.wait_for_selector("#overlay", state="hidden")
+    if opener is not None:
+        assert opener.evaluate("el => el === document.activeElement"), f"{expected_label}: focus not returned to opener"
 
 
 if BASE is None:
@@ -161,15 +326,30 @@ with sync_playwright() as playwright:
         assert page.get_by_role("button", name="Retry Connection").count() == 1
         assert page.get_by_role("button", name="Play Hotseat (Open the Case)").count() == 1
         assert page.get_by_role("button", name="Back").count() == 1
+        assert page.locator("#scr-online-entry [data-ui-state='error'][role='alert']").count() == 1
     else:
         assert page.locator("#oe-host-name").count() == 1
+    # UI states (#41), online flow: loading -> error, each with a way out.
+    page.evaluate("import('./js/ui/online/index.js').then(m => m.renderOnlineVerificationLoading())")
+    page.wait_for_selector("#scr-online-entry [data-ui-state='loading'][aria-busy='true']")
+    assert page.locator("#scr-online-entry").get_by_role("button", name="Cancel").count() == 1
+    page.evaluate("import('./js/ui/online/index.js').then(m => m.renderOnlineVerificationFailed(new Error('network timeout')))")
+    page.wait_for_selector("#scr-online-entry [data-ui-state='error']")
+    assert "Network Offline" in page.locator("#scr-online-entry").inner_text()
+    assert page.get_by_role("button", name="Retry Connection").count() == 1
 
     # Click Back to return to title screen
     page.get_by_role("button", name="Back").click()
     page.wait_for_selector("#scr-title.active")
 
-    page.get_by_role("button", name="Open the Case (this screen)").click()
+    # Keyboard-only start: Enter on the title button lands focus on the
+    # Case picker heading, and the live status region exists.
+    page.get_by_role("button", name="Open the Case (this screen)").focus()
+    page.keyboard.press("Enter")
     page.wait_for_selector("#scr-hook.active")
+    assert_screen_focus(page, "scr-hook")
+    assert page.evaluate("document.activeElement.textContent.trim()") == "Choose the Case"
+    assert page.locator("#sr-status[role='status'][aria-live='polite']").count() == 1
     run_dom_audit(page, "case select screen")
     assert page.locator(".casecard").count() == 8
     assert page.locator(".case-phase-rail").count() == 1
@@ -182,6 +362,7 @@ with sync_playwright() as playwright:
     )
 
     page.locator(".casecard").first.click()
+    assert_screen_focus(page, "scr-players")
     run_dom_audit(page, "players screen")
     assert page.locator("input[name='local-art-style'][value='ink']").count() == 1
     assert page.locator("input[name='local-art-style'][value='expressionist']").count() == 1
@@ -214,12 +395,40 @@ with sync_playwright() as playwright:
     page.wait_for_selector("#scr-hub.active")
     run_dom_audit(page, "resumed act hub screen")
 
+    # Every overlay entry point is a keyboard-safe, named dialog (#13).
+    check_overlay_keyboard(page, None, "How the Case Is Run", page.locator("#topbar").get_by_role("button", name="The Rules"))
+    check_overlay_keyboard(page, None, "The Gallery", page.locator("#topbar").get_by_role("button", name="The Gallery"))
+    check_overlay_keyboard(page, None, "Stakeout", page.locator("#topbar").get_by_role("button", name="Stakeout"))
+    inspect = page.locator("#scr-hub .card-inspect").first
+    card_name = inspect.get_attribute("aria-label").removeprefix("Read ").removesuffix(" card larger")
+    check_overlay_keyboard(page, None, f"Card detail: {card_name}", inspect)
+    page.locator("#topbar").get_by_role("button", name="The Gallery").click()
+    page.locator(".gtile").first.focus()
+    page.keyboard.press("Enter")
+    detail_label = page.locator("#overlay").get_attribute("aria-label")
+    assert detail_label.startswith("Gallery detail: "), detail_label
+    assert focus_in_overlay(page), "gallery detail re-render dropped focus out of the dialog"
+    page.keyboard.press("Escape")
+    page.wait_for_selector("#overlay", state="hidden")
+    check_overlay_keyboard(page, lambda: page.evaluate("import('./js/chronicle/markdown.js').then(m => m.fallbackCopy('# Dossier'))"), "Copy the Dossier")
+    # History-driven close (browser Back) also returns focus to the opener (#67).
+    rules_button = page.locator("#topbar").get_by_role("button", name="The Rules")
+    rules_button.focus()
+    rules_button.press("Enter")
+    page.wait_for_selector("#overlay", state="visible")
+    page.go_back()
+    page.wait_for_selector("#overlay", state="hidden")
+    assert rules_button.evaluate("el => el === document.activeElement"), "Back did not return focus to the Rules button"
+
     # Gallery: Hero faces remain separate and both visual languages are exposed.
     page.get_by_role("button", name="The Gallery").click()
     page.wait_for_selector("#overlay", state="visible")
     run_dom_audit(page, "gallery overlay")
     assert page.locator(".gcat-heroes .gtile").count() == 15
     assert page.locator(".gcat-cases .gtile").count() == 0
+    # Grid tiles load the small thumbnails, never the full-size art (#91).
+    page.wait_for_function("() => [...document.querySelectorAll('.gcat-heroes .gtile img')].some(i => i.complete && i.naturalWidth > 0 && i.currentSrc.includes('/art/thumbs/'))")
+    assert not page.evaluate("() => [...document.querySelectorAll('.gtile img')].some(i => i.currentSrc.includes('/art/images/'))")
     tile = page.locator(".gcat-heroes .gtile").first
     control = tile.locator(".gallery-flip-control")
     assert control.get_attribute("aria-label") == "View Bad Day"
@@ -238,13 +447,17 @@ with sync_playwright() as playwright:
     # otherwise substring-matches this same accessible name too.
     page.get_by_role("button", name="The Dossier", exact=True).click()
     page.wait_for_selector("#scr-chronicle.active")
+    assert_screen_focus(page, "scr-chronicle")
     run_dom_audit(page, "dossier screen")
+    # UI states (#41), Dossier: empty before any scene is played.
+    assert page.locator("#scr-chronicle [data-ui-state='empty']").count() == 1
     page.get_by_role("button", name="Return to the Case").click()
 
     # Play Scene 1 of Act I and verify the tracker/resolution surfaces.
     page.get_by_role("button", name="Begin a scene").click()
     if page.get_by_role("button", name="Got it — begin").count():
         page.get_by_role("button", name="Got it — begin").click()
+    assert_screen_focus(page, "scr-scene")
     run_dom_audit(page, "scene pick screen")
     check_no_raw_undefined_or_null(page)
 
@@ -554,6 +767,7 @@ with sync_playwright() as playwright:
     page.wait_for_selector("#scr-chronicle.active")
     check_no_raw_undefined_or_null(page)
     assert "THE CASE IS CLOSED" in page.locator("#scr-chronicle").inner_text().upper()
+    assert page.locator("#scr-chronicle [data-ui-state='empty']").count() == 0, "filled Dossier still shows the empty state"
     assert "THE MILLHAVEN DOSSIER" in page.locator("#scr-chronicle").inner_text().upper()
     assert "DEBRIEF QUESTIONS" in page.locator("#scr-chronicle").inner_text().upper()
 
@@ -678,14 +892,43 @@ with sync_playwright() as playwright:
     assert page.locator("button:has-text('Joining...')").get_attribute("disabled") is not None
     page.wait_for_timeout(1050)
     assert page.evaluate("window.joinRoomCalls") == 1
+    # Free the full-game page before the fresh contexts below; holding it
+    # open pushed WebKit's peak memory high enough to crash on CI (#91).
+    page.close()
 
-    mobile = browser.new_page(viewport={"width": 390, "height": 844})
+    for width in (320, 375, 1280):
+        check_core_flow_layout(browser, width)
+    check_core_flow_layout(browser, 375, reduced_motion="reduce")
+
+    mobile_context = browser.new_context(viewport={"width": 390, "height": 844}, has_touch=True)
+    mobile = mobile_context.new_page()
     watch(mobile, "mobile ")
     mobile.goto(BASE, wait_until="load")
-    mobile.get_by_role("button", name="Open the Case (this screen)").click()
+    # UI states (#41), setup and Gallery: when art fails to load, the
+    # fallback still names the card.
+    mobile.route("**/art/images/**/cases/**", lambda route: route.fulfill(status=404, body=""))
+    mobile.route("**/art/thumbs/**/cases/**", lambda route: route.fulfill(status=404, body=""))
+    mobile.route("**/art/images/**/heroes/**", lambda route: route.fulfill(status=404, body=""))
+    mobile.route("**/art/thumbs/**/heroes/**", lambda route: route.fulfill(status=404, body=""))
+    # Touch: card actions are visible and tappable without hover (#40).
+    mobile.locator("#scr-title").get_by_role("button", name="The Gallery").tap()
+    mobile.wait_for_selector("#overlay", state="visible")
+    mobile.wait_for_selector(".gtile-media.g-missing, .gallery-face.g-missing")
+    assert mobile.locator(".gtile").first.locator(".gf-title").first.inner_text().strip() != ""
+    flip = mobile.locator(".gallery-flip-control").first
+    assert flip.is_visible() and float(flip.evaluate("el => getComputedStyle(el).opacity")) > 0.5
+    flip.tap()
+    assert flip.get_attribute("aria-pressed") == "true"
+    mobile.locator(".gtile").first.tap()
+    assert mobile.locator("#overlay").get_attribute("aria-label").startswith("Gallery detail: ")
+    mobile.keyboard.press("Escape")
+    mobile.wait_for_selector("#overlay", state="hidden")
+    mobile.get_by_role("button", name="Open the Case (this screen)").tap()
     assert mobile.locator(".casecard").count() == 8
+    mobile.wait_for_selector(".casecard-art.missing")
+    assert mobile.locator(".casecard-art.missing .game-art-fallback").first.inner_text().strip() != ""
     assert mobile.evaluate("document.documentElement.scrollWidth <= window.innerWidth")
-    mobile.close()
+    mobile_context.close()
     browser.close()
 
 if server:

@@ -24,9 +24,42 @@ let lastFocusBeforeOverlay = null;
    and safely collapses stale entries to the title after a refresh. */
 const historySession = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 
+/* One polite live region for screen, turn, waiting, and recovery changes.
+   Clearing first lets an identical message be announced again. */
+let announceTimer = null;
+export function announce(message){
+  const region = $('sr-status');
+  if(!region || !message) return;
+  region.textContent = '';
+  clearTimeout(announceTimer);
+  announceTimer = setTimeout(()=>{ region.textContent = message; }, 50);
+}
+
+/* After a real screen change, move focus to the new screen's heading (or
+   first control) so keyboard and screen-reader users start at the top of
+   what just appeared. Deferred a tick because some callers render the
+   screen's content right after show(). Skipped when a caller already
+   focused something inside the screen, or when a dialog is open. */
+function focusScreen(id){
+  setTimeout(()=>{
+    const screen = $(id);
+    if(!screen?.classList.contains('active')) return;
+    if($('overlay')?.style.display === 'block') return;
+    if(screen.contains(document.activeElement) && document.activeElement !== screen) return;
+    const heading = screen.querySelector('h1, h2');
+    const target = heading || screen.querySelector('button:not([disabled]), input, select, textarea, a[href]') || screen;
+    if(target === heading || target === screen) target.tabIndex = -1;
+    // Focusing the heading is what voices the new screen; announce() is
+    // left free for turn/waiting messages that don't change screens.
+    target.focus({preventScroll:true});
+  }, 0);
+}
+
 export function show(id){
+  const changed = !$(id).classList.contains('active');
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   $(id).classList.add('active');
+  if(changed) focusScreen(id);
   document.body?.classList.toggle('secret-reveal-active', id === 'scr-secret');
   window.scrollTo({top:0,behavior:'auto'});
   renderTopbar();
@@ -47,10 +80,33 @@ function setBackgroundInert(inert){
   if(topbar) topbar.inert = inert;
   if(wrap) wrap.inert = inert;
 }
-export function openOverlay(){
-  lastFocusBeforeOverlay = document.activeElement;
+const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), summary, [tabindex]:not([tabindex="-1"])';
+function overlayFocusables(){
+  return [...$('overlay').querySelectorAll(FOCUSABLE)].filter(el => el.offsetParent !== null || el === document.activeElement);
+}
+
+/* Every overlay state gets a stable accessible name (Rules, The Gallery,
+   Gallery detail: …) so screen readers announce what opened. */
+export function setOverlayLabel(label){
+  $('overlay').setAttribute('aria-label', label || 'Supe Pines');
+}
+
+/* Moves focus into the dialog unless a caller already placed it there.
+   Also used after a re-render (e.g. Gallery detail) wipes the focused node. */
+export function focusOverlayStart(){
+  const overlay = $('overlay');
+  if(overlay.contains(document.activeElement) && document.activeElement !== overlay) return;
+  const first = overlayFocusables()[0];
+  if(first) first.focus();
+  else { overlay.tabIndex = -1; overlay.focus(); }
+}
+
+export function openOverlay(label){
+  if($('overlay').style.display !== 'block') lastFocusBeforeOverlay = document.activeElement;
+  setOverlayLabel(label);
   $('overlay').style.display = 'block';
   setBackgroundInert(true);
+  focusOverlayStart();
   pushHistory({...currentScreenState(), overlay:true});
 }
 export function closeOverlay(){
@@ -95,9 +151,19 @@ export function initHistoryNav(){
     } finally { suppressHistory = false; }
   });
   window.addEventListener('keydown', event=>{
-    if(event.key==='Escape' && $('overlay').style.display==='block'){
+    if($('overlay').style.display!=='block') return;
+    if(event.key==='Escape'){
       event.preventDefault();
       closeOverlay();
+    } else if(event.key==='Tab'){
+      // inert keeps the page out of reach; this keeps Tab from escaping
+      // to the browser chrome and loops it inside the dialog instead.
+      const items = overlayFocusables();
+      if(!items.length){ event.preventDefault(); return; }
+      const first = items[0], last = items[items.length-1];
+      const inside = $('overlay').contains(document.activeElement);
+      if(event.shiftKey && (!inside || document.activeElement===first)){ event.preventDefault(); last.focus(); }
+      else if(!event.shiftKey && (!inside || document.activeElement===last)){ event.preventDefault(); first.focus(); }
     }
   });
 }

@@ -18,7 +18,7 @@ export function renderScenePick(){
   const c = G.current, p = G.players[c.starter];
   const primerHTML = !hasSeenIntro() ? `
     <div class="panel spotlight">
-      <h3 style="color:var(--gold)">Before your first scene</h3>
+      <h3 class="u-gold">Before your first scene</h3>
       ${sceneAnatomyDiagramHTML()}
       <div class="btnrow"><button class="primary" onclick="dismissScenePrimer()">Got it — begin</button></div>
     </div>` : '';
@@ -27,15 +27,15 @@ export function renderScenePick(){
     ${primerHTML}
     <h2 class="center">${esc(p.name)} begins a scene</h2>
     <div class="ornament">❦</div>
-    <h3 style="color:var(--gold)">Choose a scene card from your hand</h3>
+    <h3 class="u-gold">Choose a scene card from your hand</h3>
     <div class="cardgrid">${p.hand.map((sc,i)=>sceneCardHTML(sc,'pickSceneCard',i)).join('')}</div>
-    <h3 style="color:var(--gold)">Choose up to two lead Heroes</h3>
-    <div class="pgrid" style="grid-template-columns:repeat(auto-fill,minmax(280px,1fr));margin-top:8px">
-      ${G.heroes.map((a,i)=>heroCard(a,'pickArch',i)).join('')}
+    <h3 class="u-gold">Choose up to two lead Heroes</h3>
+    <div class="pgrid u-grid-cards u-mt-8">
+      ${G.heroes.map((a,i)=>heroCard(a,'pickHero',i)).join('')}
     </div>
     <div class="panel">
       <label class="fld" for="scene-opening">What the camera sees as the scene opens</label>
-      <p class="small muted" style="margin-bottom:6px">Every scene begins as if filmed. The block, the light, the hour, who stands where. Then narrate freely, aloud.</p>
+      <p class="small muted u-mb-6">Every scene begins as if filmed. The block, the light, the hour, who stands where. Then narrate freely, aloud.</p>
       <textarea id="scene-opening" oninput="setSceneOpening(this.value)" placeholder="The camera drifts through…">${esc(c.opening||'')}</textarea>
       <div class="btnrow">
         <button class="ghost" onclick="bleakifyField('scene-opening','scene opening',this)">Bleakify</button>
@@ -55,7 +55,7 @@ export function pickSceneCard(i){
   checkBegin();
   saveGame('scr-scene');
 }
-export function pickArch(i){
+export function pickHero(i){
   const selected = State.G.current.archIdxs || (State.G.current.archIdx===null ? [] : [State.G.current.archIdx]);
   const at = selected.indexOf(i);
   if(at >= 0) selected.splice(at,1);
@@ -95,9 +95,9 @@ export function renderScenePlay(animateSlot=null){
       const ap = G.players[c.adding.pi];
       if(!c.adding.pick){
         addingHTML = `
-          <p class="small" style="color:var(--gold)">${esc(ap.name)} — choose a scene card from your hand, or a signal from the row:</p>
+          <p class="small u-gold">${esc(ap.name)} — choose a scene card from your hand, or a signal from the row:</p>
           ${ap.hand.length?`<div class="cardgrid">${ap.hand.map((sc,i)=>sceneCardHTML(sc,'pickContribScene',i)).join('')}</div>`:''}
-          ${G.signalRow.length?`<div class="cardgrid compact">${G.signalRow.map((o,i)=>signalCard(o,'pickContribOmen',i)).join('')}</div>`:''}
+          ${G.signalRow.length?`<div class="cardgrid compact">${G.signalRow.map((o,i)=>signalCard(o,'pickContribSignal',i)).join('')}</div>`:''}
           <button class="ghost" onclick="cancelContrib()">Never mind</button>`;
       } else {
         const pk = c.adding.pick;
@@ -129,7 +129,7 @@ export function renderScenePlay(animateSlot=null){
 
     <div class="panel spotlight">
       <label class="fld" for="scene-happened">The record of what happens</label>
-      <p class="small muted" style="margin-bottom:6px">Play the scene aloud — narrate, act, cast one another in roles. Note here what the Dossier should remember: who appeared, what was said, what was discovered.</p>
+      <p class="small muted u-mb-6">Play the scene aloud — narrate, act, cast one another in roles. Note here what the Dossier should remember: who appeared, what was said, what was discovered.</p>
       <textarea id="scene-happened" style="min-height:130px" oninput="setSceneHappened(this.value)" placeholder="What the Dossier will remember of this scene…">${esc(c.happened||'')}</textarea>
       <div class="btnrow">
         <button class="ghost" onclick="bleakifyField('scene-happened','record of what happened',this)">Bleakify</button>
@@ -140,7 +140,7 @@ export function renderScenePlay(animateSlot=null){
 }
 export function pickContrib(pi){ State.G.current.adding = {pi, pick:null, how:''}; renderScenePlay(); }
 export function pickContribScene(i){ State.G.current.adding.pick={kind:'scene', idx:i}; renderScenePlay(); }
-export function pickContribOmen(i){ State.G.current.adding.pick={kind:'omen', idx:i}; renderScenePlay(); }
+export function pickContribSignal(i){ State.G.current.adding.pick={kind:'omen', idx:i}; renderScenePlay(); }
 export function confirmContrib(){
   const G = State.G;
   const c = G.current, ad = c.adding, ap = G.players[ad.pi];
