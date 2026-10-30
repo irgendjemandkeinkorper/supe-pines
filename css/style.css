@@ -492,6 +492,25 @@ label.fld{display:block;margin:12px 0 4px;color:var(--gold);font-family:'Work Sa
 .flexrow{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .btnrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
 .notice{border:1px dashed rgba(242,169,31,.5);padding:10px 14px;color:#dfe6ec;margin:12px 0;font-size:.95rem;line-height:1.5}
+/* Shared loading / empty / error / offline / success states (js/ui/states.js). */
+.ui-state{text-align:center}
+.ui-state-eyebrow{font-family:'Bangers',sans-serif;letter-spacing:.22em;text-transform:uppercase;color:var(--gold)}
+.ui-state--error .ui-state-eyebrow,.ui-state--offline .ui-state-eyebrow{color:var(--blood-bright)}
+.ui-state--success .ui-state-eyebrow{color:var(--moon)}
+.ui-state-title{margin-top:10px}
+.ui-state-body{max-width:540px;margin:12px auto 0;color:var(--text-parchment)}
+.ui-state-next{max-width:540px;margin:14px auto 0;font-size:.9rem;color:var(--text-parchment-muted)}
+.ui-state-actions{justify-content:center;margin-top:22px}
+.ui-state>.panel{text-align:left;margin:20px auto;max-width:540px}
+.ui-state--compact{margin-top:20px}
+.ui-state-panel{position:relative;border-color:var(--blood-bright);border-width:2px;margin:0}
+.ui-state-panel .ui-state--compact{margin-top:0}
+.ui-state-dismiss{position:absolute;top:8px;right:8px;min-width:32px;min-height:32px;border:none;background:none;box-shadow:none;color:var(--gold-soft);font-size:1.3rem}
+.ui-state--compact .ui-state-title{font-size:1.2rem}
+.ui-state-spinner{width:36px;height:36px;margin:20px auto 4px;border:4px solid rgba(255,255,255,.1);border-left-color:var(--gold);border-radius:50%;animation:uiStateSpin 1s linear infinite}
+@keyframes uiStateSpin{to{transform:rotate(360deg)}}
+/* Reduced motion: the spinner holds still; the eyebrow and title carry "working". */
+@media (prefers-reduced-motion: reduce){ .ui-state-spinner{animation:none;border-left-color:var(--gold);border-right-color:var(--gold)} }
 /* Local save failures: non-blocking, dismissible, distinct from the no-save state. */
 .save-warning{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
 .save-warning[hidden]{display:none}

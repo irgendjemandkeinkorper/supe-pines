@@ -5,6 +5,7 @@ import { show } from '../screens.js';
 import { verifyFirebaseReadiness } from '../../sync/auth.js';
 import { firebaseConfigured } from '../../sync/config.js';
 import { artStylePickerHTML } from '../art.js';
+import { stateBlockHTML } from '../states.js';
 import { session } from './session.js';
 import { leaveOnlineRoom, onlineCreateRoom, onlineJoinRoom, onlineRefreshArtPicker, showOnlineEntry, tryAutoRejoin } from './entry.js';
 
@@ -52,12 +53,12 @@ export async function initFirebaseConnection() {
 }
 
 export function renderOnlineMissingConfig() {
-  $('scr-online-entry').innerHTML = `
-    <div class="panel u-panel-centered">
-      <div class="sc" style="color:var(--blood-bright);letter-spacing:.22em">REMOTE TABLES</div>
-      <h2 class="u-mt-10">The Switchboard Isn’t Live Yet</h2>
-      <p class="muted" style="max-width:540px;margin:12px auto 0">This public build is ready for hotseat play on one shared screen. Separate-screen rooms need a dedicated Firebase project before they can safely open.</p>
-
+  $('scr-online-entry').innerHTML = `<div class="panel u-panel-centered">${stateBlockHTML({
+    kind:'offline',
+    eyebrow:'Remote tables',
+    title:'The Switchboard Isn’t Live Yet',
+    body:'This public build is ready for hotseat play on one shared screen. Separate-screen rooms need a dedicated Firebase project before they can safely open.',
+    detailHTML:`
       <div class="panel tight" style="text-align:left;background:rgba(255,255,255,0.02);border-color:rgba(255,255,255,0.1);margin:20px auto;max-width:540px;">
         <h4 class="u-gold u-mt-0">Required Firebase Setup Steps:</h4>
         <ol class="small" style="padding-left:18px;line-height:1.5;color:var(--text-parchment)">
@@ -68,34 +69,23 @@ export function renderOnlineMissingConfig() {
           <li><strong>Authorized Domains:</strong> Add your deployment domain (e.g. your-username.github.io) under Authentication → Settings → Authorized domains.</li>
         </ol>
       </div>
-
-      <p class="small" style="max-width:540px;margin:14px auto 0;color:var(--text-parchment-muted)">If you’re hosting tonight, choose <strong>Open the Case</strong>. Nothing in the local game depends on Firebase.</p>
-      <div class="btnrow u-justify-center u-mt-22">
-        <button class="primary" onclick="show('scr-hook')">Open the Case</button>
-        <button class="ghost" onclick="show('scr-title')">Back</button>
-      </div>
-    </div>`;
+`,
+    next:'If you’re hosting tonight, choose Open the Case. Nothing in the local game depends on Firebase.',
+    actions:[
+      {label:'Open the Case', onclick:"show('scr-hook')", variant:'primary'},
+      {label:'Back', onclick:"show('scr-title')"}
+    ]
+  })}</div>`;
 }
 
 export function renderOnlineVerificationLoading() {
-  $('scr-online-entry').innerHTML = `
-    <style>
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-    </style>
-    <div class="panel u-panel-centered">
-      <div class="sc" style="color:var(--gold);letter-spacing:.22em">VERIFYING SWITCHBOARD</div>
-      <h2 class="u-mt-10">Testing Connection to Millhaven...</h2>
-      <p class="muted" style="max-width:540px;margin:12px auto 0">Verifying Anonymous Authentication and Firestore database availability.</p>
-      <div style="margin:24px 0;">
-        <div class="spinner" style="border: 4px solid rgba(255, 255, 255, 0.1); border-left-color: var(--gold); border-radius: 50%; width: 36px; height: 36px; animation: spin 1s linear infinite; margin: 0 auto;"></div>
-      </div>
-      <div class="btnrow u-justify-center u-mt-22">
-        <button class="ghost" onclick="leaveOnlineRoom()">Cancel</button>
-      </div>
-    </div>`;
+  $('scr-online-entry').innerHTML = `<div class="panel u-panel-centered">${stateBlockHTML({
+    kind:'loading',
+    eyebrow:'Verifying switchboard',
+    title:'Testing Connection to Millhaven…',
+    body:'Verifying Anonymous Authentication and Firestore database availability.',
+    actions:[{label:'Cancel', onclick:'leaveOnlineRoom()'}]
+  })}</div>`;
 }
 
 export function renderOnlineVerificationFailed(error) {
@@ -124,11 +114,11 @@ export function renderOnlineVerificationFailed(error) {
     actionRequired = "Check your internet connection or firewall. If you are deploying to GitHub Pages, ensure you have added your custom domain or GitHub Pages URL to your Firebase Authorized Domains list.";
   }
 
-  $('scr-online-entry').innerHTML = `
-    <div class="panel u-panel-centered">
-      <div class="sc" style="color:var(--blood-bright);letter-spacing:.22em">SWITCHBOARD OFFLINE</div>
-      <h2 class="u-mt-10">${esc(categoryTitle)}</h2>
-
+  $('scr-online-entry').innerHTML = `<div class="panel u-panel-centered">${stateBlockHTML({
+    kind:'error',
+    eyebrow:'Switchboard offline',
+    title:categoryTitle,
+    detailHTML:`
       <div class="panel tight" style="text-align:left;background:rgba(217, 83, 79, 0.05);border-color:var(--blood);margin:20px auto;max-width:540px;">
         <p class="small" style="margin-top:0"><strong>Details:</strong> <span style="color:var(--text-blush-pale)">${esc(msg)}</span></p>
         <p class="small" style="margin-bottom:0;color:var(--text-parchment)"><strong>Diagnostic:</strong> ${diagnostic}</p>
@@ -147,15 +137,14 @@ export function renderOnlineVerificationFailed(error) {
           <li><strong>Authorized Domains:</strong> Deployment URL authorized under Authentication → Settings.</li>
         </ol>
       </div>
-
-      <p class="small" style="max-width:540px;margin:14px auto 0;color:var(--text-parchment-muted)">You can still play tonight using Hotseat mode (all storytellers sharing one screen).</p>
-
-      <div class="btnrow u-justify-center u-mt-22">
-        <button class="primary" onclick="onlineVerifyAndProceed()">Retry Connection</button>
-        <button class="primary" onclick="show('scr-hook')">Play Hotseat (Open the Case)</button>
-        <button class="ghost" onclick="leaveOnlineRoom()">Back</button>
-      </div>
-    </div>`;
+`,
+    next:'You can still play tonight using Hotseat mode (all storytellers sharing one screen).',
+    actions:[
+      {label:'Retry Connection', onclick:'onlineVerifyAndProceed()', variant:'primary'},
+      {label:'Play Hotseat (Open the Case)', onclick:"show('scr-hook')", variant:'primary'},
+      {label:'Back', onclick:'leaveOnlineRoom()'}
+    ]
+  })}</div>`;
 }
 
 export function renderOnlineEntryForm() {
