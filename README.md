@@ -97,11 +97,17 @@ between ES module scoping and the inline `onclick="fn(...)"` attributes in
 | Obsession / Guilt / Dread | Fury / Guilt / Dread |
 | Chronicle / "The Record" | "The Dossier" (display label only — `js/chronicle/` internals unchanged) |
 
-A handful of internal function/variable names (e.g. `archIdx`, `renderArchSetup`,
-`chooseCase`) intentionally still carry the old naming underneath current UI
-copy — renamed data/state fields and all player-facing text is what actually
-matters for coherence; renaming every internal identifier to match added risk
-without benefit and was deliberately skipped.
+Internal function names now use Supe Pines terms (`renderHeroSetup`,
+`pickHero`, `renderThreatSetup`, `toggleSecretSignal`, `replaceSignalByVote`,
+`renderCases`, and their `online*`/`live*` counterparts). A few old names
+remain on purpose:
+
+| Still named | Where | Why it stays |
+|---|---|---|
+| `archIdx`, `archIdxs`, `archName`, `archRole`, `omenVotes`, scene `hook` | game state, journal entries, Firestore room docs | Persisted in local saves and live rooms; renaming would break resume and in-flight games without a migration. |
+| `#scr-archsetup`, `#scr-victim`, `#scr-hook`, `#arch-pick-*`, `#victim-name` | DOM ids | Stable selectors for the browser smoke suite and history state. |
+| `js/chronicle/`, `renderChronicle`, `viewChronicle` | Dossier internals | "The Dossier" is the display label; the module boundary predates it and renaming it buys nothing. |
+| `Bleakify` button / `js/ai/bleakify.js` | scene notes helper | Its visible label needs a product decision on a new name before renaming. |
 
 ## Firebase setup (for remote multiplayer)
 
@@ -171,6 +177,15 @@ python3 -m playwright install webkit
 python3 scripts/smoke.py --engine webkit
 ```
 
+The smoke suite also replays the core flow (title → Case → players → Hero
+setup → Threat → hub → scene → Dossier) at 320px, 375px, and 1280px, and at
+375px with `prefers-reduced-motion: reduce`. Each screen must have no
+horizontal page scroll, no clipped controls, and no action target under 24px.
+The 320px run is the zoom check: WCAG reflow treats 320 CSS px as a 1280px
+window at 400% zoom. For a manual check, open the site at 1280px wide, zoom
+to 400%, and walk the same flow. With reduced motion, nothing may move or
+fade, and the selected card must still show its `✓ Selected` label.
+
 GitHub Actions runs the same data checks and Chromium smoke test on pull
 requests and `main`, plus a WebKit smoke lane. The production site remains a
 dependency-free static GitHub Pages build. For isolated Firestore rules tests,
@@ -234,6 +249,12 @@ For the launch build, the completed Case and Signal art pack ships **56/132** fi
 | **Threats** | All Styles | 0 / 16 | None | Deferred |
 
 The `scripts/check-art.mjs` script acts as our CI/CD gate. It enforces that all current Case and Signal assets are present and correct before any commit can be merged.
+
+After adding or replacing art, run `python3 scripts/make-thumbs.py` (needs
+Pillow) and commit `art/thumbs/`. Cards and Gallery tiles load these 480px
+WebP thumbnails; only the Gallery detail view and the scene background load
+the full-size originals. Decoding dozens of full-size PNGs at once crashed
+WebKit (#91). `test/gallery-thumbs.test.mjs` fails if a thumbnail is missing.
 
 ### Deferred Post-Launch Art Packs
 The rest of the manifest's image slots represent a deferred pipeline of future art expansion packs. These will be generated and shipped in waves post-launch:

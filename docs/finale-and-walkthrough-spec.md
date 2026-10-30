@@ -202,7 +202,7 @@ Add `sceneWalkthroughHTML()` to `js/ui/cards.js`, beside the existing
 |---|---|
 | Title screen / case select | `showRules()` in `js/ui/renderChronicle.js`, after *Anatomy of a Scene* |
 | Scene primer (local) | `renderScenePick()` in `js/ui/scene.js` |
-| Scene primer (online) | `renderOnlineScenePick()` in `js/ui/online.js` (~line 878) |
+| Scene primer (online) | `renderOnlineScenePick()` in `js/ui/online/scene.js` |
 | "How to Play" button | `index.html:56` → already routes to `showRules()` |
 
 In the two primers it should be collapsed behind the existing `.disclose`
