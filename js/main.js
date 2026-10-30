@@ -247,7 +247,7 @@ const onlineButton = document.getElementById('title-online-button');
 if(onlineButton){
   onlineButton.classList.remove('primary');
   onlineButton.classList.add('ghost');
-  onlineButton.textContent = firebaseConfigured ? 'Online (check connection)' : 'Online (setup required)';
+  onlineButton.textContent = firebaseConfigured ? 'Online Beta (check connection)' : 'Online Beta (setup required)';
   onlineButton.title = firebaseConfigured
     ? 'Remote rooms will verify Firebase when opened; hotseat play is ready.'
     : 'Remote rooms need the project Firebase configuration; hotseat play is ready.';

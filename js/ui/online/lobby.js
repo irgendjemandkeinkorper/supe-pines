@@ -29,7 +29,7 @@ export function renderOnlineLobby(room){
         <span style="font-size:2.2rem;letter-spacing:.3em;color:var(--text-parchment-bright)">${esc(State.onlineRoomCode)}</span>
       </p>
       <p class="center"><button class="ghost" id="btn-copy-link" onclick="onlineCopyRoomLink()">Copy invite link</button></p>
-      <p class="small muted center">Share the code or link — everyone else joins from “Play Online.”</p>
+      <p class="small muted center">Share the code or link — everyone else joins from “Play Online (Beta).”</p>
       <h3 style="color:var(--gold);margin-top:18px">Seated (${seatCount} of 6)</h3>
       <div class="btnrow">
         ${room.players.map((p,i)=>`<span class="pill">${i===0?'👑 ':''}${esc(p.name)}${p.uid===uid?' (you)':''}</span>`).join('')}

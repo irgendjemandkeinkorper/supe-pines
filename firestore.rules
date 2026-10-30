@@ -16,7 +16,8 @@ rules_version = '2';
 // design — the whole ruleset already runs on that same trust via the Strike
 // mechanic — so it's a deliberate tradeoff for staying serverless rather
 // than a bug to chase down. Revisit with a Cloud Function if that trust
-// model ever needs tightening.
+// model ever needs tightening. Decision, accepted abuse cases, and revisit
+// triggers: docs/online-trust-model.md (#44).
 service cloud.firestore {
   match /databases/{database}/documents {
 

@@ -42,7 +42,7 @@ export async function initFirebaseConnection() {
     if(onlineButton){
       onlineButton.classList.remove('primary');
       onlineButton.classList.add('ghost');
-      onlineButton.textContent = 'Online (connection issue)';
+      onlineButton.textContent = 'Online Beta (connection issue)';
       onlineButton.title = 'Firebase connection failed. Click to view details and troubleshoot.';
     }
     const params = new URLSearchParams(location.search);
@@ -149,8 +149,9 @@ export function renderOnlineVerificationFailed(error) {
 
 export function renderOnlineEntryForm() {
   $('scr-online-entry').innerHTML = `
-    <h2 class="center">Play Online</h2>
+    <h2 class="center">Play Online <span class="pill">Beta</span></h2>
     <p class="center muted">Gather your team across separate screens. One person opens the case; everyone else joins with the code.</p>
+    <p class="center small muted">Online play is in beta. If a room drops, Continue in Hotseat keeps the case going on one screen.</p>
     <div class="ornament">❦</div>
     <div class="pgrid" style="grid-template-columns:repeat(auto-fit,minmax(320px,1fr));max-width:900px;margin:0 auto">
       <div class="panel">

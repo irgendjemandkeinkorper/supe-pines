@@ -285,8 +285,16 @@ signals:
 
 ## 13. Decisions required
 
-- Is the next public release hotseat-only until Firebase production setup is
-  verified, or is remote multiplayer a launch requirement?
+**Decided 2026-10-30 (#64): hotseat at launch, online as Beta.** Hotseat on
+one shared screen is the launch mode. Remote multiplayer stays visible and is
+labelled **Beta** in the UI. It ships only after the owner has checked the
+production Firebase gates in #65 (Anonymous Auth, authorized domains, TTL,
+deployed rules). The two-client emulator test (`scripts/online_smoke.py`,
+#10) covers it in CI. Abuse by seated players is an accepted risk; see
+[`online-trust-model.md`](online-trust-model.md) (#44).
+
+Still open:
+
 - Which browser/version matrix is supported for launch, beyond the current
   Chromium smoke path?
 - Who owns final product acceptance, Firebase console changes, and release
