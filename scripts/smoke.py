@@ -892,6 +892,9 @@ with sync_playwright() as playwright:
     assert page.locator("button:has-text('Joining...')").get_attribute("disabled") is not None
     page.wait_for_timeout(1050)
     assert page.evaluate("window.joinRoomCalls") == 1
+    # Free the full-game page before the fresh contexts below; holding it
+    # open pushed WebKit's peak memory high enough to crash on CI (#91).
+    page.close()
 
     for width in (320, 375, 1280):
         check_core_flow_layout(browser, width)
