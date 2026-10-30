@@ -40,7 +40,10 @@ unlockable skins; they are two ways of looking at the same neighborhood.
 
 - **Palette:** near-black blue/green, dirty cream paper, oxblood danger,
   streetlamp amber, and restrained electric cyan. Cyan is orientation and
-  information; oxblood is consequence; amber is the record.
+  information; oxblood is consequence; amber is the record. Buried Secrets
+  alone use a muted lilac/violet (`--secret-*`). Secondary text on dark
+  panels uses the `--text-parchment-*` tints. JS templates use these tokens,
+  never raw hex values.
 - **Typography:** Bangers is display lettering only. Work Sans carries all
   instructions, controls, labels, and long reading. Never use display type for
   a paragraph or a form label.

@@ -9,13 +9,13 @@ import { showIdleClicker, idleClick } from './ui/idle.js';
 import { showGallery, setGalleryStyle, setGalleryCat, openGalleryDetail,
          closeGalleryDetail, navigateGallery, galleryImgError, flipGalleryCard } from './ui/gallery.js';
 import { gameArtImgError } from './ui/art.js';
-import { renderHooks, chooseCase, renderPlayerInputs, confirmPlayers,
-         beginArchSetup, renderArchSetup, saveArchSetup, renderVictim, finishVictim } from './ui/setup.js';
-import { renderHub, renderCloseIntro, openLocalHand, tradeSignal, forfeitScene, beginClose, setReadyRole, voteOmenReplacement } from './ui/hub.js';
-import { startSceneFor, renderScenePick, renderScenePlay, pickSceneCard, pickArch, beginScene, pickContrib,
-         pickContribScene, pickContribOmen, confirmContrib, cancelContrib,
+import { renderCases, chooseCase, renderPlayerInputs, confirmPlayers,
+         beginHeroSetup, renderHeroSetup, saveHeroSetup, renderThreatSetup, finishThreatSetup } from './ui/setup.js';
+import { renderHub, renderCloseIntro, openLocalHand, tradeSignal, forfeitScene, beginClose, setReadyRole, voteSignalReplacement } from './ui/hub.js';
+import { startSceneFor, renderScenePick, renderScenePlay, pickSceneCard, pickHero, beginScene, pickContrib,
+         pickContribScene, pickContribSignal, confirmContrib, cancelContrib,
          setContribHow, setSceneHappened, dismissScenePrimer, setSceneOpening } from './ui/scene.js';
-import { endScene, renderResolve, renderSecretUnlock, applyResolve, toggleSecretOmen, confirmSecret, toggleResolveFlip, setSecretAnswer } from './ui/resolve.js';
+import { endScene, renderResolve, renderSecretUnlock, applyResolve, toggleSecretSignal, confirmSecret, toggleResolveFlip, setSecretAnswer } from './ui/resolve.js';
 import { viewChronicle, returnFromChronicle, toggleStrike, showRules,
          returnFromRules, initOverlayDismiss, renderChronicle } from './ui/renderChronicle.js';
 import { copyChronicle, downloadChronicle } from './chronicle/markdown.js';
@@ -41,7 +41,7 @@ function withPendingState(btn, pendingText, actionFn){
 
 function loadOnlineModule(){
   if(!onlineModulePromise){
-    const moduleLoad = import('./ui/online.js');
+    const moduleLoad = import('./ui/online/index.js');
     const timeout = new Promise((_, reject) => setTimeout(
       () => reject(new Error('The online multiplayer module could not load. Check your network and try again.')),
       ONLINE_LOAD_TIMEOUT_MS
@@ -94,21 +94,21 @@ const leaveOnlineRoom = onlineBridge('leaveOnlineRoom');
 const tryAutoRejoin = onlineBridge('tryAutoRejoin');
 const onlineRefreshArtPicker = onlineBridge('onlineRefreshArtPicker');
 const onlineBeginTale = onlineBridge('onlineBeginTale');
-const onlineSaveArchSetup = onlineBridge('onlineSaveArchSetup');
-const onlineFinishVictim = onlineBridge('onlineFinishVictim');
+const onlineSaveHeroSetup = onlineBridge('onlineSaveHeroSetup');
+const onlineFinishThreatSetup = onlineBridge('onlineFinishThreatSetup');
 const onlineStartScene = onlineBridge('onlineStartScene');
-const onlineTradeOmen = onlineBridge('onlineTradeOmen');
+const onlineTradeSignal = onlineBridge('onlineTradeSignal');
 const onlineForfeitScene = onlineBridge('onlineForfeitScene');
 const onlineBeginClose = onlineBridge('onlineBeginClose');
 const onlineSetReadyRole = onlineBridge('onlineSetReadyRole');
-const onlineVoteOmenReplacement = onlineBridge('onlineVoteOmenReplacement');
+const onlineVoteSignalReplacement = onlineBridge('onlineVoteSignalReplacement');
 const onlinePickSceneCard = onlineBridge('onlinePickSceneCard');
-const onlinePickArch = onlineBridge('onlinePickArch');
+const onlinePickHero = onlineBridge('onlinePickHero');
 const onlineBeginScene = onlineBridge('onlineBeginScene');
 const routeAndRenderCurrent = onlineBridge('routeAndRenderCurrent');
 const onlineStartContrib = onlineBridge('onlineStartContrib');
 const onlinePickContribScene = onlineBridge('onlinePickContribScene');
-const onlinePickContribOmen = onlineBridge('onlinePickContribOmen');
+const onlinePickContribSignal = onlineBridge('onlinePickContribSignal');
 const onlineCancelContrib = onlineBridge('onlineCancelContrib');
 const onlineSetContribHow = onlineBridge('onlineSetContribHow');
 const onlineSetSceneHappened = onlineBridge('onlineSetSceneHappened');
@@ -116,7 +116,7 @@ const onlineSetSecretAnswer = onlineBridge('onlineSetSecretAnswer');
 const onlineConfirmContrib = onlineBridge('onlineConfirmContrib');
 const onlineEndScene = onlineBridge('onlineEndScene');
 const onlineApplyResolve = onlineBridge('onlineApplyResolve');
-const onlineToggleSecretOmen = onlineBridge('onlineToggleSecretOmen');
+const onlineToggleSecretSignal = onlineBridge('onlineToggleSecretSignal');
 const onlineConfirmSecret = onlineBridge('onlineConfirmSecret');
 const onlineAnswerForAbsent = onlineBridge('onlineAnswerForAbsent');
 const onlineCopyRoomLink = onlineBridge('onlineCopyRoomLink');
@@ -132,24 +132,24 @@ Object.assign(window, {
   State,
   show, flipHeroCard, openCardDetail, closeCardDetail, showIdleClicker, idleClick, dismissFirstrunHint,
   showGallery, setGalleryStyle, setGalleryCat, openGalleryDetail, closeGalleryDetail, navigateGallery, galleryImgError, flipGalleryCard, gameArtImgError,
-  chooseCase, renderPlayerInputs, confirmPlayers, beginArchSetup, renderArchSetup, saveArchSetup, renderVictim, finishVictim,
-  renderHub, openLocalHand, tradeSignal, forfeitScene, beginClose, setReadyRole, voteOmenReplacement,
-  startSceneFor, renderScenePick, renderScenePlay, pickSceneCard, pickArch, beginScene, pickContrib, pickContribScene, pickContribOmen,
+  chooseCase, renderPlayerInputs, confirmPlayers, beginHeroSetup, renderHeroSetup, saveHeroSetup, renderThreatSetup, finishThreatSetup,
+  renderHub, openLocalHand, tradeSignal, forfeitScene, beginClose, setReadyRole, voteSignalReplacement,
+  startSceneFor, renderScenePick, renderScenePlay, pickSceneCard, pickHero, beginScene, pickContrib, pickContribScene, pickContribSignal,
   confirmContrib, cancelContrib, setContribHow, setSceneHappened, dismissScenePrimer, setSceneOpening,
-  endScene, renderResolve, renderSecretUnlock, applyResolve, toggleSecretOmen, confirmSecret, toggleResolveFlip, setSecretAnswer,
+  endScene, renderResolve, renderSecretUnlock, applyResolve, toggleSecretSignal, confirmSecret, toggleResolveFlip, setSecretAnswer,
   viewChronicle, returnFromChronicle, toggleStrike, showRules, returnFromRules, closeOverlay,
   copyChronicle, downloadChronicle,
   bleakifyField,
   showOnlineEntry, onlineCreateRoom, onlineJoinRoom, leaveOnlineRoom,
   onlineRefreshArtPicker,
-  onlineBeginTale, onlineSaveArchSetup, onlineFinishVictim,
-  onlineStartScene, onlineTradeOmen, onlineForfeitScene, onlineBeginClose,
-  onlineSetReadyRole, onlineVoteOmenReplacement,
-  onlinePickSceneCard, onlinePickArch, onlineBeginScene, routeAndRenderCurrent,
-  onlineStartContrib, onlinePickContribScene, onlinePickContribOmen, onlineCancelContrib,
+  onlineBeginTale, onlineSaveHeroSetup, onlineFinishThreatSetup,
+  onlineStartScene, onlineTradeSignal, onlineForfeitScene, onlineBeginClose,
+  onlineSetReadyRole, onlineVoteSignalReplacement,
+  onlinePickSceneCard, onlinePickHero, onlineBeginScene, routeAndRenderCurrent,
+  onlineStartContrib, onlinePickContribScene, onlinePickContribSignal, onlineCancelContrib,
   onlineSetContribHow, onlineSetSceneHappened, onlineSetSecretAnswer,
   onlineConfirmContrib, onlineEndScene, onlineApplyResolve,
-  onlineToggleSecretOmen, onlineConfirmSecret,
+  onlineToggleSecretSignal, onlineConfirmSecret,
   onlineAnswerForAbsent, onlineCopyRoomLink, onlineDismissScenePrimer, openOnlineHand,
   showOnlineError, hideOnlineError, onlineRetryConnection, onlineFallbackToHotseat,
   onlineVerifyAndProceed, withPendingState
@@ -193,8 +193,8 @@ export function resumeLocalGame(){
     const intro = document.getElementById('intro-text');
     if(intro) intro.innerHTML = State.G.case.intro;
     show('scr-intro');
-  } else if(screen==='scr-archsetup') { renderArchSetup(); show(screen); }
-  else if(screen==='scr-victim') { renderVictim(); }
+  } else if(screen==='scr-archsetup') { renderHeroSetup(); show(screen); }
+  else if(screen==='scr-victim') { renderThreatSetup(); }
   else if(screen==='scr-scene') {
     if(State.G.current?.phase==='pick') renderScenePick(); else renderScenePlay();
     show(screen);
@@ -237,7 +237,7 @@ export async function importGameFile(file){
 Object.assign(window, { downloadGameSave, importGameFile });
 
 /* ---------------- init ---------------- */
-renderHooks();
+renderCases();
 renderPlayerInputs();
 refreshResumeControl();
 applyFirstrunVisibility();

@@ -5,7 +5,7 @@ export function characterSideLabel(_kind, sideIndex, authoredState){
   return sideIndex === 1 ? 'Bad Day' : 'Good Day';
 }
 
-export function normalizeArchIndices(indices, heroCount){
+export function normalizeHeroIndices(indices, heroCount){
   if(!Array.isArray(indices)) return [];
   return [...new Set(indices)]
     .filter(index => Number.isInteger(index) && index >= 0 && index < heroCount)
@@ -17,7 +17,7 @@ export function canAddContribution(contributions, playerIndex, maxPerPlayer=2){
   return contributions.filter(item => item?.pi === playerIndex).length < maxPerPlayer;
 }
 
-export function replaceOmenByVote(state, signalIndex, voters, playerCount){
+export function replaceSignalByVote(state, signalIndex, voters, playerCount){
   if(!state || !Array.isArray(state.signalRow) || !Array.isArray(state.signalDeck)) return false;
   if(!Number.isInteger(signalIndex) || signalIndex < 0 || signalIndex >= state.signalRow.length) return false;
   const uniqueVoters = [...new Set(Array.isArray(voters) ? voters : [])];

@@ -137,16 +137,16 @@ function renderGalleryContent(){
   const active = CATS.find(c=>c.id===gState.cat);
   const tiles = active.build(gState.style);
   $('overlay-content').innerHTML = `
-    <h2 style="color:var(--gold)">The Gallery</h2>
+    <h2 class="u-gold">The Gallery</h2>
     <p class="small muted">Browse every card face in Supe Pines. Text fallback is a fully supported and intentional launch state. Currently, 46 Hero and Threat portraits feature finalized art in both visual languages, while remaining slots show beautifully integrated text previews. Hero cards have two distinct sides: use the turn button to compare their conditions and variants without opening the card.</p>
     <div class="btnrow" style="margin-top:12px">
       ${ART_STYLES.map(style => `<button class="${gState.style===style.id?'primary':'ghost'}" onclick="setGalleryStyle('${style.id}')">${style.label}</button>`).join('')}
     </div>
-    <div class="btnrow" style="margin-top:6px">
+    <div class="btnrow u-mt-6">
       ${CATS.map(c=>`<button class="${c.id===gState.cat?'primary':'ghost'}" onclick="setGalleryCat('${c.id}')">${c.label}</button>`).join('')}
     </div>
     <div class="ggrid gcat-${gState.cat}" style="margin-top:16px">${tiles.map(tileHTML).join('')}</div>
-    <div class="btnrow" style="justify-content:center;margin-top:20px"><button class="primary" onclick="closeOverlay()">Back to Millhaven</button></div>`;
+    <div class="btnrow u-justify-center u-mt-20"><button class="primary" onclick="closeOverlay()">Back to Millhaven</button></div>`;
 }
 export function setGalleryStyle(style){
   const normalized = normalizeArtStyle(style);
@@ -208,7 +208,7 @@ function detailHTML(){
         <section class="gallery-day good"><h4>${esc(t.sub)}${t.frontTitle?` · ${esc(t.frontTitle)}`:''}</h4><p>${esc(t.frontBackground)}</p></section>
         <section class="gallery-day bad"><h4>${esc(t.backSub)}${t.backTitle?` · ${esc(t.backTitle)}`:''}</h4><p>${esc(t.backBackground||'')}</p></section>
       </div></details>`:''}
-      ${t.flippable?'<p class="small muted" style="margin-top:8px">Use the turn button on the card to compare its two faces.</p>':''}
+      ${t.flippable?'<p class="small muted u-mt-8">Use the turn button on the card to compare its two faces.</p>':''}
     </div>
     <div class="btnrow gallery-nav" style="justify-content:center;margin-top:16px">
       <button class="ghost" onclick="navigateGallery(-1)" aria-label="Previous gallery card">← Previous</button>
