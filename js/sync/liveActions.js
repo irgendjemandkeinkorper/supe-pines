@@ -17,7 +17,7 @@ import { db } from './firebase-init.js';
 import { SCENES, SIGNALS, SECRETS, TONES, villainForCase } from '../data/index.js';
 import { shuffle } from '../engine/utils.js';
 import { maxContrib, HEROES_PER_GAME } from '../engine/rules.js';
-import { canAddContribution, normalizeArchIndices, replaceOmenByVote, roomExpiryTimestamp } from '../engine/gameplay.js';
+import { canAddContribution, normalizeHeroIndices, replaceSignalByVote, roomExpiryTimestamp } from '../engine/gameplay.js';
 
 function mySeat(room){
   const uid = getUid();
@@ -58,7 +58,7 @@ export async function liveSaveHeroSetup(code, name, answer){
     // never owned by one player, and without this, a disconnected player
     // stuck as "current answerer" would deadlock the whole game — archIdx
     // can only ever be advanced by this function. Any seated player may
-    // answer on their behalf; the UI (js/ui/online.js) still shows the
+    // answer on their behalf; the UI (js/ui/online/) still shows the
     // input to the assigned answerer by default and only reveals it to
     // others via an explicit "answer for them" action, so this doesn't
     // change normal-flow turn-taking.
@@ -126,7 +126,7 @@ export async function liveBeginScene(code, cardIdx, archIdx, opening){
     const card = priv.hand.splice(cardIdx,1)[0];
     p.handCount = priv.hand.length;
 
-    const archIdxs = normalizeArchIndices(Array.isArray(archIdx) ? archIdx : [archIdx], room.heroes.length);
+    const archIdxs = normalizeHeroIndices(Array.isArray(archIdx) ? archIdx : [archIdx], room.heroes.length);
     if(!archIdxs.length) throw new Error('Choose at least one lead Hero.');
     room.current = {type:'scene', starter:pi, archIdx:archIdxs[0], archIdxs, card, contributions:[], happened:'', opening:(opening||'').trim(), phase:'play'};
 
@@ -219,7 +219,7 @@ function countTonesAndResolve(room, flips){
   }
   if(c.type==='close') room.closeDone = true;
   room.current = null;
-  // No secret-matching here — see file header. The client (js/ui/online.js)
+  // No secret-matching here — see file header. The client (js/ui/online/)
   // reactively checks the new journal entry against its own private
   // secrets and, on a match, calls liveClaimSecret. If nothing is claimed,
   // every client's delayed liveAdvanceAfterClose() call handles cascading
@@ -394,7 +394,7 @@ export async function liveSetReadyRole(code, role){
   });
 }
 
-export async function liveVoteOmenReplacement(code, signalIndex){
+export async function liveVoteSignalReplacement(code, signalIndex){
   await runTransaction(db, async t => {
     const room = await readRoom(t, code);
     const pi = mySeat(room);
@@ -404,7 +404,7 @@ export async function liveVoteOmenReplacement(code, signalIndex){
     const voters = new Set(Array.isArray(room.omenVotes[key]) ? room.omenVotes[key] : []);
     voters.add(pi);
     room.omenVotes[key] = [...voters];
-    if(replaceOmenByVote(room, signalIndex, room.omenVotes[key], room.players.length)){
+    if(replaceSignalByVote(room, signalIndex, room.omenVotes[key], room.players.length)){
       room.omenVotes = {};
       room.signalDeck = shuffle(room.signalDeck);
     }

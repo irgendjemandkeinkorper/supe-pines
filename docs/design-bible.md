@@ -40,7 +40,10 @@ unlockable skins; they are two ways of looking at the same neighborhood.
 
 - **Palette:** near-black blue/green, dirty cream paper, oxblood danger,
   streetlamp amber, and restrained electric cyan. Cyan is orientation and
-  information; oxblood is consequence; amber is the record.
+  information; oxblood is consequence; amber is the record. Buried Secrets
+  alone use a muted lilac/violet (`--secret-*`). Secondary text on dark
+  panels uses the `--text-parchment-*` tints. JS templates use these tokens,
+  never raw hex values.
 - **Typography:** Bangers is display lettering only. Work Sans carries all
   instructions, controls, labels, and long reading. Never use display type for
   a paragraph or a form label.
@@ -68,6 +71,29 @@ door they can open rather than a script they must perform.
 - Focus is visible, keyboard navigation is complete, and overlays return focus
   to the control that opened them.
 - Strike, reset, and leave actions are reversible or clearly confirmed.
+
+## Artwork alt text
+
+Every artwork `<img>` comes from `js/ui/art.js` or the Gallery and follows
+one pattern per category, so a screen reader always hears which card it is:
+
+| Artwork | Alt text pattern | Example |
+| --- | --- | --- |
+| Hero portrait | `<Hero role> — <side state> portrait` | `Ballast — Good Day portrait` |
+| Threat portrait | `<Threat name>, the Threat` | |
+| Signal art | `<Signal title> signal art` | |
+| Case cover | `<Case title> Case cover` | |
+| Gallery face | `<card title>, <side or subtitle>` | |
+| Decorative (scene backdrop) | inside an `aria-hidden="true"` wrapper | |
+
+Alt text is never empty outside a decorative wrapper, and never contains
+`undefined`, `null`, `placeholder`, `image of`, or a file name. When art is
+missing or fails to load, the fallback text keeps the card's identity (title
+or glyph beside the card's visible title). `test/alt-text.test.mjs` audits
+every Hero, Threat, Signal, and Case against these rules.
+
+Selected cards and choices carry a visible `✓ Selected` cue as well as their
+colour change.
 
 ## Component checklist
 

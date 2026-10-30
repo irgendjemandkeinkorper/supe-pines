@@ -99,7 +99,7 @@ export function fallbackCopy(md){
     <label class="small muted" for="fallback-md" style="display:block;margin-bottom:6px">Select all and copy:</label>
     <textarea style="min-height:340px" id="fallback-md">${esc(md)}</textarea>
     <div class="btnrow"><button onclick="closeOverlay()">Close</button></div>`;
-  openOverlay();
+  openOverlay('Copy the Dossier');
   const t=$('fallback-md'); t.focus(); t.select();
 }
 

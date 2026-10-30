@@ -19,7 +19,8 @@ export const ART_STYLES = [
   }
 ];
 
-const ART_EXTS = ['webp','png','jpg','jpeg'];
+/* Shipped art is PNG; the other extensions cover hand-exported files. */
+const ART_EXTS = ['png','webp','jpg','jpeg'];
 
 export function normalizeArtStyle(style){
   if(style === 'burden') return 'expressionist';
@@ -42,20 +43,32 @@ export function artPath(style, category, key){
   return `art/images/${normalizeArtStyle(style)}/${category}/${key}`;
 }
 
-function imageHTML(path, alt){
-  return `<img loading="lazy" src="${path}.${ART_EXTS[0]}" data-base="${path}" data-exts="${ART_EXTS.slice(1).join(',')}" onerror="gameArtImgError(this)" alt="${esc(alt)}">`;
+/* Card-sized art starts with the small WebP from art/thumbs
+   (scripts/make-thumbs.py). Decoding many 1254px PNGs at once crashed
+   WebKit (#91); only full-bleed art (opts.full) needs the original. */
+export function thumbPath(path){
+  return path.replace(/^art\/images\//, 'art/thumbs/') + '.webp';
+}
+
+export function artImgHTML(path, alt, {thumb=true, onerror='gameArtImgError(this)'}={}){
+  const srcs = [...(thumb ? [thumbPath(path)] : []), ...ART_EXTS.map(ext => `${path}.${ext}`)];
+  return `<img loading="lazy" decoding="async" src="${srcs[0]}" data-srcs="${srcs.slice(1).join(',')}" onerror="${onerror}" alt="${esc(alt)}">`;
+}
+
+/* Shared by game art and the Gallery: try the next source, then reveal the text fallback. */
+export function nextArtSource(img, missingSelector, missingClass){
+  const srcs = (img.dataset.srcs||'').split(',').filter(Boolean);
+  if(srcs.length){
+    img.dataset.srcs = srcs.slice(1).join(',');
+    img.src = srcs[0];
+    return;
+  }
+  img.closest(missingSelector)?.classList.add(missingClass);
+  img.remove();
 }
 
 export function gameArtImgError(img){
-  const exts = (img.dataset.exts||'').split(',').filter(Boolean);
-  if(exts.length){
-    const next = exts.shift();
-    img.dataset.exts = exts.join(',');
-    img.src = `${img.dataset.base}.${next}`;
-    return;
-  }
-  img.closest('.game-art, .hero-art, .casecard-art')?.classList.add('missing');
-  img.remove();
+  nextArtSource(img, '.game-art, .hero-art, .casecard-art', 'missing');
 }
 
 export function gameArtHTML(category, key, alt, opts={}){
@@ -63,17 +76,18 @@ export function gameArtHTML(category, key, alt, opts={}){
   const classes = ['game-art', opts.className||''].filter(Boolean).join(' ');
   return `<div class="${classes}">
     <div class="game-art-fallback"><span>${esc(opts.fallback||alt)}</span></div>
-    ${imageHTML(artPath(style, category, key), alt)}
+    ${artImgHTML(artPath(style, category, key), alt, {thumb:!opts.full})}
   </div>`;
 }
 
 export function heroArtHTML(hero, sideIdx, opts={}){
   const side = sideIdx===0 ? 'front' : 'turned';
-  return gameArtHTML('heroes', `${slugify(hero.role)}--${side}`, `${hero.role}, Side ${sideIdx===0?'I':'II'}`, opts);
+  const state = hero.sides?.[sideIdx]?.state || (sideIdx===0 ? 'Side I' : 'Side II');
+  return gameArtHTML('heroes', `${slugify(hero.role)}--${side}`, `${hero.role} — ${state} portrait`, opts);
 }
 
 export function signalArtHTML(signal, opts={}){
-  return gameArtHTML('signals', slugify(signal.title), signal.title, {...opts, fallback:opts.fallback||signal.glyph});
+  return gameArtHTML('signals', slugify(signal.title), `${signal.title} signal art`, {...opts, fallback:opts.fallback||signal.glyph});
 }
 
 function caseArtKey(itemOrId){
@@ -88,7 +102,7 @@ export function caseArtHTML(item, opts={}){
 }
 
 export function threatArtHTML(item, opts={}){
-  return gameArtHTML('threats', item.id, `The Threat — ${item.title}`, opts);
+  return gameArtHTML('threats', item.id, `${item.name || item.title}, the Threat`, opts);
 }
 
 export function artStylePickerHTML(name, selected=null, sampleCase='toll'){

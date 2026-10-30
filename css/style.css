@@ -18,6 +18,17 @@
   --tone-guilt:#5a4bb0;
   --tone-dread:#1f7a82;
   --fog:rgba(140,200,220,.05);
+  /* Text and Buried-Secret accents used by JS-rendered templates (#50). */
+  --text-parchment:#cfc2a2;
+  --text-parchment-bright:#eddfba;
+  --text-parchment-soft:#e3d7b8;
+  --text-parchment-muted:#d9cca9;
+  --text-parchment-dim:#b3a687;
+  --text-blush:#e8c9c9;
+  --text-blush-pale:#f2dede;
+  --secret-lilac:#c9b3de;
+  --secret-lilac-pale:#e0d4ec;
+  --secret-violet:#8a63a8;
   --space-1:4px;
   --space-2:8px;
   --space-3:12px;
@@ -36,6 +47,32 @@ button,input,select,textarea{font:inherit}
 button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,
 [role="button"]:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--moon);outline-offset:3px;box-shadow:var(--focus-ring)}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+/* Utility classes for styles JS templates repeat (#49). They are
+   !important so they keep the precedence the inline style="" they
+   replaced had over component rules. Prefer a component class for
+   anything new; use these only for one-off tweaks. */
+.u-gold{color:var(--gold)!important}
+.u-blood{color:var(--blood-bright)!important}
+.u-blood-dark{color:var(--blood)!important}
+.u-secret{color:var(--secret-lilac)!important}
+.u-parchment{color:var(--text-parchment)!important}
+.u-parchment-bright{color:var(--text-parchment-bright)!important}
+.u-ink-soft{color:var(--ink-soft)!important}
+.u-mt-0{margin-top:0!important}
+.u-mt-6{margin-top:6px!important}
+.u-mt-8{margin-top:8px!important}
+.u-mt-10{margin-top:10px!important}
+.u-mt-20{margin-top:20px!important}
+.u-mt-22{margin-top:22px!important}
+.u-mb-6{margin-bottom:6px!important}
+.u-pointer{cursor:pointer!important}
+.u-justify-center{justify-content:center!important}
+.u-col-640,.u-col-680,.u-col-720{margin:0 auto!important}
+.u-col-640{max-width:640px!important}
+.u-col-680{max-width:680px!important}
+.u-col-720{max-width:720px!important}
+.u-panel-centered{max-width:680px!important;margin:36px auto!important;text-align:center!important}
+.u-grid-cards{grid-template-columns:repeat(auto-fill,minmax(280px,1fr))!important}
 html{scroll-behavior:smooth}
 body{
   background:
@@ -229,7 +266,7 @@ label.fld{display:block;margin:12px 0 4px;color:var(--gold);font-family:'Work Sa
   padding:8px 12px;margin:10px 0;font-size:.85rem;color:#e6d8ae;
   display:flex;gap:8px;align-items:flex-start;text-align:left;
 }
-.hint .hint-x{cursor:pointer;margin-left:auto;color:var(--gold-soft);flex:none}
+.hint .hint-x{cursor:pointer;margin-left:auto;color:var(--gold-soft);flex:none;display:inline-flex;align-items:center;justify-content:center;min-width:28px;min-height:28px}
 .hint .hint-x:hover{color:var(--gold)}
 
 /* ---------- progress dots (hero setup) ---------- */
@@ -344,6 +381,10 @@ label.fld{display:block;margin:12px 0 4px;color:var(--gold);font-family:'Work Sa
 .art-style-error{color:var(--blood-bright);min-height:1.1em}
 .hero-flip.selectable:hover .hero{border-color:var(--gold);box-shadow:0 0 10px rgba(242,169,31,.2)}
 .hero-flip.selected .hero{border-color:var(--blood-bright);box-shadow:0 0 0 1px var(--blood-bright)}
+/* Selection is never colour-only: a text cue rides along with the border. */
+.card.selected::before,.hero-flip.selected .hero::before{content:'✓ Selected';position:absolute;z-index:6;top:-11px;left:10px;padding:1px 8px;border-radius:2px;background:var(--blood-bright);color:#fff;font:700 .68rem/1.5 'Work Sans',sans-serif;letter-spacing:.06em;text-transform:uppercase;pointer-events:none}
+.hero-flip.selected .hero{position:relative}
+.ready-role-row button.selected::before{content:'✓ '}
 .hero-flip-inner{
   position:relative;min-height:400px;
   transform-style:preserve-3d;
@@ -451,6 +492,28 @@ label.fld{display:block;margin:12px 0 4px;color:var(--gold);font-family:'Work Sa
 .flexrow{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .btnrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
 .notice{border:1px dashed rgba(242,169,31,.5);padding:10px 14px;color:#dfe6ec;margin:12px 0;font-size:.95rem;line-height:1.5}
+/* Shared loading / empty / error / offline / success states (js/ui/states.js). */
+.ui-state{text-align:center}
+.ui-state-eyebrow{font-family:'Bangers',sans-serif;letter-spacing:.22em;text-transform:uppercase;color:var(--gold)}
+.ui-state--error .ui-state-eyebrow,.ui-state--offline .ui-state-eyebrow{color:var(--blood-bright)}
+.ui-state--success .ui-state-eyebrow{color:var(--moon)}
+.ui-state-title{margin-top:10px}
+.ui-state-body{max-width:540px;margin:12px auto 0;color:var(--text-parchment)}
+.ui-state-next{max-width:540px;margin:14px auto 0;font-size:.9rem;color:var(--text-parchment-muted)}
+.ui-state-actions{justify-content:center;margin-top:22px}
+.ui-state>.panel{text-align:left;margin:20px auto;max-width:540px}
+.ui-state--compact{margin-top:20px}
+.ui-state-panel{position:relative;border-color:var(--blood-bright);border-width:2px;margin:0}
+.ui-state-panel .ui-state--compact{margin-top:0}
+.ui-state-dismiss{position:absolute;top:8px;right:8px;min-width:32px;min-height:32px;border:none;background:none;box-shadow:none;color:var(--gold-soft);font-size:1.3rem}
+.ui-state--compact .ui-state-title{font-size:1.2rem}
+.ui-state-spinner{width:36px;height:36px;margin:20px auto 4px;border:4px solid rgba(255,255,255,.1);border-left-color:var(--gold);border-radius:50%;animation:uiStateSpin 1s linear infinite}
+@keyframes uiStateSpin{to{transform:rotate(360deg)}}
+/* Reduced motion: the spinner holds still; the eyebrow and title carry "working". */
+@media (prefers-reduced-motion: reduce){ .ui-state-spinner{animation:none;border-left-color:var(--gold);border-right-color:var(--gold)} }
+/* Local save failures: non-blocking, dismissible, distinct from the no-save state. */
+.save-warning{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.save-warning[hidden]{display:none}
 .secretbox{border:1px solid #8a63a8;background:rgba(28,20,36,.6);padding:10px 12px;border-radius:3px;margin-top:8px}
 .secretbox summary{cursor:pointer;color:#c9b3de;font-family:'Bangers',sans-serif;font-size:.95rem}
 .pill{display:inline-block;border:1px solid rgba(242,169,31,.4);padding:1px 10px;font-size:.78rem;border-radius:10px;color:#c3c9d3}
@@ -759,6 +822,9 @@ label.fld{display:block;margin:12px 0 4px;color:var(--gold);font-family:'Work Sa
 
 @media (prefers-reduced-motion: reduce){
   .gallery-face{transition:none}
+  /* Selection and hover still read via border, shadow, and the ✓ cue. */
+  .card.selectable{transition:box-shadow .15s ease}
+  .card.selectable:hover,.card-inspect:hover,.card-inspect:focus-visible{transform:none}
   .scene-slot.dealt-in,.scene-slot.dealt-in .scene-table-card,.scene-slot.dealt-in .scene-manifest,.scene-arrival-callout,.hand-focus{animation:none}
   .scene-arrival-callout{opacity:0}
 }
