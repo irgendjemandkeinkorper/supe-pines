@@ -2,7 +2,7 @@ import { $, esc, slugify } from '../engine/utils.js';
 import { HEROES, CASES, SIGNALS, VILLAINS } from '../data/index.js';
 import { openOverlay, setOverlayLabel, focusOverlayStart } from './screens.js';
 import { State } from '../engine/state.js';
-import { ART_STYLES, normalizeArtStyle, applyArtStyleTheme } from './art.js';
+import { ART_STYLES, normalizeArtStyle, applyArtStyleTheme, artImgHTML, nextArtSource } from './art.js';
 import { VILLAIN_BACKGROUNDS } from '../data/characterBackgrounds.js';
 
 /* The card-art Gallery — a pure browsing surface, deliberately independent
@@ -58,24 +58,14 @@ const CATS = [
   {id:'threats', label:'Threats', build:threatTiles}
 ];
 
-/* Try a handful of extensions in turn before giving up and revealing the
-   text fallback underneath — the naming doc promises .jpg, but nothing
-   stops someone from exporting .png/.webp instead. */
-const EXTS = ['jpg','jpeg','png','webp'];
-function imgWithFallback(path, alt){
-  const rest = EXTS.slice(1).join(',');
-  return `<img loading="lazy" src="${path}.${EXTS[0]}" data-base="${path}" data-exts="${rest}" onerror="galleryImgError(this)" alt="${esc(alt)}">`;
+/* Grid tiles start with the thumbnail; the detail view loads the original.
+   Missing art reveals the intentional text fallback underneath. */
+function imgWithFallback(path, alt, thumb=false){
+  return artImgHTML(path, alt, {thumb, onerror:'galleryImgError(this)'});
 }
 export function galleryImgError(img){
-  const exts = (img.dataset.exts||'').split(',').filter(Boolean);
-  if(exts.length){
-    const next = exts.shift();
-    img.dataset.exts = exts.join(',');
-    img.src = img.dataset.base + '.' + next;
-  } else {
-    (img.closest('.gallery-face') || img.closest('.gtile-media, .gdetail-media'))?.classList.add('g-missing');
-    img.remove();
-  }
+  const face = img.closest('.gallery-face') ? '.gallery-face' : '.gtile-media, .gdetail-media';
+  nextArtSource(img, face, 'g-missing');
 }
 
 function fallbackHTML(t, sub=t.sub){
@@ -83,11 +73,11 @@ function fallbackHTML(t, sub=t.sub){
 }
 function galleryMediaHTML(t, detail=false){
   const cls = detail ? 'gdetail-media' : 'gtile-media';
-  if(!t.flippable) return `<div class="${cls}">${imgWithFallback(t.path,t.title)}${fallbackHTML(t)}</div>`;
+  if(!t.flippable) return `<div class="${cls}">${imgWithFallback(t.path,t.title,!detail)}${fallbackHTML(t)}</div>`;
   return `<div class="${cls} gallery-flip">
     <div class="gallery-flip-inner">
-      <div class="gallery-face gallery-front">${imgWithFallback(t.path,`${t.title}, ${t.sub}`)}${fallbackHTML(t,t.sub)}<span class="gallery-face-label">${esc(t.sub)}</span></div>
-      <div class="gallery-face gallery-back">${imgWithFallback(t.backPath,`${t.title}, ${t.backSub}`)}${fallbackHTML(t,t.backSub)}<span class="gallery-face-label">${esc(t.backSub)}</span></div>
+      <div class="gallery-face gallery-front">${imgWithFallback(t.path,`${t.title}, ${t.sub}`,!detail)}${fallbackHTML(t,t.sub)}<span class="gallery-face-label">${esc(t.sub)}</span></div>
+      <div class="gallery-face gallery-back">${imgWithFallback(t.backPath,`${t.title}, ${t.backSub}`,!detail)}${fallbackHTML(t,t.backSub)}<span class="gallery-face-label">${esc(t.backSub)}</span></div>
     </div>
     <button class="gallery-flip-control" type="button" onclick="event.stopPropagation();flipGalleryCard(this)" data-front-label="${esc(t.sub)}" data-back-label="${esc(t.backSub)}" aria-label="View ${esc(t.backSub)}" aria-pressed="false">⟳ <span>${esc(t.backSub)}</span></button>
   </div>`;

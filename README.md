@@ -250,6 +250,12 @@ For the launch build, the completed Case and Signal art pack ships **56/132** fi
 
 The `scripts/check-art.mjs` script acts as our CI/CD gate. It enforces that all current Case and Signal assets are present and correct before any commit can be merged.
 
+After adding or replacing art, run `python3 scripts/make-thumbs.py` (needs
+Pillow) and commit `art/thumbs/`. Cards and Gallery tiles load these 480px
+WebP thumbnails; only the Gallery detail view and the scene background load
+the full-size originals. Decoding dozens of full-size PNGs at once crashed
+WebKit (#91). `test/gallery-thumbs.test.mjs` fails if a thumbnail is missing.
+
 ### Deferred Post-Launch Art Packs
 The rest of the manifest's image slots represent a deferred pipeline of future art expansion packs. These will be generated and shipped in waves post-launch:
 1. **The Heroes Pack:** Authoring and shipping 60 card faces (front and turned sides for 15 heroes) in both Bold Comic and Church Glass styles.

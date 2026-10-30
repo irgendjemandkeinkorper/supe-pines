@@ -426,6 +426,9 @@ with sync_playwright() as playwright:
     run_dom_audit(page, "gallery overlay")
     assert page.locator(".gcat-heroes .gtile").count() == 15
     assert page.locator(".gcat-cases .gtile").count() == 0
+    # Grid tiles load the small thumbnails, never the full-size art (#91).
+    page.wait_for_function("() => [...document.querySelectorAll('.gcat-heroes .gtile img')].some(i => i.complete && i.naturalWidth > 0 && i.currentSrc.includes('/art/thumbs/'))")
+    assert not page.evaluate("() => [...document.querySelectorAll('.gtile img')].some(i => i.currentSrc.includes('/art/images/'))")
     tile = page.locator(".gcat-heroes .gtile").first
     control = tile.locator(".gallery-flip-control")
     assert control.get_attribute("aria-label") == "View Bad Day"
@@ -901,7 +904,9 @@ with sync_playwright() as playwright:
     # UI states (#41), setup and Gallery: when art fails to load, the
     # fallback still names the card.
     mobile.route("**/art/images/**/cases/**", lambda route: route.fulfill(status=404, body=""))
+    mobile.route("**/art/thumbs/**/cases/**", lambda route: route.fulfill(status=404, body=""))
     mobile.route("**/art/images/**/heroes/**", lambda route: route.fulfill(status=404, body=""))
+    mobile.route("**/art/thumbs/**/heroes/**", lambda route: route.fulfill(status=404, body=""))
     # Touch: card actions are visible and tappable without hover (#40).
     mobile.locator("#scr-title").get_by_role("button", name="The Gallery").tap()
     mobile.wait_for_selector("#overlay", state="visible")
