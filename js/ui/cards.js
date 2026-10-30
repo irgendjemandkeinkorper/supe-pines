@@ -232,7 +232,7 @@ export function sceneTrackerHTML(G, opts={}){
   const tone = dominantTone(toneSources);
   return `${arrived?`<div class="scene-arrival-callout" aria-live="polite"><span>${esc(arrived.owner)}</span> ${animateSlot===0?'opens the scene with':'adds'} <strong>${esc(arrived.card.title)}</strong></div>`:''}
   <section class="scene-tracker${resolving?' resolving':''}${arrived?' card-arrival':''}" aria-label="Current scene tracker"${tone?` data-scene-tone="${tone}"`:''}>
-    ${G.case?`<div class="scene-bg" aria-hidden="true">${caseArtHTML(G.case, {className:'scene-bg-art'})}</div>`:''}
+    ${G.case?`<div class="scene-bg" aria-hidden="true">${caseArtHTML(G.case, {className:'scene-bg-art', full:true})}</div>`:''}
     <div class="scene-fg">
     <div class="scene-tracker-head">
       <div>

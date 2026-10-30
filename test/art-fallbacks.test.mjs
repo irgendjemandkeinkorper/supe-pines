@@ -6,7 +6,7 @@ test('Case art HTML follows the shipped title-slug asset convention', () => {
   const item = { id: 'toll', title: 'The Toll' };
   const html = caseArtHTML(item, { style: 'ink' });
 
-  assert.ok(html.includes('src="art/images/ink/cases/the-toll.webp"'), 'HTML must use the Case title slug');
+  assert.ok(html.includes('src="art/thumbs/ink/cases/the-toll.webp"'), 'HTML must use the Case title slug');
 });
 
 test('Threat art HTML generation and fallback attributes', () => {
@@ -21,29 +21,31 @@ test('Threat art HTML generation and fallback attributes', () => {
   assert.ok(html.includes('The Toll, the Threat'), 'HTML must include fallback text');
   assert.ok(!html.includes('undefined'), 'HTML must not render undefined');
   // Verify image path is correct
-  assert.ok(html.includes('src="art/images/ink/threats/toll.webp"'), 'HTML must include correct image src');
+  assert.ok(html.includes('src="art/thumbs/ink/threats/toll.webp"'), 'HTML must include correct image src');
   // Verify onerror attribute triggers gameArtImgError
   assert.ok(html.includes('onerror="gameArtImgError(this)"'), 'HTML must include correct onerror attribute');
 });
 
-test('gameArtImgError fallback mechanism with extension fallback', () => {
-  // Mock a DOM img element
-  const dataset = {
-    base: 'art/images/ink/threats/toll',
-    exts: 'png,jpg,jpeg'
-  };
+test('gameArtImgError walks thumbnail, then full-size extensions, then the text fallback', () => {
+  const holder = { classList: { added: [], add(c){ this.added.push(c); } } };
   const mockImg = {
-    dataset,
-    src: 'art/images/ink/threats/toll.webp'
+    dataset: { srcs: 'art/images/ink/threats/toll.png,art/images/ink/threats/toll.webp' },
+    src: 'art/thumbs/ink/threats/toll.webp',
+    closest: () => holder,
+    removed: false,
+    remove(){ this.removed = true; }
   };
 
-  // Calling gameArtImgError with multiple exts should cycle to next extension
   gameArtImgError(mockImg);
   assert.equal(mockImg.src, 'art/images/ink/threats/toll.png');
-  assert.equal(mockImg.dataset.exts, 'jpg,jpeg');
-
-  // Next cycle
   gameArtImgError(mockImg);
-  assert.equal(mockImg.src, 'art/images/ink/threats/toll.jpg');
-  assert.equal(mockImg.dataset.exts, 'jpeg');
+  assert.equal(mockImg.src, 'art/images/ink/threats/toll.webp');
+  gameArtImgError(mockImg);
+  assert.ok(mockImg.removed);
+  assert.deepEqual(holder.classList.added, ['missing']);
+});
+
+test('full-bleed art skips the thumbnail', () => {
+  const html = caseArtHTML({ id: 'toll', title: 'The Toll' }, { style: 'ink', full: true });
+  assert.ok(html.includes('src="art/images/ink/cases/the-toll.png"'));
 });
