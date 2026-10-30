@@ -1,0 +1,46 @@
+Supe Pines is made of two kinds of material under different terms.
+
+1. Code — MIT License
+=====================
+
+Applies to the source code in this repository: js/, css/, scripts/,
+test/, index.html, and the build, test, and CI configuration.
+
+Copyright (c) 2026 irgendjemandkeinkorper
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+2. Game design and content — not covered by the MIT grant
+=========================================================
+
+Supe Pines adapts the tabletop story game *Tall Pines*, designed by Miles
+Gaborit, by way of the sibling project Bleakwood Vale. The game's rules,
+structure, and card concepts derive from that design.
+
+The MIT grant above does NOT cover:
+
+- the game rules and structure derived from *Tall Pines*;
+- the game text in js/data/ (Cases, Heroes, Threats, Signals, Scenes,
+  Secrets, and other card and story copy);
+- the artwork in art/.
+
+All rights in the original *Tall Pines* design remain with its rights
+holder. Supe Pines' own adaptation text and artwork are not licensed for
+reuse. To reuse any of this material, ask the rights holder for permission
+first.

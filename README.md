@@ -10,6 +10,10 @@ men and women, Daredevil/Jessica Jones/Defenders tier, not global-power heroics 
 each carrying a limiting trauma or flaw that the case's Threat is built to exploit.
 Runs entirely in the browser.
 
+**License:** the code is MIT. The game design, card and story text, and art
+are not covered by that grant. *Tall Pines* remains its designer's, and the
+adaptation content is not licensed for reuse. See [LICENSE](LICENSE).
+
 **Play the current public build:**
 [irgendjemandkeinkorper.github.io/supe-pines](https://irgendjemandkeinkorper.github.io/supe-pines/)
 

@@ -212,6 +212,8 @@ If a bad UI code change or corrupted asset manifest is published to GitHub Pages
 ### Path B: Bad Firebase Rules Release Emergency Containment
 If a Firestore security rules release exposes the database or contains a vulnerability that leaks player hands/secrets:
 
+> Seated players changing public game state or writing blind into another player's hand are accepted risks, not incidents. See [`online-trust-model.md`](online-trust-model.md) (#44). Use this path for privacy breaks, or for abuse across many rooms or a cost spike.
+
 1. **Initiate Immediate Lockdown:**
    - Open the [Firebase Console](https://console.firebase.google.com/).
    - Navigate to **Build → Firestore Database → Rules**.
