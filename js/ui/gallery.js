@@ -1,8 +1,8 @@
 import { $, esc, slugify } from '../engine/utils.js';
 import { HEROES, CASES, SIGNALS, VILLAINS } from '../data/index.js';
-import { openOverlay } from './screens.js';
+import { openOverlay, setOverlayLabel, focusOverlayStart } from './screens.js';
 import { State } from '../engine/state.js';
-import { ART_STYLES, normalizeArtStyle, applyArtStyleTheme } from './art.js';
+import { ART_STYLES, normalizeArtStyle, applyArtStyleTheme, artImgHTML, nextArtSource } from './art.js';
 import { VILLAIN_BACKGROUNDS } from '../data/characterBackgrounds.js';
 
 /* The card-art Gallery — a pure browsing surface, deliberately independent
@@ -58,24 +58,14 @@ const CATS = [
   {id:'threats', label:'Threats', build:threatTiles}
 ];
 
-/* Try a handful of extensions in turn before giving up and revealing the
-   text fallback underneath — the naming doc promises .jpg, but nothing
-   stops someone from exporting .png/.webp instead. */
-const EXTS = ['jpg','jpeg','png','webp'];
-function imgWithFallback(path, alt){
-  const rest = EXTS.slice(1).join(',');
-  return `<img loading="lazy" src="${path}.${EXTS[0]}" data-base="${path}" data-exts="${rest}" onerror="galleryImgError(this)" alt="${esc(alt)}">`;
+/* Grid tiles start with the thumbnail; the detail view loads the original.
+   Missing art reveals the intentional text fallback underneath. */
+function imgWithFallback(path, alt, thumb=false){
+  return artImgHTML(path, alt, {thumb, onerror:'galleryImgError(this)'});
 }
 export function galleryImgError(img){
-  const exts = (img.dataset.exts||'').split(',').filter(Boolean);
-  if(exts.length){
-    const next = exts.shift();
-    img.dataset.exts = exts.join(',');
-    img.src = img.dataset.base + '.' + next;
-  } else {
-    (img.closest('.gallery-face') || img.closest('.gtile-media, .gdetail-media'))?.classList.add('g-missing');
-    img.remove();
-  }
+  const face = img.closest('.gallery-face') ? '.gallery-face' : '.gtile-media, .gdetail-media';
+  nextArtSource(img, face, 'g-missing');
 }
 
 function fallbackHTML(t, sub=t.sub){
@@ -83,11 +73,11 @@ function fallbackHTML(t, sub=t.sub){
 }
 function galleryMediaHTML(t, detail=false){
   const cls = detail ? 'gdetail-media' : 'gtile-media';
-  if(!t.flippable) return `<div class="${cls}">${imgWithFallback(t.path,t.title)}${fallbackHTML(t)}</div>`;
+  if(!t.flippable) return `<div class="${cls}">${imgWithFallback(t.path,t.title,!detail)}${fallbackHTML(t)}</div>`;
   return `<div class="${cls} gallery-flip">
     <div class="gallery-flip-inner">
-      <div class="gallery-face gallery-front">${imgWithFallback(t.path,`${t.title}, ${t.sub}`)}${fallbackHTML(t,t.sub)}<span class="gallery-face-label">${esc(t.sub)}</span></div>
-      <div class="gallery-face gallery-back">${imgWithFallback(t.backPath,`${t.title}, ${t.backSub}`)}${fallbackHTML(t,t.backSub)}<span class="gallery-face-label">${esc(t.backSub)}</span></div>
+      <div class="gallery-face gallery-front">${imgWithFallback(t.path,`${t.title}, ${t.sub}`,!detail)}${fallbackHTML(t,t.sub)}<span class="gallery-face-label">${esc(t.sub)}</span></div>
+      <div class="gallery-face gallery-back">${imgWithFallback(t.backPath,`${t.title}, ${t.backSub}`,!detail)}${fallbackHTML(t,t.backSub)}<span class="gallery-face-label">${esc(t.backSub)}</span></div>
     </div>
     <button class="gallery-flip-control" type="button" onclick="event.stopPropagation();flipGalleryCard(this)" data-front-label="${esc(t.sub)}" data-back-label="${esc(t.backSub)}" aria-label="View ${esc(t.backSub)}" aria-pressed="false">⟳ <span>${esc(t.backSub)}</span></button>
   </div>`;
@@ -124,23 +114,29 @@ export function showGallery(){
   gState.detail = null;
   applyArtStyleTheme(gState.style);
   renderGallery();
-  openOverlay();
+  openOverlay('The Gallery');
 }
 function renderGallery(){
+  renderGalleryContent();
+  // Re-rendering replaces the focused control; keep keyboard focus in the dialog.
+  if($('overlay').style.display === 'block') focusOverlayStart();
+}
+function renderGalleryContent(){
+  setOverlayLabel(gState.detail ? `Gallery detail: ${gState.detail.title}` : 'The Gallery');
   if(gState.detail){ $('overlay-content').innerHTML = detailHTML(); return; }
   const active = CATS.find(c=>c.id===gState.cat);
   const tiles = active.build(gState.style);
   $('overlay-content').innerHTML = `
-    <h2 style="color:var(--gold)">The Gallery</h2>
+    <h2 class="u-gold">The Gallery</h2>
     <p class="small muted">Browse every card face in Supe Pines. Text fallback is a fully supported and intentional launch state. Currently, 46 Hero and Threat portraits feature finalized art in both visual languages, while remaining slots show beautifully integrated text previews. Hero cards have two distinct sides: use the turn button to compare their conditions and variants without opening the card.</p>
     <div class="btnrow" style="margin-top:12px">
       ${ART_STYLES.map(style => `<button class="${gState.style===style.id?'primary':'ghost'}" onclick="setGalleryStyle('${style.id}')">${style.label}</button>`).join('')}
     </div>
-    <div class="btnrow" style="margin-top:6px">
+    <div class="btnrow u-mt-6">
       ${CATS.map(c=>`<button class="${c.id===gState.cat?'primary':'ghost'}" onclick="setGalleryCat('${c.id}')">${c.label}</button>`).join('')}
     </div>
     <div class="ggrid gcat-${gState.cat}" style="margin-top:16px">${tiles.map(tileHTML).join('')}</div>
-    <div class="btnrow" style="justify-content:center;margin-top:20px"><button class="primary" onclick="closeOverlay()">Back to Millhaven</button></div>`;
+    <div class="btnrow u-justify-center u-mt-20"><button class="primary" onclick="closeOverlay()">Back to Millhaven</button></div>`;
 }
 export function setGalleryStyle(style){
   const normalized = normalizeArtStyle(style);
@@ -202,7 +198,7 @@ function detailHTML(){
         <section class="gallery-day good"><h4>${esc(t.sub)}${t.frontTitle?` · ${esc(t.frontTitle)}`:''}</h4><p>${esc(t.frontBackground)}</p></section>
         <section class="gallery-day bad"><h4>${esc(t.backSub)}${t.backTitle?` · ${esc(t.backTitle)}`:''}</h4><p>${esc(t.backBackground||'')}</p></section>
       </div></details>`:''}
-      ${t.flippable?'<p class="small muted" style="margin-top:8px">Use the turn button on the card to compare its two faces.</p>':''}
+      ${t.flippable?'<p class="small muted u-mt-8">Use the turn button on the card to compare its two faces.</p>':''}
     </div>
     <div class="btnrow gallery-nav" style="justify-content:center;margin-top:16px">
       <button class="ghost" onclick="navigateGallery(-1)" aria-label="Previous gallery card">← Previous</button>

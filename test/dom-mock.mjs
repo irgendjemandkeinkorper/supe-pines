@@ -56,6 +56,7 @@ function createMockElement(id, tag = 'div') {
     classList: {
       add: () => {},
       remove: () => {},
+      contains: () => false,
       toggle: () => {},
     },
     setAttribute: () => {},

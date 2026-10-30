@@ -40,7 +40,7 @@ function heroFaceHTML(h, sideIdx, turned){
 export function heroCard(h, selectable, idx, opts = {}){
   const frontIdx = h.flipped?1:0, backIdx = h.flipped?0:1;
   const selectedArchs = State.G?.current?.archIdxs || (State.G?.current?.archIdx===idx ? [idx] : []);
-  const isSelected = selectable === 'pickArch' && selectedArchs.includes(idx);
+  const isSelected = selectable === 'pickHero' && selectedArchs.includes(idx);
   const selectAttrs = selectable
     ? `role="button" tabindex="0" aria-pressed="${isSelected?'true':'false'}" onclick="${selectable}(${idx})" onkeydown="if((event.key==='Enter'||event.key===' ')&&event.target===this){event.preventDefault();${selectable}(${idx})}" id="arch-pick-${idx}"`
     : '';
@@ -99,7 +99,7 @@ export function sceneAnatomyDiagramHTML(){
       <div class="td-num">3</div>
       <div class="td-label">Narrate</div>
       <div class="td-visual">
-        <p class="small" style="font-style:italic;color:#cfc2a2">“Sirens two blocks over, closing fast…”</p>
+        <p class="small" style="font-style:italic;color:var(--text-parchment)">“Sirens two blocks over, closing fast…”</p>
       </div>
       <div class="td-caption">Play it out aloud, together, until the starter ends it.</div>
     </div>
@@ -116,7 +116,7 @@ export function sceneAnatomyDiagramHTML(){
 }
 export function signalCard(o, selectable, idx){
   let isSelected = false;
-  if (selectable === 'toggleSecretOmen' && State.G?.pendingSecret?.secretSel?.includes(idx)) {
+  if (selectable === 'toggleSecretSignal' && State.G?.pendingSecret?.secretSel?.includes(idx)) {
     isSelected = true;
   }
   const selectAttrs = selectable
@@ -141,7 +141,7 @@ export function sceneCardHTML(c, selectable, idx){
     <div class="c-kicker">Scene · ${ACT_NAMES[G.act]}</div>
     <div class="c-title">${esc(c.title)}</div>
     <div class="c-prompt">${esc(c.prompt)}</div>
-    <div style="margin-top:8px">${toneBadge(c.tone)}</div>
+    <div class="u-mt-8">${toneBadge(c.tone)}</div>
   </div>`;
 }
 
@@ -232,7 +232,7 @@ export function sceneTrackerHTML(G, opts={}){
   const tone = dominantTone(toneSources);
   return `${arrived?`<div class="scene-arrival-callout" aria-live="polite"><span>${esc(arrived.owner)}</span> ${animateSlot===0?'opens the scene with':'adds'} <strong>${esc(arrived.card.title)}</strong></div>`:''}
   <section class="scene-tracker${resolving?' resolving':''}${arrived?' card-arrival':''}" aria-label="Current scene tracker"${tone?` data-scene-tone="${tone}"`:''}>
-    ${G.case?`<div class="scene-bg" aria-hidden="true">${caseArtHTML(G.case, {className:'scene-bg-art'})}</div>`:''}
+    ${G.case?`<div class="scene-bg" aria-hidden="true">${caseArtHTML(G.case, {className:'scene-bg-art', full:true})}</div>`:''}
     <div class="scene-fg">
     <div class="scene-tracker-head">
       <div>
@@ -286,21 +286,21 @@ export function journalEntrySummaryHTML(entry, opts){
     return `<div class="panel tight"><span class="small muted">${esc(entry.text)}</span></div>`;
   }
   if(entry.type==='secret'){
-    return `<div class="panel tight" style="border-color:#8a63a8">
-      <h3 style="color:#c9b3de">${compact?'Just revealed — ':''}A Buried Secret: ${esc(entry.playerName)}</h3>
-      <p class="small" style="color:#e0d4ec">“${esc(entry.question)}”</p>
+    return `<div class="panel tight" style="border-color:var(--secret-violet)">
+      <h3 class="u-secret">${compact?'Just revealed — ':''}A Buried Secret: ${esc(entry.playerName)}</h3>
+      <p class="small" style="color:var(--secret-lilac-pale)">“${esc(entry.question)}”</p>
       <p class="small muted">Shown through: ${entry.signals.map(o=>`${o.glyph} ${esc(o.title)}`).join(' · ')}</p>
     </div>`;
   }
   const contribHTML = entry.contributions.length
-    ? entry.contributions.map(x=>`<p class="small" style="margin:3px 0"><span style="color:var(--gold)">${x.kind==='omen'?(x.glyph+' '):''}${esc(x.title)}</span> <span class="muted">(${esc(x.playerName)})</span>${(!compact && x.how)?` — ${nl2br(x.how)}`:''}</p>`).join('')
+    ? entry.contributions.map(x=>`<p class="small" style="margin:3px 0"><span class="u-gold">${x.kind==='omen'?(x.glyph+' '):''}${esc(x.title)}</span> <span class="muted">(${esc(x.playerName)})</span>${(!compact && x.how)?` — ${nl2br(x.how)}`:''}</p>`).join('')
     : '<p class="small muted">No one else played into this scene.</p>';
   return `<div class="panel tight">
-    <h3 style="color:var(--gold)">${entry.type==='close'?'Act Close — ':''}${esc(entry.cardTitle)}</h3>
+    <h3 class="u-gold">${entry.type==='close'?'Act Close — ':''}${esc(entry.cardTitle)}</h3>
     <p class="small">Led by <strong>${esc(entry.playerName)}</strong> as ${esc(entry.archName)} (${esc(entry.archRole)})</p>
     <p class="small" style="color:var(--gold);margin-top:6px">Cards &amp; characters played</p>
     ${contribHTML}
-    <p class="small muted" style="margin-top:6px">Tones: ${entry.tones.map(toneBadge).join(' ')}</p>
+    <p class="small muted u-mt-6">Tones: ${entry.tones.map(toneBadge).join(' ')}</p>
     ${entry.flips.length?`<p class="small muted">${entry.flips.map(esc).join('; ')}.</p>`:''}
   </div>`;
 }
@@ -318,8 +318,8 @@ export function playerPanel(p,i){
       ${G.sceneDeck.length?`<button class="ghost" onclick="tradeSignal(${i},${oi})">Trade for a scene card</button>`:'<span class="small muted">Scene deck empty</span>'}</div>`).join('')}</div>`:''}
     ${p.secrets.map(s=>`
       <details class="secretbox"><summary>Buried Secret ${s.used?'— revealed':'(theirs alone to read)'}</summary>
-        <div class="small" style="margin-top:6px">${s.combo.map(toneBadge).join(' ')}<br>
-        <span style="color:#c9b3de">${esc(s.q)}</span>
+        <div class="small u-mt-6">${s.combo.map(toneBadge).join(' ')}<br>
+        <span class="u-secret">${esc(s.q)}</span>
         ${s.used?'':'<br><span class="muted">Unlocks when a scene’s tones contain this combination.</span>'}</div>
       </details>`).join('')}
   </div>`;

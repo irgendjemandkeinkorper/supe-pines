@@ -3,9 +3,9 @@ import assert from 'node:assert/strict';
 
 import {
   characterSideLabel,
-  normalizeArchIndices,
+  normalizeHeroIndices,
   canAddContribution,
-  replaceOmenByVote,
+  replaceSignalByVote,
   roomExpiryTimestamp
 } from '../js/engine/gameplay.js';
 
@@ -18,9 +18,9 @@ test('character sides use Good Day and Bad Day labels', () => {
 });
 
 test('scene archetype selection normalizes to one or two unique indices', () => {
-  assert.deepEqual(normalizeArchIndices([], 4), []);
-  assert.deepEqual(normalizeArchIndices([4, 4, 9], 6), [4]);
-  assert.deepEqual(normalizeArchIndices([4, 2, 9], 6), [4, 2]);
+  assert.deepEqual(normalizeHeroIndices([], 4), []);
+  assert.deepEqual(normalizeHeroIndices([4, 4, 9], 6), [4]);
+  assert.deepEqual(normalizeHeroIndices([4, 2, 9], 6), [4, 2]);
 });
 
 test('a player may contribute at most two cards to one scene', () => {
@@ -34,9 +34,9 @@ test('omen replacement requires unanimous votes and reshuffles the old omen', ()
     signalRow: [{title:'A'}, {title:'B'}],
     signalDeck: [{title:'C'}]
   };
-  assert.equal(replaceOmenByVote(state, 0, [0], 2), false);
+  assert.equal(replaceSignalByVote(state, 0, [0], 2), false);
   assert.deepEqual(state.signalRow.map(x=>x.title), ['A', 'B']);
-  assert.equal(replaceOmenByVote(state, 0, [0, 1], 2), true);
+  assert.equal(replaceSignalByVote(state, 0, [0, 1], 2), true);
   assert.deepEqual(state.signalRow.map(x=>x.title), ['C', 'B']);
   assert.deepEqual(state.signalDeck.map(x=>x.title), ['A']);
 });
