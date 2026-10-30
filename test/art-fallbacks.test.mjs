@@ -10,14 +10,16 @@ test('Case art HTML follows the shipped title-slug asset convention', () => {
 });
 
 test('Threat art HTML generation and fallback attributes', () => {
-  const item = { id: 'toll', title: 'The Toll' };
+  // Real VILLAINS entries carry `name`; the old `title` lookup rendered "undefined".
+  const item = { id: 'toll', name: 'The Toll' };
   // Mock currentArtStyle to return 'ink'
   const html = threatArtHTML(item, { style: 'ink' });
 
   // Verify HTML contains container with class game-art
   assert.ok(html.includes('class="game-art'), 'HTML must include class="game-art"');
   // Verify HTML contains fallback text
-  assert.ok(html.includes('The Threat — The Toll'), 'HTML must include fallback text');
+  assert.ok(html.includes('The Toll, the Threat'), 'HTML must include fallback text');
+  assert.ok(!html.includes('undefined'), 'HTML must not render undefined');
   // Verify image path is correct
   assert.ok(html.includes('src="art/images/ink/threats/toll.webp"'), 'HTML must include correct image src');
   // Verify onerror attribute triggers gameArtImgError
